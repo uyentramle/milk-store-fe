@@ -1,8 +1,6 @@
 import { DesktopOutlined } from '@ant-design/icons';
 import {
     FileOpenOutlined,
-    Person2Outlined,
-    Person3Outlined,
     PieChartOutlined,
 } from '@mui/icons-material';
 import { Menu, MenuProps } from 'antd';
@@ -30,15 +28,6 @@ function getItem(
 const items: MenuItem[] = [
     getItem('Dashboard', '1', <PieChartOutlined />),
     getItem('Option 2', '2', <DesktopOutlined />),
-    getItem('Quản lý khóa học', 'sub1', <Person2Outlined />, [
-        getItem('Danh sách khóa học', '3'),
-        getItem('Thêm khóa học mới', '4'),
-        getItem('Danh sách loại khóa học', '5'),
-    ]),
-    getItem('Quản lý tài khoản', 'sub2', <Person3Outlined />, [
-        getItem('Học sinh', '6'),
-        getItem('Gia đình', '8'),
-    ]),
     getItem('Files', '9', <FileOpenOutlined />),
 ];
 

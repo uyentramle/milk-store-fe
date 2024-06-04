@@ -1,7 +1,6 @@
 import { MenuOutlined } from '@ant-design/icons';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
-import AppsOutlinedIcon from '@mui/icons-material/AppsOutlined';
 import { Menu, MenuProps } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import React, { useEffect, useState } from 'react';
@@ -43,19 +42,13 @@ export default function MySider() {
     const getConditionalItems = (): MenuItem[] => {
         return [
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
-            getItem('Quản lý dịch vụ', '2', <AppsOutlinedIcon />),
-            getItem('Quản lý tài khoản', '3', <ManageAccountsOutlinedIcon />),
-            getItem('Chương trình dào tạo', '4', <ManageAccountsOutlinedIcon />),
-            getItem('Quản lý kết nối', '5', <ManageAccountsOutlinedIcon />),
+            getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
         ];
     };
     const navUrl = new Map<string, string>();
     navUrl
         .set('1', '/admin/')
-        .set('2', '/admin/quan-ly-dich-vu')
-        .set('3', '/admin/quan-ly-tai-khoan')
-        .set('4', '/admin/truong-trinh-dao-tao')
-        .set('5', '/admin/quan-ly-ket-noi');
+        .set('2', '/admin/quan-ly-tai-khoan');
 
     return (
         <>
