@@ -5,14 +5,14 @@ import MyContent from './Components/Content/Content';
 import MyFooter from './Components/Footer/Footer';
 import { DefaultLayoutProps } from '../../types/layout.type';
 
-const DefaultAdminLayout = ({ childen }: DefaultLayoutProps) => {
+const DefaultAdminLayout = ({ children }: DefaultLayoutProps) => {
     return (
         <>
             <Layout className="min-h-screen">
                 <MySider />
                 <Layout className="bg-white">
                     <MyHeader />
-                    <MyContent childen={childen} />
+                    <MyContent children={children} />
                     <MyFooter />
                 </Layout>
             </Layout>
