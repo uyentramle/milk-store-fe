@@ -6,7 +6,8 @@ const DefaultClientLayout = ({ children }: DefaultLayoutProps) => {
     return (
         <div>
             <Header />
-            <div className="mt-4 py-4">{children}</div>
+            
+            {children}
             <Footer />
         </div>
     );
