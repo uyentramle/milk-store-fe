@@ -3,7 +3,7 @@ import React from 'react';
 
 const MyFooter: React.FC = () => {
     return (
-        <Footer className="bg-white text-gray-600 py-8">
+        <Footer className="bg-gray text-gray-600 py-8">
             <div className="container mx-auto flex flex-wrap justify-between">
                 <div className="w-full md:w-1/4 mb-6 md:mb-0">
                     <h2 className="text-lg font-bold mb-2">Công Ty Cổ Phần Milk Store</h2>
