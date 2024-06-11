@@ -1,14 +1,13 @@
 import React from 'react';
-import { Menu, Dropdown, Button, Input } from 'antd';
-import { DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Button, Badge } from 'antd';
+import { DownOutlined, ShoppingCartOutlined, BellOutlined, } from '@ant-design/icons';
 
-const { Search } = Input;
 
 const productMenu = (
     <Menu>
-        <Menu.Item key="1">Sữa bột</Menu.Item>
-        <Menu.Item key="2">Sữa tươi</Menu.Item>
-        <Menu.Item key="3">Sữa cho bé</Menu.Item>
+        <Menu.Item key="1">Sữa bột cao cấp</Menu.Item>
+        <Menu.Item key="2">Sữa tươi các loại</Menu.Item>
+        <Menu.Item key="3">Sữa cho bé theo tuổi</Menu.Item>
         <Menu.Item key="4">Sữa cho mẹ</Menu.Item>
     </Menu>
 );
@@ -31,16 +30,22 @@ const Header: React.FC = () => {
                 />
             </div> */}
             <div className="flex items-center space-x-6">
-                <a href="/" className="hover:text-blue-500">Trang chủ</a>
+                <a href="/" className="hover:text-pink-500">Trang chủ</a>
                 <Dropdown overlay={productMenu}>
-                    <a className="ant-dropdown-link flex items-center hover:text-blue-500" onClick={(e) => e.preventDefault()}>
+                    <a className="ant-dropdown-link flex items-center hover:text-pink-500" onClick={(e) => e.preventDefault()}>
                         Sản phẩm <DownOutlined className="ml-1" />
                     </a>
                 </Dropdown>
-                <a href="#" className="hover:text-blue-500">Khuyến mãi</a>
-                <a href="#" className="hover:text-blue-500">Blog</a>
-                <a href="#" className="hover:text-blue-500">Liên hệ</a>
-                <a href="#" className="hover:text-blue-500">CSKH</a>
+                <a href="#" className="hover:text-pink-500">Khuyến mãi</a>
+                <a href="#" className="hover:text-pink-500">Blog</a>
+                <a href="#" className="hover:text-pink-500">Liên hệ</a>
+                <a href="#" className="hover:text-pink-500">CSKH</a>
+                <Badge count={8}>
+                    <a href='#' className="hover:text-pink-500"><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
+                </Badge>
+                <Badge count={8}>
+                    <BellOutlined className="hover:text-pink-500" style={{ fontSize: '24px' }} />
+                </Badge>
                 <Button type="primary" className="ml-4">Đăng nhập</Button>
             </div>
         </div>
