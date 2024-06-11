@@ -15,10 +15,11 @@ export default {
       },
       extend: {
           colors: {
-              primary: 'white',
+              primary: '#e83c7e',
               greenHome: '#D2B4DE',
               grayLine: '#747474',
-              blueAnt: '#1890FF',
+            //   blueAnt: '#1890FF',
+              pinkAnt: '#e83c7e',
           },
       },
   },
