@@ -41,9 +41,15 @@ const MyFooter: React.FC = () => {
                     </div> */}
                     <h2 className="text-lg font-bold mb-2">Kết Nối Với Chúng Tôi</h2>
                     <div className="flex">
-                        <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/facebook.png" alt="Facebook" className="w-10 h-10 mr-2" />
-                        <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/zalo.png" alt="Zalo" className="w-10 h-10 mr-2" />
-                        <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/youtube.png" alt="YouTube" className="w-10 h-10 mr-2" />
+                        <a href='#'>
+                            <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/facebook.png" alt="Facebook" className="w-10 h-10 mr-2" />
+                        </a>
+                        <a href='#'>
+                            <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/zalo.png" alt="Zalo" className="w-10 h-10 mr-2" />
+                        </a>
+                        <a href='#'>
+                            <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/style/youtube.png" alt="YouTube" className="w-10 h-10 mr-2" />
+                        </a>
                     </div>
                 </div>
             </div>

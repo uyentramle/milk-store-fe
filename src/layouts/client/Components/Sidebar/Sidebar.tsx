@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
+const linkClass = "text-pink-500";
 
 const Sidebar: React.FC = () => {
   return (
@@ -30,19 +31,26 @@ const Sidebar: React.FC = () => {
           key="sub1"
           icon={<MailOutlined />}
           title="Sữa bột cao cấp"
-          // className='hover:text-pink-500 active:text-pink-500'
         >
-          <Menu.Item key="1">Sữa Mỹ</Menu.Item>
-          <Menu.Item key="2">Sữa Nhật</Menu.Item>
-          <Menu.Item key="3">Sữa Úc</Menu.Item>
-          <Menu.Item key="4">Châu Âu</Menu.Item>
-          <Menu.Item key="5">Sữa Khác</Menu.Item>
+          <Menu.Item className={linkClass} key="1">Sữa Mỹ</Menu.Item>
+          <Menu.Item className={linkClass} key="2">Sữa Nhật</Menu.Item>
+          <Menu.Item className={linkClass} key="3">Sữa Úc</Menu.Item>
+          <Menu.Item className={linkClass} key="4">Châu Âu</Menu.Item>
+          <Menu.Item className={linkClass} key="5">Sữa Khác</Menu.Item>
         </SubMenu>
-        <Menu.Item key="sub3" icon={<SettingOutlined />}>
+        <Menu.Item className={linkClass} key="sub3" icon={<SettingOutlined />}>
           Sữa tươi các loại
         </Menu.Item>
-
-        <Menu.Item key="sub10" icon={<AppstoreOutlined />}>
+        <Menu.Item className={linkClass} key="sub4" icon={<SettingOutlined />}>
+          Sữa bột pha sẵn
+        </Menu.Item>
+        <Menu.Item className={linkClass} key="sub5" icon={<SettingOutlined />}>
+          Sữa hạt dinh dưỡng
+        </Menu.Item>
+        <Menu.Item className={linkClass} key="sub6" icon={<SettingOutlined />}>
+          Thức uống dinh dưỡng
+        </Menu.Item>
+        <Menu.Item className={linkClass} key="sub10" icon={<AppstoreOutlined />}>
           Ứng dụng Mẹ & Bé
         </Menu.Item>
       </Menu>
