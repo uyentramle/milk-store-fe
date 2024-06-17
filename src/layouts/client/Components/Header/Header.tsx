@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Dropdown, Badge, Input, Avatar } from 'antd';
+import { Menu, Dropdown, Badge, Avatar } from 'antd';
 import {
     DownOutlined,
     ShoppingCartOutlined,
@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 
 const linkClass = "text-pink-500 hover:text-pink-800";
+const menuStyle = "text-pink-500 hover:text-pink-800 font-medium";
 
 const productMenu = (
     <Menu>
@@ -27,25 +28,18 @@ const Header: React.FC = () => {
                     <span className="text-xl font-bold text-pink-500">MILK STORE</span>
                 </div>
             </a>
-            {/* <div className="hidden md:block">
-                <Input.Search
-                    placeholder="Tìm kiếm sản phẩm"
-                    style={{ width: 300, color: 'pink', borderColor: 'pink' }}
-                    enterButton
-                />
-            </div> */}
             <div className="flex items-center space-x-6">
-                <a href="/" className="text-pink-500 hover:text-pink-80 font-medium">Trang chủ</a>
+                <a href="/" className={menuStyle}>Trang chủ</a>
                 <Dropdown overlay={productMenu}>
-                    <a className="ant-dropdown-link flex items-center text-pink-500 hover:text-pink-800 font-medium"
+                    <a className={`ant-dropdown-link flex items-center ${menuStyle}`}
                         onClick={(e) => e.preventDefault()}>
                         Sản phẩm <DownOutlined className="ml-1" />
                     </a>
                 </Dropdown>
-                <a href="#" className={linkClass}>Khuyến mãi</a>
-                <a href="#" className={linkClass}>Blog</a>
-                <a href="#" className={linkClass}>Liên hệ</a>
-                <a href="#" className={linkClass}>CSKH</a>
+                <a href="#" className={menuStyle}>Khuyến mãi</a>
+                <a href="#" className={menuStyle}>Blog</a>
+                <a href="#" className={menuStyle}>Liên hệ</a>
+                <a href="#" className={menuStyle}>CSKH</a>
                 <Badge count={8}>
                     <a href='#' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
                 </Badge>
@@ -53,7 +47,10 @@ const Header: React.FC = () => {
                     <BellOutlined className={linkClass} style={{ fontSize: '24px' }} />
                 </Badge>
                 <a href="#" className="">
-                    <Avatar style={{ backgroundColor: '#e83c7e' }} icon={<UserOutlined />} />
+                    <Avatar
+                        style={{ backgroundColor: '#e83c7e' }}
+                        icon={<UserOutlined />}
+                    />
                 </a>
                 {/* <Button type="primary" className="ml-4 bg-pink-500 hover:bg-pink-800">Đăng nhập</Button> */}
             </div>
