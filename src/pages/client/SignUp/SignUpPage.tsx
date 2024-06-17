@@ -91,7 +91,7 @@ const SignUpPage: React.FC = () => {
 
         <div className="text-center mt-4">
           <span>Đã có tài khoản?</span> 
-          <Button type="link" href="/login">Đăng nhập</Button>
+          <Button type="link" href="/sign-in">Đăng nhập</Button>
         </div>
       </div>
     </div>

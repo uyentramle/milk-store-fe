@@ -4,6 +4,7 @@ import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 
 import HomePage from '../pages/client/Home/HomePage';
 import SignUpPage from '../pages/client/SignUp/SignUpPage';
+import SignInPage from '../pages/client/SignIn/SignInPage';
 import { DefaultLayoutProps } from '../types/layout.type';
 
 interface RouteProps {
@@ -14,7 +15,8 @@ interface RouteProps {
 
 const publicRoutes: RouteProps[] = [
     { path: '/', component: HomePage, layout: DefaultClientLayout },
-    { path: '/signup', component: SignUpPage, layout: DefaultClientLayout },
+    { path: '/sign-up', component: SignUpPage, layout: DefaultClientLayout },
+    { path: '/sign-in', component: SignInPage, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
