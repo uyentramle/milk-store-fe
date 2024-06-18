@@ -1,5 +1,10 @@
 import React from 'react';
 import { Form, Input, Button, Checkbox } from 'antd';
+import { LineOutlined } from '@ant-design/icons';
+
+// useEffect(() => {
+//   document.title = "Đăng ký";
+// }, []);
 
 const SignUpPage: React.FC = () => {
   const onFinish = (values: any) => {
@@ -11,7 +16,7 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-2">
+    <div className="min-h-screen flex items-center justify-center bg-pink-100 mt-2">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Đăng ký</h2>
         <Form
@@ -69,7 +74,7 @@ const SignUpPage: React.FC = () => {
           <Form.Item
             name="agreement"
             valuePropName="checked"
-            rules={[{ validator:(_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với các điều khoản của Milk Store') }]}
+            rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với các điều khoản của Milk Store') }]}
           >
             <Checkbox>Tôi đã đọc và đồng ý với các <a href='#'>Điều khoản</a> của Milk Store</Checkbox>
           </Form.Item>
@@ -77,7 +82,7 @@ const SignUpPage: React.FC = () => {
           <Form.Item
             name="agreement"
             valuePropName="checked"
-            rules={[{ validator:(_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với chính sách bảo vệ thông tin cá nhân của Milk Store') }]}
+            rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với chính sách bảo vệ thông tin cá nhân của Milk Store') }]}
           >
             <Checkbox>Tôi đã đọc và đồng ý với <a href='#'>Chính sách bảo vệ thông tin cá nhân</a> của Milk Store</Checkbox>
           </Form.Item>
@@ -90,8 +95,9 @@ const SignUpPage: React.FC = () => {
         </Form>
 
         <div className="text-center mt-4">
-          <span>Đã có tài khoản?</span> 
-          <Button type="link" href="/sign-in">Đăng nhập</Button>
+          <LineOutlined className='' />
+          <p>Đã có tài khoản? <Button type="link" href="/sign-in">Đăng nhập</Button></p>
+
         </div>
       </div>
     </div>

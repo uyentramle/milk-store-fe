@@ -1,15 +1,23 @@
-:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title, 
-:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-item-selected, :where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-item-selected,
-:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-submenu-selected >.ant-menu-submenu-title {
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-submenu-selected>.ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-submenu-selected>.ant-menu-submenu-title {
     color: #e83c7e !important;
 }
 
-:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-item-selected, :where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-item-selected {
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-item-selected {
     background-color: #fff1fe !important;
 }
 
-:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title, :where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-submenu-selected >.ant-menu-submenu-title {
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light .ant-menu-submenu-selected>.ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-1okl62o).ant-menu-light>.ant-menu .ant-menu-submenu-selected>.ant-menu-submenu-title {
     background-color: #fff1fe !important;
+}
+
+/* Layout */
+.ant-layout-header {
+    background-color: #e83c7e !important;
 }
 
 /* Button */
@@ -18,19 +26,31 @@
     border-color: #e83c7e !important;
 }
 
-.ant-btn-primary:hover, .ant-btn-primary:focus {
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
     background-color: #d32f6e !important;
     border-color: #d32f6e !important;
 }
 
 /* Checkbox */
-.ant-checkbox:hover .ant-checkbox-inner, .ant-checkbox-input:focus + .ant-checkbox-inner {
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus+.ant-checkbox-inner {
     border-color: #e83c7e !important;
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
     background-color: #e83c7e !important;
     border-color: #e83c7e !important;
+}
+
+/* Dropdown */
+.ant-dropdown-link {
+    color: #e83c7e !important;
+}
+
+.ant-dropdown-link:hover,
+.ant-dropdown-link:focus {
+    color: #d32f6e !important;
 }
 
 /* Input */
@@ -57,6 +77,57 @@
     color: #e83c7e !important;
 }
 
-.ant-btn-link:hover, .ant-btn-link:focus {
+.ant-btn-link:hover,
+.ant-btn-link:focus {
     color: #d32f6e !important;
+}
+
+/* Radio */
+.ant-radio:hover .ant-radio-inner,
+.ant-radio-input:focus+.ant-radio-inner {
+    border-color: #e83c7e !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: #e83c7e !important;
+}
+
+.ant-radio-checked .ant-radio-inner:after {
+    background-color: #e83c7e !important;
+}
+
+/* Select */
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-color: #e83c7e !important;
+}
+
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-color: #d32f6e !important;
+    box-shadow: 0 0 0 2px rgba(231, 60, 126, 0.2) !important;
+}
+
+/* Steps */
+.ant-steps .ant-steps-item-process .ant-steps-item-icon {
+    background-color: #e83c7e !important;
+    border-color: #e83c7e !important;
+}
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+    background-color: #fff1fe;
+    border-color: #ffe6fd;
+}
+
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon>.ant-steps-icon {
+    color: #e83c7e !important;
+}
+
+.custom-steps {
+    white-space: pre-wrap;
+    text-align: center;
+    display: block;
+    margin-top: 8px;
+}
+
+.custom-steps .ant-steps-item-title.inactive {
+    display: none;
 }

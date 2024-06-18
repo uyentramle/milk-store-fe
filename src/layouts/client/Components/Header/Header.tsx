@@ -46,7 +46,7 @@ const Header: React.FC = () => {
                 <Badge count={8}>
                     <BellOutlined className={linkClass} style={{ fontSize: '24px' }} />
                 </Badge>
-                <a href="#" className="">
+                <a href="/sign-in" className="">
                     <Avatar
                         style={{ backgroundColor: '#e83c7e' }}
                         icon={<UserOutlined />}
