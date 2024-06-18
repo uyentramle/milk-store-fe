@@ -13,7 +13,7 @@ const SignInPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-pink-100 mt-2">
-            <div className="bg-white p-8 rounded w-full max-w-md">
+            <div className="bg-white p-8 rounded w-full max-w-md shadow-md ">
                 <h2 className="text-2xl font-bold mb-6 text-center text-pink-500">Đăng nhập</h2>
                 <Form
                     name="sign_in"
@@ -33,7 +33,7 @@ const SignInPage: React.FC = () => {
                         name="password"
                         rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
                     >
-                        <Input.Password placeholder="Mật khẩu" className='border-pink-500 hover:border-pink-500 focus:border-pink-500'/>
+                        <Input.Password placeholder="Mật khẩu" />
                     </Form.Item>
 
                     <div className='grid grid-cols-2 justify-items-stretch'>
@@ -41,7 +41,7 @@ const SignInPage: React.FC = () => {
                             <Checkbox>Ghi nhớ tài khoản</Checkbox>
                         </Form.Item>
                         <div className="justify-self-end text-right mb-4">
-                            <Button type="link">Quên mật khẩu?</Button>
+                            <Button type="link" href="/forgot-password">Quên mật khẩu?</Button>
                         </div>
                     </div>
 

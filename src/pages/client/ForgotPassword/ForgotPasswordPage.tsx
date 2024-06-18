@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Steps, Form, Input, Button, message, GetProp, } from 'antd';
 import {
     LockOutlined,
-    MailOutlined,
+    // MailOutlined,
     UserOutlined,
     LineOutlined,
     CheckCircleFilled,
@@ -58,10 +58,10 @@ const ForgotPasswordPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-pink-100 mt-2">
-            <div className="bg-white p-8 rounded w-full max-w-md">
+            <div className="bg-white p-8 rounded w-full max-w-md shadow-md ">
                 <h2 className="text-2xl font-bold mb-6 text-center text-pink-500">Quên mật khẩu</h2>
                 <Steps current={currentStep} className="mb-8 custom-steps">
-                    <Step title={currentStep == 0 ? <>Nhập tài khoản <LineOutlined className="ml-4" /></> : <LineOutlined className="ml-4 text-pink-500" />} />
+                    <Step title={currentStep == 0 ? <>Nhập tài khoản <LineOutlined className="ml-4 text-pink-500" /></> : <LineOutlined className="ml-4 text-pink-500" />} />
                     <Step title={currentStep == 1 ? <>Xác Minh Bảo Mật <LineOutlined className="ml-4 text-pink-500" /></> : <LineOutlined className="ml-4 text-pink-500" />} />
                     <Step title={currentStep == 2 ? "Thiết lập mật khẩu" : ""} />
                 </Steps>
