@@ -11,6 +11,9 @@ import {
 import { Link } from 'react-router-dom';
 import type { OTPProps } from 'antd/es/input/OTP';
 
+// useEffect(() => {
+//     document.title = "Quên mật khẩu";
+// }, []);
 
 const { Step } = Steps;
 
@@ -18,20 +21,20 @@ const ForgotPasswordPage: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [form] = Form.useForm();
 
-    const onFinish = (values: any) => {
+    const onFinish = () => {
         if (currentStep === 0) {
             // Handle username/email submission
-
+    
             message.success('Tên người dùng đã gửi');
             setCurrentStep(1);
         } else if (currentStep === 1) {
             // Handle verification code submission
-
+    
             message.success('Đã gửi mã xác minh');
             setCurrentStep(2);
         } else if (currentStep === 2) {
             // Handle password reset
-
+    
             message.success('Đặt lại mật khẩu thành công');
             setCurrentStep(3);
         }
@@ -92,7 +95,7 @@ const ForgotPasswordPage: React.FC = () => {
                                     placeholder="Mã Xác Nhận"
                                     className=""
                                 /> */}
-                                <Input.OTP length={6} {...sharedProps} className=''/>
+                                <Input.OTP length={6} {...sharedProps} className='' />
                             </Form.Item>
                             <Button type="link" className=""><LoadingOutlined /> Gửi lại ({countdown}s)</Button>
                         </>

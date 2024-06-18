@@ -2,6 +2,10 @@ import React from 'react';
 import { Form, Input, Button, Checkbox, } from 'antd';
 import { GoogleOutlined, } from '@ant-design/icons';
 
+// useEffect(() => {
+//     document.title = "Đăng nhập";
+// }, []);
+
 const SignInPage: React.FC = () => {
     const onFinish = (values: any) => {
         console.log('Success:', values);

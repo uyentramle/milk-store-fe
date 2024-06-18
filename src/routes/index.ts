@@ -1,5 +1,6 @@
 import DefaultAdminLayout from '../layouts/admin/DefaultAdminLayout';
 import DefaultClientLayout from '../layouts/client/DefaultClientLayout';
+import DefaultAuthenLayout from '../layouts/authen/DefaultAuthenLayout';
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 
 import HomePage from '../pages/client/Home/HomePage';
@@ -16,9 +17,9 @@ interface RouteProps {
 
 const publicRoutes: RouteProps[] = [
     { path: '/', component: HomePage, layout: DefaultClientLayout },
-    { path: '/sign-up', component: SignUpPage, layout: DefaultClientLayout },
-    { path: '/sign-in', component: SignInPage, layout: DefaultClientLayout },
-    { path: '/forgot-password', component: ForgotPasswordPage, layout: DefaultClientLayout },
+    { path: '/sign-up', component: SignUpPage, layout: DefaultAuthenLayout },
+    { path: '/sign-in', component: SignInPage, layout: DefaultAuthenLayout },
+    { path: '/forgot-password', component: ForgotPasswordPage, layout: DefaultAuthenLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
