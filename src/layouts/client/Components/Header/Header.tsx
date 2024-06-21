@@ -36,10 +36,12 @@ const Header: React.FC = () => {
                         Sản phẩm <DownOutlined className="ml-1" />
                     </a>
                 </Dropdown>
+
                 <a href="#" className={menuStyle}>Khuyến mãi</a>
-                <a href="#" className={menuStyle}>Blog</a>
+                <a href="/blog" className={menuStyle}>Blog</a>
                 <a href="#" className={menuStyle}>Liên hệ</a>
                 <a href="#" className={menuStyle}>CSKH</a>
+
                 <Badge count={8}>
                     <a href='#' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
                 </Badge>
