@@ -3,7 +3,7 @@ import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
 import { Input, Typography, Row, Col, Card, } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, } from '@ant-design/icons';
-
+import { Link } from 'react-router-dom';
 
 const HomePage: React.FC = () => {
     const products = [
@@ -76,6 +76,7 @@ const HomePage: React.FC = () => {
                         <Row gutter={[16, 16]} >
                             {products.map((product) => (
                                 <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
+                                     <Link to="/productdetail">
                                     <Card
                                         hoverable cover={<img alt={product.name} src={product.image} className='p-4' style={{ width: '150px' }} />}
                                         actions={[
@@ -89,6 +90,7 @@ const HomePage: React.FC = () => {
                                             description={<span className="text-sm text-gray-500">{product.price}</span>}
                                         />
                                     </Card>
+                                    </Link>
                                 </Col>
                             ))}
                         </Row>

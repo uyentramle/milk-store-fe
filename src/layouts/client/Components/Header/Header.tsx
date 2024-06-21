@@ -37,8 +37,8 @@ const Header: React.FC = () => {
                     </a>
                 </Dropdown>
                 <a href="#" className="hover:text-pink-500">Khuyến mãi</a>
-                <a href="#" className="hover:text-pink-500">Blog</a>
-                <a href="#" className="hover:text-pink-500">Liên hệ</a>
+                <a href="/blog" className="hover:text-pink-500">Blog</a>
+                <a href="/productdetail" className="hover:text-pink-500">Liên hệ</a>
                 <a href="#" className="hover:text-pink-500">CSKH</a>
                 <Badge count={8}>
                     <a href='#' className="hover:text-pink-500"><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
