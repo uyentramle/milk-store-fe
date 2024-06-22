@@ -80,14 +80,14 @@ const HomePage: React.FC = () => {
                                     <Card
                                         hoverable cover={<img alt={product.name} src={product.image} className='p-4' style={{ width: '150px' }} />}
                                         actions={[
-                                            <a href="#" className="hover:text-pink-500">
-                                                <ShoppingCartOutlined style={{ fontSize: '25px' }} />
+                                            <a href="#" >
+                                                <ShoppingCartOutlined className="hover:text-pink-500" style={{ fontSize: '25px' }} />
                                             </a>,
                                         ]}
                                     >
                                         <Card.Meta
                                             title={<a href="#" className="hover:text-pink-500">{product.name}</a>}
-                                            description={<span className="text-sm text-gray-500">{product.price}</span>}
+                                            description={<span className="text-sm text-pink-500">{product.price}</span>}
                                         />
                                     </Card>
                                     </Link>
