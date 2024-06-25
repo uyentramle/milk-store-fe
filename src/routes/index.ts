@@ -9,6 +9,8 @@ import ProductDetail from '../pages/client/Home/ProductDetail';
 import SignUpPage from '../pages/client/SignUp/SignUpPage';
 import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';
+import BrandPage from '../pages/client/Brand/BrandPage';
+import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
 import { DefaultLayoutProps } from '../types/layout.type';
 import CartPage from '../pages/client/Cart/Cart';
 
@@ -16,7 +18,7 @@ import CartPage from '../pages/client/Cart/Cart';
 
 interface RouteProps {
     path: string;
-    component: React.FC<any>; 
+    component: React.FC<any>;
     layout: ({ children }: DefaultLayoutProps) => JSX.Element;
 }
 
@@ -29,13 +31,15 @@ const publicRoutes: RouteProps[] = [
     { path: '/blogdetail', component: BlogPageDetail, layout: DefaultClientLayout },
     { path: '/productdetail', component: ProductDetail, layout: DefaultClientLayout },
     { path: '/cart', component: CartPage, layout: DefaultClientLayout },
+    { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
+    { path: '/branddetail', component: BrandDetailPage, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
 
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
-    
+
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
