@@ -39,11 +39,11 @@ const Header: React.FC = () => {
 
                 <a href="#" className={menuStyle}>Khuyến mãi</a>
                 <a href="/blog" className={menuStyle}>Blog</a>
-                <a href="#" className={menuStyle}>Liên hệ</a>
-                <a href="#" className={menuStyle}>CSKH</a>
+                {/* <a href="#" className={menuStyle}>Liên hệ</a>*/}
+                <a href="#" className={menuStyle}>CSKH</a> 
 
-                <Badge count={8}>
-                    <a href='#' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
+                <Badge count={3}>
+                    <a href='/cart' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
                 </Badge>
                 <Badge count={8}>
                     <BellOutlined className={linkClass} style={{ fontSize: '24px' }} />
