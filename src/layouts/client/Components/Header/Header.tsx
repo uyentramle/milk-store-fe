@@ -21,7 +21,7 @@ const productMenu = (
 
 const Header: React.FC = () => {
     return (
-        <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50">
+        <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50 mx-auto">
             <a href="/">
                 <div className="flex items-center">
                     <img src="https://via.placeholder.com/50" alt="Logo" className="mr-4" />

@@ -32,7 +32,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/productdetail', component: ProductDetail, layout: DefaultClientLayout },
     { path: '/cart', component: CartPage, layout: DefaultClientLayout },
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
-    { path: '/branddetail', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];

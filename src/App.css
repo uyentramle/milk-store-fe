@@ -15,6 +15,10 @@
     background-color: #fff1fe !important;
 }
 
+.main-content {
+    padding-top: 64px;
+}
+
 /* Layout */
 .ant-layout-header {
     background-color: #e83c7e !important;
@@ -30,6 +34,12 @@
 .ant-btn-primary:focus {
     background-color: #d32f6e !important;
     border-color: #d32f6e !important;
+}
+
+.ant-btn-default:hover,
+.ant-btn-default:focus {
+    color: #e83c7e !important;
+    border-color: #e83c7e !important;
 }
 
 /* Checkbox */
@@ -130,4 +140,26 @@
 
 .custom-steps .ant-steps-item-title.inactive {
     display: none;
+}
+
+/* Pagination */
+.ant-pagination .ant-pagination-item-active,
+.ant-pagination .ant-pagination-item-active a,
+.ant-pagination .ant-pagination-prev,
+.ant-pagination .ant-pagination-next,
+.ant-pagination .ant-pagination-item-active:hover,
+.ant-pagination .ant-pagination-item-active a:hover,
+.ant-pagination .ant-pagination-prev:hover,
+.ant-pagination .ant-pagination-next:hover {
+    color: #e83c7e;
+    border-color: #e83c7e;
+}
+
+/* Product Card */
+.product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
