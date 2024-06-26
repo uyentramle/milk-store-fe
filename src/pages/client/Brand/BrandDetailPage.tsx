@@ -146,7 +146,7 @@ const BrandDetailPage: React.FC = () => {
                     </div>
                     <div className="w-1/4 bg-white shadow rounded-lg p-4">
                         <img src="https://cdn1.concung.com/img/news/2023/2563-1699929403-cover.webp" alt="Info 4" className="h-45 w-full object-cover rounded-lg" />
-                        <p className="mt-2">Top 5 sữa cho trẻ biếng ăn, suy dinh dưỡng được ưa chuộng tại Con Cưng</p>
+                        <p className="mt-2">Top 5 sữa cho trẻ biếng ăn, suy dinh dưỡng được ưa chuộng</p>
                         <p className="text-xs text-pink-500 mt-2"><EyeTwoTone twoToneColor="#eb2f96" /> 14k</p>
                     </div>
                 </div>
