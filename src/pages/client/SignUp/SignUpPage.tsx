@@ -61,14 +61,27 @@ const SignUpPage: React.FC = () => {
           {currentStep === 0 && (
             <>
               <Form.Item
-                name="username"
-                rules={[{ required: true, message: 'Số điện thoại/Email không được để trống' }]}
+                name="phone"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập số điện thoại' },
+                  { type: 'string', pattern: new RegExp(/^[0-9]+$/), message: 'Số điện thoại chưa hợp lệ' },
+                ]}
               >
-                <Input
-                  prefix={<UserOutlined />}
-                  placeholder="Số điện thoại/Email"
-                  className=""
-                />
+                <Input placeholder="Số điện thoại" />
+              </Form.Item>
+              <Form.Item
+                name="agreement"
+                valuePropName="checked"
+                rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với các điều khoản của Milk Store') }]}
+              >
+                <Checkbox>Tôi đã đọc và đồng ý với các <a href='#'>Điều khoản</a> của Milk Store</Checkbox>
+              </Form.Item>
+              <Form.Item
+                name="agreement"
+                valuePropName="checked"
+                rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với chính sách bảo vệ thông tin cá nhân của Milk Store') }]}
+              >
+                <Checkbox>Tôi đã đọc và đồng ý với <a href='#'>Chính sách bảo vệ thông tin cá nhân</a> của Milk Store</Checkbox>
               </Form.Item>
               <div className="text-center mt-4">
                 <LineOutlined className='mx-4' />
@@ -146,21 +159,7 @@ const SignUpPage: React.FC = () => {
                 - Tối thiểu gồm 2 loại ký tự<br />
                 - Đảm bảo hai lần nhập mật khẩu giống nhau
               </p>
-              <Form.Item
-                name="agreement"
-                valuePropName="checked"
-                rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với các điều khoản của Milk Store') }]}
-              >
-                <Checkbox>Tôi đã đọc và đồng ý với các <a href='#'>Điều khoản</a> của Milk Store</Checkbox>
-              </Form.Item>
-
-              <Form.Item
-                name="agreement"
-                valuePropName="checked"
-                rules={[{ validator: (_, value) => value ? Promise.resolve() : Promise.reject('Bạn phải đồng ý với chính sách bảo vệ thông tin cá nhân của Milk Store') }]}
-              >
-                <Checkbox>Tôi đã đọc và đồng ý với <a href='#'>Chính sách bảo vệ thông tin cá nhân</a> của Milk Store</Checkbox>
-              </Form.Item>
+              
             </>
           )}
           {currentStep === 3 && (
