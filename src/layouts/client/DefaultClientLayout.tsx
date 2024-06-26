@@ -6,8 +6,9 @@ const DefaultClientLayout = ({ children }: DefaultLayoutProps) => {
     return (
         <div>
             <Header />
-            
-            {children}
+            <div className="main-content">
+                {children}
+            </div>
             <Footer />
         </div>
     );
