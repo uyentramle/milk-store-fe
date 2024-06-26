@@ -5,7 +5,7 @@ import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 import BlogPage from '../pages/client/Blog/BlogPage';
 import BlogPageDetail from '../pages/client/Blog/BlogPageDetail';
 import HomePage from '../pages/client/Home/HomePage';
-import ProductDetail from '../pages/client/Home/ProductDetail';
+import ProductDetail from '../pages/client/Product/ProductDetail';
 import SignUpPage from '../pages/client/SignUp/SignUpPage';
 import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';

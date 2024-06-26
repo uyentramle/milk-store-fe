@@ -78,8 +78,12 @@ const BlogPage = () => {
         },
     ];
     return (
-        <section className="container mx-auto m-4">
-    <Row gutter={[16, 16]}>
+        <div className="min-h-screen flex flex-col">
+        <Banner />
+        <div className="flex flex-1">
+            <Sidebar />
+            <section className="container mx-auto m-4" style={{marginTop: '10px'}}>
+            <Row gutter={[16, 16]} >
         {Blog.map((blog) => (
             <Col key={blog.id} xs={24} sm={12} md={8} lg={6}>
                 <Link to="/blogdetail">
@@ -103,8 +107,10 @@ const BlogPage = () => {
                                             alt="Author"
                                             style={{ width: '30px', height: '30px', borderRadius: '50%' }}
                                         />
-                                        <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500">{blog.author}</span>
-                                        <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500">{blog.Date}</span>
+                                        <div className="font-medium dark:text-black">
+                                        <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500 dark:text-blacks-400">{blog.author}</span>
+                                        <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500 dark:text-gray-400">{blog.Date}</span>
+                                        </div>
                                     </div>
                                     
                                 </div>
@@ -114,8 +120,10 @@ const BlogPage = () => {
                 </Link>
             </Col>
         ))}
-    </Row>
-</section>
+        </Row>
+    </section>
+</div>
+</div>
 
     );
 };

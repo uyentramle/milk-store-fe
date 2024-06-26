@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.table {
+  @apply border border-solid border-gray-200; /* Using Tailwind utilities */
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+th {
+  background-color: #aa047b;
+  color: white;
+}
+.slide {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .product {
+    flex: 1;
+    text-align: center;
+  }
+  .product-slide {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+  }
+  
+  .product-slide .ant-card {
+    width: 100%;
+    max-width: 200px;
+  }
+  .comment {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ccc;
+    /* Thay đổi màu nền hoặc thêm hình ảnh bằng background-image */
+    margin-right: 10px;
+}
+
+.comment-text {
+    flex: 1;
+}
+
+.username {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
