@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
                         <Row gutter={[16, 16]}>
                             {products.map((product) => (
                                 <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
-                                    <Link to={`/productdetail/${product.id}`} className="block hover:opacity-75">
+                                    <Link to={`/product-detail/`} className="block hover:opacity-75">
                                         <Card
                                             hoverable
                                             cover={
@@ -231,19 +231,21 @@ const HomePage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                         {recentBlog.map((blog) => (
                             <div key={blog.id}>
-                                <Card
-                                    hoverable
-                                    cover={<img alt={blog.title} src={blog.image} />}
-                                >
-                                    <div className="">
-                                        <h3 className="text-lg hover:text-pink-500">{blog.title}</h3>
-                                        <p className="text-xs text-gray-500 mt-2">{blog.date}</p>
-                                        <div className="flex items-center justify-between mt-2">
-                                            <p className="text-xs text-gray-500"><EyeTwoTone twoToneColor="#9b9b9b" /> {blog.view}</p>
-                                            <Rate disabled defaultValue={blog.rating} />
+                                <Link to={`/blog-detail`} className="block hover:opacity-75">
+                                    <Card
+                                        hoverable
+                                        cover={<img alt={blog.title} src={blog.image} />}
+                                    >
+                                        <div className="">
+                                            <h3 className="text-lg hover:text-pink-500">{blog.title}</h3>
+                                            <p className="text-xs text-gray-500 mt-2">{blog.date}</p>
+                                            <div className="flex items-center justify-between mt-2">
+                                                <p className="text-xs text-gray-500"><EyeTwoTone twoToneColor="#9b9b9b" /> {blog.view}</p>
+                                                <Rate disabled defaultValue={blog.rating} />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Card>
+                                    </Card>
+                                </Link>
                             </div>
                         ))}
                     </div>
@@ -251,25 +253,27 @@ const HomePage: React.FC = () => {
                     <Typography.Title level={3} className="my-4">Sản phẩm bán chạy</Typography.Title>
                     <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
                         {bestSellingProduct.map((p) => (
-                            <Card className="w-full">
-                                <div className="flex justify-center">
-                                    <img src={p.image} alt={p.title} className="h-40 object-cover rounded-md mb-4" />
-                                </div>
-                                <h3 className="font-medium hover:text-pink-500 ">{p.title}</h3>
-                                <Rate disabled defaultValue={p.rating} />
-                                <div className="flex items-center justify-between my-2">
-                                    <span className="text-lg font-semibold">{p.price.toLocaleString()}₫</span>
-                                    <Badge.Ribbon text={`-${p.discount}%`} color="red">
-                                    </Badge.Ribbon>
-                                </div>
-                                <p className="text-gray-500">Đã bán {p.sold}</p>
-                                <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
-                            </Card>
+                            <Link to={`/product-detail`} className="block hover:opacity-75">
+                                <Card className="w-full">
+                                    <div className="flex justify-center">
+                                        <img src={p.image} alt={p.title} className="h-40 object-cover rounded-md mb-4" />
+                                    </div>
+                                    <h3 className="font-medium hover:text-pink-500 ">{p.title}</h3>
+                                    <Rate disabled defaultValue={p.rating} />
+                                    <div className="flex items-center justify-between my-2">
+                                        <span className="text-lg font-semibold">{p.price.toLocaleString()}₫</span>
+                                        <Badge.Ribbon text={`-${p.discount}%`} color="red">
+                                        </Badge.Ribbon>
+                                    </div>
+                                    <p className="text-gray-500">Đã bán {p.sold}</p>
+                                    <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 </main>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

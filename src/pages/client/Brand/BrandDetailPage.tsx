@@ -90,9 +90,9 @@ const products = [
 const BrandDetailPage: React.FC = () => {
     return (
         <div className="min-h-screen flex flex-wrap w-full">
-            <div className="bg-white">
+            {/* <div className="bg-white">
                 <img src="https://cdn1.concung.com/img/adds/2024/06/1719288912-CATE-Vinamilk.png" alt="Vinamilk" className="w-full object-cover rounded-lg" />
-            </div>
+            </div> */}
             <div className="p-4">
                 <div className="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
                     <img src="https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png" alt="Vinamilk" className="h-20 w-20 rounded-full shadow border-2" />
@@ -104,7 +104,7 @@ const BrandDetailPage: React.FC = () => {
                         <button className="bg-pink-500 text-white px-4 py-2 rounded mr-2">Theo Dõi</button>
                         {/* <button className="bg-gray-200 text-black px-4 py-2 rounded">Trao Đổi</button> */}
                     </div>
-                    <div className="flex-1 flex justify-left">
+                    <div className="flex-1 flex justify-left text-lg">
                         <div className="mx-6">
                             <p>Theo dõi: </p>
                             <p>Hài lòng: </p>
