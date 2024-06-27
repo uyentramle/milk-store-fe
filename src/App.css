@@ -19,6 +19,11 @@
     padding-top: 64px;
 }
 
+.fixed-sidebar {
+    position: sticky !important;
+    top: 85px !important; 
+  }
+
 /* Layout */
 .ant-layout-header {
     background-color: #e83c7e !important;
