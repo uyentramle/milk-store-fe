@@ -5,6 +5,11 @@ import { Menu, MenuProps } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBeer, faTruck } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+
+library.add(faBeer, faTruck);
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -43,13 +48,16 @@ export default function MySider() {
         return [
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
             getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
+            getItem('Quản lý sản phẩm', '3', <FontAwesomeIcon icon={faBeer} />),
+            getItem('Quản lý đơn hàng', '4', <FontAwesomeIcon icon={faTruck} />),
         ];
     };
     const navUrl = new Map<string, string>();
     navUrl
         .set('1', '/admin/')
-        .set('2', '/admin/quan-ly-tai-khoan');
-
+        .set('2', '/admin/accounts')
+        .set('3', '/admin/products')
+        .set('4', '/admin/orders');
     return (
         <>
             <Sider

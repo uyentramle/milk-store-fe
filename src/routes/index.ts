@@ -13,6 +13,8 @@ import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
 import { DefaultLayoutProps } from '../types/layout.type';
 import CartPage from '../pages/client/Cart/Cart';
+import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
+import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 
 
 
@@ -39,7 +41,8 @@ const privateRoutes: RouteProps[] = [];
 
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
-
+    { path: '/admin/accounts', component: ManageAccountPage, layout: DefaultAdminLayout },
+    { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
