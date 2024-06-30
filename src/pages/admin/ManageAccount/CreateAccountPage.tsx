@@ -8,6 +8,7 @@ interface Account {
     phone: string;
     gender: 'Male' | 'Female' | 'Other';
     avatar: File | null;
+    role: 'User' | 'Manager' | 'Staff';
 }
 
 const CreateAccountPage: React.FC = () => {
@@ -18,6 +19,7 @@ const CreateAccountPage: React.FC = () => {
         phone: '',
         gender: 'Male',
         avatar: null,
+        role: 'User',
     });
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLInputElement>) => {
@@ -41,6 +43,7 @@ const CreateAccountPage: React.FC = () => {
             phone: '',
             gender: 'Male',
             avatar: null,
+            role: 'User',
         });
     };
 
@@ -143,6 +146,23 @@ const CreateAccountPage: React.FC = () => {
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div className="mb-6">
+                            <label htmlFor="role" className="mb-1 block font-semibold">
+                                Role:
+                            </label>
+                            <select
+                                id="role"
+                                name="role"
+                                value={formData.role}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="User">User</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Manager">Manager</option>
                             </select>
                         </div>
                     </form>

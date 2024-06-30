@@ -15,6 +15,9 @@ import { DefaultLayoutProps } from '../types/layout.type';
 import CartPage from '../pages/client/Cart/Cart';
 import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
 import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
+import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
+import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
+import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 
 
 
@@ -43,6 +46,9 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts', component: ManageAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
+    { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
