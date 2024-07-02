@@ -11,10 +11,10 @@ import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';
 import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
-import { DefaultLayoutProps } from '../types/layout.type';
 import CartPage from '../pages/client/Cart/Cart';
+import ContactPage from '../pages/client/Contact/ContactPage';
 
-
+import { DefaultLayoutProps } from '../types/layout.type';
 
 interface RouteProps {
     path: string;
@@ -33,6 +33,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/cart', component: CartPage, layout: DefaultClientLayout },
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
