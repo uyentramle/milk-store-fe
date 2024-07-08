@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => {
     //   <a href="#" className="block">Đồ chơi, học tập</a>
     //   <a href="#" className="block">Ứng dụng Mẹ & Bé</a>
     // </aside>
-    <div className="h-screen bg-white">
+    <div className="h-screen bg-white sticky top-0 left-0 fixed-sidebar">
       <Menu
         mode="vertical"
         defaultSelectedKeys={['1']}

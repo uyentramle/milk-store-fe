@@ -21,10 +21,10 @@ const productMenu = (
 
 const Header: React.FC = () => {
     return (
-        <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50">
+        <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50 mx-auto">
             <a href="/">
                 <div className="flex items-center">
-                    <img src="https://via.placeholder.com/50" alt="Logo" className="mr-4" />
+                    <img src="https://marketplace.canva.com/EAE8wGDEkQU/1/0/1600w/canva-pink-cute-calf-illustration-organic-milk-and-dairy-logo-oTfX7cOvpos.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" />
                     <span className="text-xl font-bold text-pink-500">MILK STORE</span>
                 </div>
             </a>
@@ -39,11 +39,11 @@ const Header: React.FC = () => {
 
                 <a href="#" className={menuStyle}>Khuyến mãi</a>
                 <a href="/blog" className={menuStyle}>Blog</a>
-                <a href="#" className={menuStyle}>Liên hệ</a>
-                <a href="#" className={menuStyle}>CSKH</a>
+                {/* <a href="#" className={menuStyle}>Liên hệ</a>*/}
+                <a href="/contact" className={menuStyle}>CSKH</a>
 
-                <Badge count={8}>
-                    <a href='#' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
+                <Badge count={3}>
+                    <a href='/cart' className={linkClass}><ShoppingCartOutlined style={{ fontSize: '25px' }} /> </a>
                 </Badge>
                 <Badge count={8}>
                     <BellOutlined className={linkClass} style={{ fontSize: '24px' }} />
