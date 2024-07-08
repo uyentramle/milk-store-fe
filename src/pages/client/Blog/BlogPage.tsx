@@ -5,7 +5,6 @@ import { Row, Col, Card } from 'antd';
 import { Link } from 'react-router-dom';
 import { FaHeart, FaShareAlt, FaComment, } from 'react-icons/fa';
 
-
 const BlogPage = () => {
     const Blog = [
         {
@@ -83,6 +82,7 @@ const BlogPage = () => {
                     <Row gutter={[16, 16]} >
                         {Blog.map((blog) => (
                             <Col key={blog.id} xs={24} sm={12} md={8} lg={6}>
+
                                 <Link to="/blog-detail">
                                     <Card
                                         hoverable
@@ -105,8 +105,9 @@ const BlogPage = () => {
                                                             style={{ width: '30px', height: '30px', borderRadius: '50%' }}
                                                         />
                                                         <div className="font-medium dark:text-black">
-                                                            <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500 dark:text-blacks-400">{blog.author}</span>
-                                                            <span style={{ marginLeft: '10px', display: 'block' }} className="text-sm text-gray-500 dark:text-gray-400">{blog.Date}</span>
+
+                                                            <span style={{ marginLeft: '10px', display: 'block', fontSize:'13px'}} className="text-sm text-gray-500 dark:text-blacks-400">{blog.author}</span>
+                                                            <span style={{ marginLeft: '10px', display: 'block', fontSize:'10px' }} className="text-sm text-gray-500 dark:text-gray-400">{blog.Date}</span>
                                                         </div>
                                                     </div>
 
