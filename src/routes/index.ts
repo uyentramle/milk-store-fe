@@ -10,7 +10,7 @@ import SignUpPage from '../pages/client/SignUp/SignUpPage';
 import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';
 import { DefaultLayoutProps } from '../types/layout.type';
-import CartPage from '../pages/client/Cart/Cart';
+import ShoppingCart from '../pages/client/Cart/Cart';
 
 
 
@@ -28,7 +28,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/blog', component: BlogPage, layout: DefaultClientLayout },
     { path: '/blogdetail', component: BlogPageDetail, layout: DefaultClientLayout },
     { path: '/productdetail', component: ProductDetail, layout: DefaultClientLayout },
-    { path: '/cart', component: CartPage, layout: DefaultClientLayout },
+    { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
