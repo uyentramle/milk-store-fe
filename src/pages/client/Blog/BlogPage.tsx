@@ -1,14 +1,9 @@
-import React from 'react';
+
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
-import { Input, Typography, Row, Col, Card } from 'antd';
+import { Row, Col, Card } from 'antd';
 import { Link } from 'react-router-dom';
-import { LogoutOutlined, SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import { FaHeart, FaShareAlt, FaComment, FaFontAwesome } from 'react-icons/fa';
-
-
-
+import { FaHeart, FaShareAlt, FaComment, } from 'react-icons/fa';
 
 const BlogPage = () => {
     const Blog = [
@@ -87,10 +82,11 @@ const BlogPage = () => {
                     <Row gutter={[16, 16]} >
                         {Blog.map((blog) => (
                             <Col key={blog.id} xs={24} sm={12} md={8} lg={6}>
-                                <Link to="/blogdetail">
+
+                                <Link to="/blog-detail">
                                     <Card
                                         hoverable
-                                        cover={<img alt={blog.name} src={blog.image} className='p-4' style={{ width: '120%', height: '200px', objectFit: 'cover', borderRadius: '23px' }} />}
+                                        cover={<img alt={blog.name} src={blog.image} className='p-4' style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '23px' }} />}
                                     >
 
                                         <div style={{ display: 'flex' }}>
@@ -109,6 +105,7 @@ const BlogPage = () => {
                                                             style={{ width: '30px', height: '30px', borderRadius: '50%' }}
                                                         />
                                                         <div className="font-medium dark:text-black">
+
                                                             <span style={{ marginLeft: '10px', display: 'block', fontSize:'13px'}} className="text-sm text-gray-500 dark:text-blacks-400">{blog.author}</span>
                                                             <span style={{ marginLeft: '10px', display: 'block', fontSize:'10px' }} className="text-sm text-gray-500 dark:text-gray-400">{blog.Date}</span>
                                                         </div>

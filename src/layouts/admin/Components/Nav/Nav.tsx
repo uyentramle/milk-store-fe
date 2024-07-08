@@ -1,8 +1,5 @@
 import { DesktopOutlined } from '@ant-design/icons';
-import {
-    FileOpenOutlined,
-    PieChartOutlined,
-} from '@mui/icons-material';
+import { FileOpenOutlined, PieChartOutlined } from '@mui/icons-material';
 import { Menu, MenuProps } from 'antd';
 import Sider, { SiderProps } from 'antd/es/layout/Sider';
 import React, { useState } from 'react';

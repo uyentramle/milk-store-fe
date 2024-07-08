@@ -1,14 +1,14 @@
-import React from 'react';
+
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
-import { Input, Typography, Row, Col, Card, Button, Popover, } from 'antd';
-import { Link } from 'react-router-dom';
+import { Input, Typography, Row, Col, Card, Button, } from 'antd';
+
 import { useState } from 'react';
 import { SearchOutlined, ShoppingCartOutlined, } from '@ant-design/icons';
 import './ProductDetail.css';
 import Slider from 'react-slick';
 
-import { Flex, Rate } from 'antd';
+import { Rate } from 'antd';
 const { Title, Paragraph } = Typography;
 
 
@@ -175,8 +175,10 @@ const ProductDetail = () => {
                     <div className="flex items-left gap-4">
                       <img className="w-10 h-10 rounded-full" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8fFLTRZVbZdcVd87wwkINBEfJhfVZEdOuw&sttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSG02ZvQT0Wk3y8ve9h_zt2ZGGQ4p4eDdHQ0w&s" alt="" />
                       <div className="font-medium dark:text-black">
-                        <div>TH True Milk</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">Xem cửa hàng</div>
+                        <a href='/brand-name'>
+                          <div>TH True Milk</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">Xem cửa hàng</div>
+                        </a>
                       </div>
                     </div>
                   </div >

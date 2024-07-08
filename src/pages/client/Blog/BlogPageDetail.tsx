@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
 import { Typography, Row, Col, Card } from 'antd';
