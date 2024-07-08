@@ -1,7 +1,7 @@
 import DefaultAdminLayout from '../layouts/admin/DefaultAdminLayout';
 import DefaultClientLayout from '../layouts/client/DefaultClientLayout';
 import DefaultAuthenLayout from '../layouts/authen/DefaultAuthenLayout';
-import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
+
 import BlogPage from '../pages/client/Blog/BlogPage';
 import BlogPageDetail from '../pages/client/Blog/BlogPageDetail';
 import HomePage from '../pages/client/Home/HomePage';
@@ -11,15 +11,17 @@ import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';
 import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
-import { DefaultLayoutProps } from '../types/layout.type';
 import CartPage from '../pages/client/Cart/Cart';
+import ContactPage from '../pages/client/Contact/ContactPage';
+
+import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
 import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 
-
+import { DefaultLayoutProps } from '../types/layout.type';
 
 interface RouteProps {
     path: string;
@@ -38,6 +40,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/cart', component: CartPage, layout: DefaultClientLayout },
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
