@@ -24,7 +24,8 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50 mx-auto">
             <a href="/">
                 <div className="flex items-center">
-                    <img src="https://marketplace.canva.com/EAE8wGDEkQU/1/0/1600w/canva-pink-cute-calf-illustration-organic-milk-and-dairy-logo-oTfX7cOvpos.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" />
+                    {/* <img src="https://marketplace.canva.com/EAE8wGDEkQU/1/0/1600w/canva-pink-cute-calf-illustration-organic-milk-and-dairy-logo-oTfX7cOvpos.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" /> */}
+                    <img src="/logo.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" />
                     <span className="text-xl font-bold text-pink-500">MILK STORE</span>
                 </div>
             </a>

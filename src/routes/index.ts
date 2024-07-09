@@ -23,6 +23,8 @@ import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 
+import UserProfilePage from '../pages/client/User/UserProfilePage';
+
 import { DefaultLayoutProps } from '../types/layout.type';
 
 interface RouteProps {
@@ -45,6 +47,8 @@ const publicRoutes: RouteProps[] = [
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
+
+    { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
 
 ];
 
