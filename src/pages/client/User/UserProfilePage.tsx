@@ -1,5 +1,11 @@
 import React from 'react';
-import { UserOutlined, EnvironmentOutlined, FileTextOutlined, RetweetOutlined, LogoutOutlined } from '@ant-design/icons';
+import {
+    UserOutlined,
+    EnvironmentOutlined,
+    FileTextOutlined,
+    RetweetOutlined,
+    LogoutOutlined,
+} from '@ant-design/icons';
 
 const UserProfilePage: React.FC = () => {
     return (
@@ -14,8 +20,8 @@ const UserProfilePage: React.FC = () => {
                                 href="/user-profile"
                                 className="flex items-center rounded bg-pink-500 p-2 text-white"
                             >
-                               {/* <i className="fa-solid fa-user mr-2"></i> */} 
-                               <UserOutlined className="mr-2" />
+                                {/* <i className="fa-solid fa-user mr-2"></i> */}
+                                <UserOutlined className="mr-2" />
                                 <b>Thông tin tài khoản</b>
                             </a>
                             <a
@@ -27,7 +33,7 @@ const UserProfilePage: React.FC = () => {
                                 <span>Quản lí địa chỉ</span>
                             </a>
                             <a
-                                href="#"
+                                href="/order-history"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
@@ -55,26 +61,33 @@ const UserProfilePage: React.FC = () => {
                 </div>
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
-                        <div className="mb-4 flex flex-col gap-12 sm:flex-row"> {/* items-center */}
+                        <div className="mb-4 flex flex-col gap-12 sm:flex-row">
+                            {' '}
+                            {/* items-center */}
                             {/* Phần Avatar và Change Photo */}
                             <div className="mb-4 ml-16 mr-0 flex-shrink-0 sm:mb-0 sm:mr-4">
                                 <div className="flex h-44 w-44 items-center justify-center rounded-full bg-gray-200">
                                     <span className="text-xl text-gray-400">140x140</span>
                                 </div>
                                 <div className="mt-4 flex flex-col items-center justify-center">
-                                    <button className="mt-2 rounded bg-pink-500 px-3 py-1.5 text-white">
+                                    <button className="mt-2 rounded bg-pink-500 px-3 py-1.5 text-white transition-colors duration-300 hover:bg-pink-600">
                                         <i className="fa fa-fw fa-camera mr-2"></i>
                                         <span>Change Photo</span>
                                     </button>
                                 </div>
                             </div>
-
                             {/* Phần Thông tin cá nhân */}
                             <div className="flex-1 sm:text-left">
-                                <nav className="mb-4">
+                                {/* <nav className="mb-4">
                                     <b className="border-b-2 border-pink-500 pb-1.5 text-pink-500">
                                         Thông tin cá nhân
                                     </b>
+                                </nav> */}
+                                <nav className="mb-4 flex">
+                                    <b className="inline-flex items-center rounded-t border-l border-r border-t border-pink-500 px-4 py-2 pb-1.5 text-pink-500">
+                                        <span className="mr-2">Thông tin cá nhân</span>
+                                    </b>
+                                    <div className="flex-grow border-b border-pink-500"></div>
                                 </nav>
                                 <form className="space-y-3">
                                     <div className="flex flex-col sm:flex-row sm:space-x-3">
@@ -133,10 +146,11 @@ const UserProfilePage: React.FC = () => {
                                     </div>
                                     <div className="text-right">
                                         <button
-                                            className="rounded bg-pink-500 px-4 py-2 text-white"
+                                                                                className="rounded bg-pink-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-pink-600"
+
                                             type="submit"
                                         >
-                                            Lưu
+                                            Cập nhật
                                         </button>
                                     </div>
                                 </form>

@@ -33,7 +33,7 @@ const ChangePasswordPage: React.FC = () => {
                                 <span>Quản lí địa chỉ</span>
                             </a>
                             <a
-                                href="#"
+                                href="/order-history"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
@@ -61,10 +61,16 @@ const ChangePasswordPage: React.FC = () => {
                 </div>
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
-                        <nav className="mb-4">
+                        {/* <nav className="mb-4">
                             <b className="border-b-2 border-pink-500 pb-1.5 text-pink-500">
                                 Đổi mật khẩu
                             </b>
+                        </nav> */}
+                        <nav className="mb-4 flex">
+                            <b className="inline-flex items-center rounded-t border-l border-r border-t border-pink-500 px-4 py-2 pb-1.5 text-pink-500">
+                                <span className="mr-2">Đổi mật khẩu</span>
+                            </b>
+                            <div className="flex-grow border-b border-pink-500"></div>
                         </nav>
                         <form className="space-y-3" noValidate>
                             <div>
@@ -105,12 +111,15 @@ const ChangePasswordPage: React.FC = () => {
                             </div>
                             <div className="flex justify-between">
                                 <button
-                                    className="rounded bg-pink-500 px-4 py-2 text-white"
+                                    className="rounded bg-pink-500 px-2 py-2 text-white transition-colors duration-300 hover:bg-pink-600"
                                     type="submit"
                                 >
                                     Lưu thay đổi
                                 </button>
-                                <a href="#" className="rounded bg-pink-500 px-4 py-2 text-white">
+                                <a
+                                    href="#"
+                                    className="rounded px-2 py-2 text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                >
                                     Quên mật khẩu
                                 </a>
                             </div>
