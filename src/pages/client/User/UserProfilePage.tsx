@@ -11,7 +11,7 @@ const UserProfilePage: React.FC = () => {
                     <div className="rounded bg-white p-4 shadow">
                         <nav className="space-y-2">
                             <a
-                                href="#"
+                                href="/user-profile"
                                 className="flex items-center rounded bg-pink-500 p-2 text-white"
                             >
                                {/* <i className="fa-solid fa-user mr-2"></i> */} 
@@ -35,7 +35,7 @@ const UserProfilePage: React.FC = () => {
                                 <span>Lịch sử đơn hàng</span>
                             </a>
                             <a
-                                href="#"
+                                href="/change-password"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
