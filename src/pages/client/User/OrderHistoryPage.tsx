@@ -40,7 +40,7 @@ const OrderHistoryPage: React.FC = () => {
                                 <span>Thông tin tài khoản</span>
                             </a>
                             <a
-                                href="#"
+                                href="/user-address"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
@@ -103,13 +103,13 @@ const OrderHistoryPage: React.FC = () => {
                                                 <td className="py-2 text-center">Mar 21</td>
                                                 <td className="py-2 text-center">15.400.000 ₫</td>
                                                 <td className="py-2 text-center">
-                                                <span className="bg-blue-300 text-blue-800 py-1 px-3 rounded-full text-xs">
-    Đã giao hàng
-  </span>
+                                                    <span className="rounded-full bg-blue-300 px-3 py-1 text-xs text-blue-800">
+                                                        Đã giao hàng
+                                                    </span>
                                                 </td>
                                                 <td className="py-2 text-center">
                                                     <button
-                                                        className="rounded-md bg-gray-400 px-3 py-1 text-white shadow-md transition-colors text-xs duration-300 hover:bg-gray-500"
+                                                        className="rounded-md bg-gray-400 px-3 py-1 text-xs text-white shadow-md transition-colors duration-300 hover:bg-gray-500"
                                                         onClick={openModal}
                                                     >
                                                         Chi tiết
@@ -125,13 +125,13 @@ const OrderHistoryPage: React.FC = () => {
                                                 </td>
                                                 <td className="py-2 text-center">15.400.000 ₫</td>
                                                 <td className="py-2 text-center">
-                                                <span className="bg-yellow-200 text-yellow-800 py-1 px-3 rounded-full text-xs">
-    Đang giao hàng
-  </span>
+                                                    <span className="rounded-full bg-yellow-200 px-3 py-1 text-xs text-yellow-800">
+                                                        Đang giao hàng
+                                                    </span>
                                                 </td>
                                                 <td className="py-2 text-center">
                                                     <button
-                                                        className="rounded-md bg-gray-400 px-3 py-1 text-white shadow-md transition-colors text-xs duration-300 hover:bg-gray-500"
+                                                        className="rounded-md bg-gray-400 px-3 py-1 text-xs text-white shadow-md transition-colors duration-300 hover:bg-gray-500"
                                                         onClick={openModal}
                                                     >
                                                         Chi tiết
@@ -145,13 +145,13 @@ const OrderHistoryPage: React.FC = () => {
                                                 <td className="py-2 text-center">Mar 21</td>
                                                 <td className="py-2 text-center">15.400.000 ₫</td>
                                                 <td className="py-2 text-center">
-                                                <span className="bg-green-300 text-green-800 py-1 px-3 rounded-full text-xs">
-    Hoàn thành
-  </span>
+                                                    <span className="rounded-full bg-green-300 px-3 py-1 text-xs text-green-800">
+                                                        Hoàn thành
+                                                    </span>
                                                 </td>
                                                 <td className="py-2 text-center">
                                                     <button
-                                                        className="rounded-md bg-gray-400 px-3 py-1 text-white shadow-md transition-colors text-xs duration-300 hover:bg-gray-500"
+                                                        className="rounded-md bg-gray-400 px-3 py-1 text-xs text-white shadow-md transition-colors duration-300 hover:bg-gray-500"
                                                         onClick={openModal}
                                                     >
                                                         Chi tiết
@@ -165,13 +165,13 @@ const OrderHistoryPage: React.FC = () => {
                                                 <td className="py-2 text-center">Mar 21</td>
                                                 <td className="py-2 text-center">$604.50</td>
                                                 <td className="py-2 text-center">
-                                                <span className="bg-yellow-100 text-yellow-800 py-1 px-3 rounded-full text-xs">
-    Chờ xác nhận hàng
-  </span>
+                                                    <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs text-yellow-800">
+                                                        Chờ xác nhận hàng
+                                                    </span>
                                                 </td>
                                                 <td className="py-2 text-center">
                                                     <button
-                                                        className="rounded-md bg-gray-400 px-3 py-1 text-white shadow-md transition-colors text-xs duration-300 hover:bg-gray-500"
+                                                        className="rounded-md bg-gray-400 px-3 py-1 text-xs text-white shadow-md transition-colors duration-300 hover:bg-gray-500"
                                                         onClick={openModal}
                                                     >
                                                         Chi tiết
@@ -187,13 +187,13 @@ const OrderHistoryPage: React.FC = () => {
                                                 </td>
                                                 <td className="py-2 text-center">$604.50</td>
                                                 <td className="py-2 text-center">
-                                                <span className="bg-orange-100 text-orange-800 py-1 px-3 rounded-full text-xs">
-    Đang chuẩn bị hàng
-  </span>
+                                                    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs text-orange-800">
+                                                        Đang chuẩn bị hàng
+                                                    </span>
                                                 </td>
                                                 <td className="py-2 text-center">
                                                     <button
-                                                        className="rounded-md bg-gray-400 px-3 py-1 text-white shadow-md transition-colors text-xs duration-300 hover:bg-gray-500"
+                                                        className="rounded-md bg-gray-400 px-3 py-1 text-xs text-white shadow-md transition-colors duration-300 hover:bg-gray-500"
                                                         onClick={openModal}
                                                     >
                                                         Chi tiết
@@ -274,9 +274,10 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose }) => {
                                     </p>
                                 </div>
                                 <p className="font-bold">
-                                    Trạng thái: <span className="bg-blue-300 text-blue-800 py-1 px-2 rounded-full font-normal">
-    Đã giao hàng
-  </span>
+                                    Trạng thái:{' '}
+                                    <span className="rounded-full bg-blue-300 px-2 py-1 font-normal text-blue-800">
+                                        Đã giao hàng
+                                    </span>
                                 </p>
                             </div>
                             <div className="flex flex-col gap-2 lg:flex-row">
@@ -481,7 +482,6 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose }) => {
                                 </button>
                                 <button
                                     type="button"
-                                    
                                     className="rounded bg-pink-500 px-2 py-1 text-sm text-white transition-colors duration-300 hover:bg-pink-600"
                                     onClick={onClose}
                                 >

@@ -26,6 +26,7 @@ import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 import UserProfilePage from '../pages/client/User/UserProfilePage';
 import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
 import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
+import UserAddressPage from '../pages/client/User/UserAddressPage';
 
 import { DefaultLayoutProps } from '../types/layout.type';
 
@@ -53,6 +54,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
     { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
+    { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
 
 ];
 

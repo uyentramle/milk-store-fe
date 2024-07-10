@@ -25,7 +25,7 @@ const UserProfilePage: React.FC = () => {
                                 <b>Thông tin tài khoản</b>
                             </a>
                             <a
-                                href="#"
+                                href="/user-address"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
@@ -146,8 +146,7 @@ const UserProfilePage: React.FC = () => {
                                     </div>
                                     <div className="text-right">
                                         <button
-                                                                                className="rounded bg-pink-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-pink-600"
-
+                                            className="rounded bg-pink-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-pink-600"
                                             type="submit"
                                         >
                                             Cập nhật

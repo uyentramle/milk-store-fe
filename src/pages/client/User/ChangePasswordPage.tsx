@@ -25,7 +25,7 @@ const ChangePasswordPage: React.FC = () => {
                                 <span>Thông tin tài khoản</span>
                             </a>
                             <a
-                                href="#"
+                                href="/user-address"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
