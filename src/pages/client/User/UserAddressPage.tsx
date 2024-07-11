@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     UserOutlined,
+    SettingOutlined,
     EnvironmentOutlined,
     FileTextOutlined,
     RetweetOutlined,
@@ -8,6 +9,24 @@ import {
     EditOutlined,
     DeleteOutlined,
 } from '@ant-design/icons';
+
+// Fake data
+const fakeAddresses = [
+    {
+        id: 1,
+        name: "Phạm Võ Minh T",
+        address: "123 Đường ABC, Phường XYZ, Quận 1, TP. HCM",
+        phone: "0123456789",
+        default: true,
+    },
+    {
+        id: 2,
+        name: "PTDL",
+        address: "456 Đường DEF, Phường UVW, Quận 2, TP. HCM",
+        phone: "0987654321",
+        default: false,
+    },
+];
 
 interface UserAddressModalProps {
     isOpen: boolean;
@@ -18,6 +37,9 @@ const UserAddressPage: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+    const [addresses, setAddresses] = useState(fakeAddresses); // Use state for addresses
+    const [selectedAddress, setSelectedAddress] = useState<any>(null); // Use state for selected address
+
     const openAddModal = () => {
         setIsAddModalOpen(true);
     };
@@ -26,12 +48,18 @@ const UserAddressPage: React.FC = () => {
         setIsAddModalOpen(false);
     };
 
-    const openEditModal = () => {
+    const openEditModal = (address: any) => {
+        setSelectedAddress(address); // Set selected address for editing
         setIsEditModalOpen(true);
     };
 
     const closeEditModal = () => {
         setIsEditModalOpen(false);
+        setSelectedAddress(null); // Clear selected address
+    };
+
+    const handleAddAddress = (newAddress: any) => {
+        setAddresses([...addresses, newAddress]);
     };
 
     return (
@@ -49,6 +77,14 @@ const UserAddressPage: React.FC = () => {
                                 {/* <i className="fa-solid fa-user mr-2"></i> */}
                                 <UserOutlined className="mr-2" />
                                 <span>Thông tin tài khoản</span>
+                            </a>
+                            <a
+                                href="/account-settings"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
+                                <SettingOutlined className="mr-2" />
+                                <span>Thiết lập tài khoản</span>
                             </a>
                             <a
                                 href="/user-address"
@@ -104,63 +140,50 @@ const UserAddressPage: React.FC = () => {
                         </nav>
                         <div className="space-y-4">
                             {/* Address Item */}
-                            <div className="flex rounded bg-gray-50 p-4 shadow">
-                                <div className="flex-grow">
-                                    <label className="font-semibold">Họ và tên: </label>
-                                    <span>Phạm Võ Minh T</span>
-                                    <span className="ml-1 rounded-full bg-green-300 px-2 py-1 text-xs text-green-800">
-                                        mặc định
-                                    </span>
-                                    <br />
-                                    <label className="font-semibold">Địa chỉ: </label>
-                                    <span>123 Đường ABC, Phường XYZ, Quận 1, TP. HCM</span>
-                                    <br />
-                                    <label className="font-semibold">Số điện thoại: </label>
-                                    <span>0123456789</span>
+                            {addresses.map((address) => (
+                                <div key={address.id} className="flex rounded bg-gray-50 p-4 shadow">
+                                    <div className="flex-grow">
+                                        <label className="font-semibold">Họ và tên: </label>
+                                        <span>{address.name}</span>
+                                        {address.default && (
+                                            // <span className="ml-1 rounded-full bg-green-300 px-2 py-1 text-xs text-green-800">
+                                            <span className="ml-2 rounded bg-pink-500 px-2 py-1 text-xs text-white">
+                                                mặc định
+                                            </span>
+                                        )}
+                                        <br />
+                                        <label className="font-semibold">Địa chỉ: </label>
+                                        <span>{address.address}</span>
+                                        <br />
+                                        <label className="font-semibold">Số điện thoại: </label>
+                                        <span>{address.phone}</span>
+                                    </div>
+                                    <div className="ml-4 flex flex-col justify-center space-y-2">
+                                        <button
+                                            className="text-pink-500 hover:text-blue-600"
+                                            onClick={() => openEditModal(address)}
+                                        >
+                                            <EditOutlined />
+                                        </button>
+                                        <button className="text-pink-500 hover:text-red-600">
+                                            <DeleteOutlined />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="ml-4 flex flex-col justify-center space-y-2">
-                                    <button
-                                        className="text-blue-500 hover:text-blue-600"
-                                        onClick={openEditModal}
-                                    >
-                                        <EditOutlined />
-                                    </button>
-                                    <button className="text-red-500 hover:text-red-600">
-                                        <DeleteOutlined />
-                                    </button>
-                                </div>
-                            </div>
-                            {/* Additional Address Items */}
-                            <div className="flex rounded bg-gray-50 p-4 shadow">
-                                <div className="flex-grow">
-                                    <label className="font-semibold">Họ và tên: </label>
-                                    <span>PTDL</span>
-                                    <br />
-                                    <label className="font-semibold">Địa chỉ: </label>
-                                    <span>456 Đường DEF, Phường UVW, Quận 2, TP. HCM</span>
-                                    <br />
-                                    <label className="font-semibold">Số điện thoại: </label>
-                                    <span>0987654321</span>
-                                </div>
-                                <div className="ml-4 flex flex-col justify-center space-y-2">
-                                    <button
-                                        className="text-blue-500 hover:text-blue-600"
-                                        onClick={openEditModal}
-                                    >
-                                        <EditOutlined />
-                                    </button>
-                                    <button className="text-red-500 hover:text-red-600">
-                                        <DeleteOutlined />
-                                    </button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
             {/* Đặt AddAddressModal tại đây */}
-            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} />
-            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} />
+            {/* <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} /> */}
+            {/* <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} /> */}
+            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
+
+            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} onAdd={handleAddAddress} />
+            {/* {selectedAddress && (
+                <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
+            )} */}
         </div>
     );
 };
@@ -168,9 +191,15 @@ const UserAddressPage: React.FC = () => {
 export default UserAddressPage;
 
 // Add and Edit Address Modal
-const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
+// const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
+const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: any) => void }> = ({ isOpen, onClose, onAdd }) => {
     // State for controlling the modal animation
     const [modalClass, setModalClass] = useState('');
+
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [isDefault, setIsDefault] = useState(false);
 
     useEffect(() => {
         // Add or remove transition class based on modal state
@@ -179,6 +208,13 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                 ? 'translate-y-0 transition-all duration-500 ease-in-out'
                 : '-translate-y-full transition-all duration-500 ease-in-out',
         );
+
+        if (isOpen) {
+            setName('');
+            setPhone('');
+            setAddress('');
+            setIsDefault(false);
+        }
     }, [isOpen]);
 
     // Function to handle Escape key press
@@ -195,6 +231,19 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
             document.removeEventListener('keydown', handleEsc);
         };
     }, [onClose]);
+
+    // test
+    const handleSubmit = () => {
+        const newAddress = {
+            id: Date.now(),
+            name,
+            phone,
+            address,
+            default: isDefault,
+        };
+        onAdd(newAddress);
+        onClose();
+    };
 
     return (
         <div
@@ -219,6 +268,9 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                                             className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                             type="text"
                                             placeholder=""
+
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
                                         />
                                     </div>
                                     <div className="w-full">
@@ -229,6 +281,9 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                                             className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                             type="text"
                                             placeholder=""
+
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -240,6 +295,9 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                                         className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                         type="text"
                                         placeholder=""
+
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
                                     />
                                 </div>
                                 {/* <div>
@@ -285,8 +343,12 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                                 <input
                                     className="h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
                                     type="checkbox"
+
+                                    id="default-address"
+                                    checked={isDefault}
+                                    onChange={(e) => setIsDefault(e.target.checked)}
                                 />
-                                <label className="ml-2 block text-sm text-gray-900">
+                                <label htmlFor="default-address" className="ml-2 block text-sm text-gray-900">
                                     Đặt làm địa chỉ mặc định
                                 </label>
                             </div>
@@ -303,6 +365,7 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
                         <button
                             type="button"
                             className="rounded bg-pink-500 px-2 py-1 text-sm text-white hover:bg-pink-600"
+                            onClick={handleSubmit} // test 
                         >
                             Thêm địa chỉ
                         </button>
@@ -313,12 +376,10 @@ const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) =
     );
 };
 
-const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
-    // State for controlling the modal animation
+const EditAddressModel: React.FC<UserAddressModalProps & { address: any }> = ({ isOpen, onClose, address }) => {
     const [modalClass, setModalClass] = useState('');
 
     useEffect(() => {
-        // Add or remove transition class based on modal state
         setModalClass(
             isOpen
                 ? 'translate-y-0 transition-all duration-500 ease-in-out'
@@ -326,7 +387,6 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) 
         );
     }, [isOpen]);
 
-    // Function to handle Escape key press
     useEffect(() => {
         const handleEsc = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -364,6 +424,7 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) 
                                             className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                             type="text"
                                             placeholder=""
+                                            defaultValue={address?.name}
                                         />
                                     </div>
                                     <div className="w-full">
@@ -374,6 +435,7 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) 
                                             className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                             type="text"
                                             placeholder=""
+                                            defaultValue={address?.phone}
                                         />
                                     </div>
                                 </div>
@@ -385,22 +447,9 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) 
                                         className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
                                         type="text"
                                         placeholder=""
+                                        defaultValue={address?.address}
                                     />
                                 </div>
-                                {/* <div>
-                      <label className="block text-sm font-medium text-gray-700">Quốc tịch</label>
-                      <select className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5">
-                        <option>Vietnam</option>
-                      </select>
-                    </div> */}
-                                {/* <div>
-                      <label className="block text-sm font-medium text-gray-700">Mã zip</label>
-                      <input
-                        className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5"
-                        type="text"
-                        placeholder=""
-                      />
-                    </div> */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">
                                         Tỉnh/Thành phố
@@ -425,31 +474,29 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) 
                                         <option>---</option>
                                     </select>
                                 </div>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    className="h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
-                                    type="checkbox"
-                                />
-                                <label className="ml-2 block text-sm text-gray-900">
-                                    Đặt làm địa chỉ mặc định
-                                </label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="default-address-edit"
+                                        className="h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                                        defaultChecked={address?.default}
+                                    />
+                                    <label htmlFor="default-address-edit" className="text-gray-700">
+                                        Đặt làm địa chỉ mặc định
+                                    </label>
+                                </div>
                             </div>
                         </form>
                     </div>
-                    <div className="modal-footer mt-4 flex justify-end space-x-2">
+                    <div className="modal-footer mt-6 flex justify-end">
                         <button
-                            type="button"
-                            className="rounded border border-pink-500 bg-white px-2 py-1 text-sm text-pink-500 hover:bg-gray-50"
+                            className="mr-2 rounded bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400"
                             onClick={onClose}
                         >
                             Hủy
                         </button>
-                        <button
-                            type="button"
-                            className="rounded bg-pink-500 px-2 py-1 text-sm text-white hover:bg-pink-600"
-                        >
-                            Cập nhật địa chỉ
+                        <button className="rounded bg-pink-500 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-600">
+                            Lưu thay đổi
                         </button>
                     </div>
                 </div>

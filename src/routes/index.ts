@@ -27,6 +27,7 @@ import UserProfilePage from '../pages/client/User/UserProfilePage';
 import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
 import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
 import UserAddressPage from '../pages/client/User/UserAddressPage';
+import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
 
 import { DefaultLayoutProps } from '../types/layout.type';
 
@@ -55,6 +56,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
+    { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
 
 ];
 

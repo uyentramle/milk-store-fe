@@ -1,6 +1,7 @@
 import React from 'react';
 import {
     UserOutlined,
+    SettingOutlined,
     EnvironmentOutlined,
     FileTextOutlined,
     RetweetOutlined,
@@ -23,6 +24,14 @@ const ChangePasswordPage: React.FC = () => {
                                 {/* <i className="fa-solid fa-user mr-2"></i> */}
                                 <UserOutlined className="mr-2" />
                                 <span>Thông tin tài khoản</span>
+                            </a>
+                            <a
+                                href="/account-settings"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
+                                <SettingOutlined className="mr-2" />
+                                <span>Thiết lập tài khoản</span>
                             </a>
                             <a
                                 href="/user-address"
