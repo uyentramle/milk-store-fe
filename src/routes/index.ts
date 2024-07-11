@@ -23,6 +23,12 @@ import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 
+import UserProfilePage from '../pages/client/User/UserProfilePage';
+import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
+import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
+import UserAddressPage from '../pages/client/User/UserAddressPage';
+import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
+
 import { DefaultLayoutProps } from '../types/layout.type';
 
 interface RouteProps {
@@ -45,6 +51,12 @@ const publicRoutes: RouteProps[] = [
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
+
+    { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
+    { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
+    { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
+    { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
+    { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
 
 ];
 
