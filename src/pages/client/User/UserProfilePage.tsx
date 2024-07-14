@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
+// import { Form, Input, Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import {
     UserOutlined,
@@ -87,7 +88,7 @@ const updateProfile = async (userId: string, firstName: string, lastName: string
         console.error('Error updating user profile:', error);
         throw new Error('Failed to update user profile.');
     }
-}; 
+};
 
 const UserProfilePage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -153,17 +154,15 @@ const UserProfilePage: React.FC = () => {
 
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const { id, firstName, lastName, gender } = userData;
-    
+
         try {
             const success = await updateProfile(id, firstName, lastName, gender);
-    
+
             if (success) {
-                console.log('User profile updated successfully');
-                
                 // Optional: Perform any actions needed after successful update
-    
+
                 // Set a timeout to refresh user profile data after 2 seconds
                 setTimeout(async () => {
                     try {
@@ -182,27 +181,34 @@ const UserProfilePage: React.FC = () => {
             }
         } catch (error: any) {
             console.error('Error updating user profile:', error);
-            // Handle error case as needed
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError;
-                if (axiosError.response?.status === 401) {
-                    console.error('Unauthorized - redirecting to login page');
-                    // Điều hướng người dùng đến trang đăng nhập khi nhận được lỗi 401
-                    navigate('/sign-in'); // Thay đổi đường dẫn tới trang đăng nhập của bạn
-                } else {
-                    console.error('Error updating user profile:', axiosError.message);
-                    // Handle other Axios errors
-                }
-            } else {
-                console.error('Error updating user profile:', error.message);
-                // Handle non-Axios errors
-            }
+            navigate('/sign-in'); // Redirect user to login page when receiving 401 error
+            // // Handle error case as needed
+            // if (axios.isAxiosError(error)) {
+            //     const axiosError = error as AxiosError;
+            //     if (axiosError.response?.status === 401) {
+            //         console.error('Unauthorized - redirecting to login page');
+            //         // Điều hướng người dùng đến trang đăng nhập khi nhận được lỗi 401
+            //         navigate('/sign-in'); // Thay đổi đường dẫn tới trang đăng nhập của bạn
+            //     } else {
+            //         console.error('Error updating user profile:', axiosError.message);
+            //         // Handle other Axios errors
+            //     }
+            // } else {
+            //     console.error('Error updating user profile:', error.message);
+            //     // Handle non-Axios errors
+            // }
         }
     };
-    
+
 
     if (!userData) {
-        return <div>Loading...</div>; // Placeholder for loading state
+        return (
+            <div className="container mx-auto w-4/5 p-4 pt-10">
+                <div className="flex flex-col gap-10 lg:flex-row">
+                    <div>Loading...</div>
+                </div>
+            </div>); // Placeholder for loading state
+        // navigate('/sign-in');
     }
 
     return (
@@ -305,10 +311,8 @@ const UserProfilePage: React.FC = () => {
                                 <div className="space-y-3">
                                     <form className="mt-6 space-y-3" onSubmit={handleUpdate}>
                                         <div className="flex flex-wrap sm:flex-nowrap sm:space-x-3">
-                                            <div className="flex-1 min-w-[100px]">
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                    Họ
-                                                </label>
+                                            <div className="flex-1 min-w-[150px]">
+                                                <label className="block text-sm font-medium text-gray-700">Họ</label>
                                                 <input
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
@@ -317,10 +321,8 @@ const UserProfilePage: React.FC = () => {
                                                     onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
                                                 />
                                             </div>
-                                            <div className="flex-1 min-w-[200px]">
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                    Tên
-                                                </label>
+                                            <div className="flex-1 min-w-[150px]">
+                                                <label className="block text-sm font-medium text-gray-700">Tên</label>
                                                 <input
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
@@ -329,18 +331,6 @@ const UserProfilePage: React.FC = () => {
                                                     onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
                                                 />
                                             </div>
-                                            {/* <div className="flex-1 min-w-[20px]">
-            <label className="block text-sm font-medium text-gray-700">
-                Giới tính
-            </label>
-            <input
-                className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
-                type="text"
-                name="gender"
-                value={userData.gender}
-                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
-            />
-        </div> */}
                                             <div className="flex items-end justify-end mt-4 mb-2 sm:mt-0">
                                                 <button
                                                     className="rounded bg-pink-500 px-2 py-1 text-white transition-colors duration-300 hover:bg-pink-600 text-xs"
@@ -350,19 +340,32 @@ const UserProfilePage: React.FC = () => {
                                                 </button>
                                             </div>
                                         </div>
+                                            <div className="">
+                                                <label className="block text-sm font-medium text-gray-700">Giới tính</label>
+                                                <select
+                                                    className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
+                                                    name="gender"
+                                                    value={userData.gender}
+                                                    onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                                >
+                                                    <option value="Male">Nam</option>
+                                                    <option value="Female">Nữ</option>
+                                                    <option value="Unknown">Chưa xác định</option>
+                                                </select>
+                                            </div>
                                     </form>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Email
-                                        </label>
-                                        <input
-                                            className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
-                                            type="email"
-                                            name="email"
-                                            value={userData.email}
-                                            readOnly
-                                        />
-                                    </div>
+                                                <label className="block text-sm font-medium text-gray-700">
+                                                    Email
+                                                </label>
+                                                <input
+                                                    className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
+                                                    type="email"
+                                                    name="email"
+                                                    value={userData.email}
+                                                    readOnly
+                                                />
+                                            </div>                
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">
                                             Số điện thoại
