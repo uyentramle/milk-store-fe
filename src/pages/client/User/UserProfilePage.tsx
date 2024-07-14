@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios, { AxiosError } from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import {
     UserOutlined,
     SettingOutlined,
@@ -10,18 +13,90 @@ import {
     UploadOutlined
 } from '@ant-design/icons';
 
-const fakeUserData = {
-    lastname: "Smith",
-    firstname: "John",
-    email: "john.smith@example.com",
-    phone: "123-456-7890",
-    address: "123 Fake Street, Faketown, FA 12345"
+// const fakeUserData = {
+//     id: "1234567890",
+//     lastname: "Smith",
+//     firstname: "John",
+//     gender: "Không biết",
+//     email: "john.smith@example.com",
+//     phone: "123-456-7890",
+//     address: "123 Fake Street, Faketown, FA 12345",
+//     avatar: "",
+//     background: ""
+// };
+
+// Hàm để gọi API và trả về thông tin người dùng đã được lọc
+const getUserProfile = async (): Promise<any> => {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        throw new Error('Access token not found.');
+    }
+
+    try {
+        const decodedToken: any = jwtDecode(accessToken);
+        const userId = decodedToken.userId; // Assuming 'userId' is the key in your accessToken payload
+
+        const response = await axios.get(`https://localhost:44329/api/Account/GetUserProfile?userId=${userId}`, {
+            headers: {
+                'accept': '*/*', // xem trong api yêu cầu gì thì copy vào
+                'authorization': `Bearer ${accessToken}` // xem trong api yêu cầu gì thì copy vào
+            }
+        });
+
+        // Lấy ra các trường cần thiết từ response
+        const { id, firstName, lastName, gender, email, phoneNumber, address, avatar, background } = response.data.data;
+
+        // Trả về một đối tượng chỉ chứa các trường cần thiết
+        return { id, firstName, lastName, gender, email, phoneNumber, address, avatar, background };
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        throw new Error('Failed to fetch user profile.');
+    }
 };
+
+const updateProfile = async (userId: string, firstName: string, lastName: string, gender: string): Promise<boolean> => {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        throw new Error('Access token not found.');
+    }
+
+    try {
+        const response = await axios.put('https://localhost:44329/api/Account/UpdateUserProfile', {
+            userId, // Assuming you need userId in the payload
+            firstName,
+            lastName,
+            gender
+        }, {
+            headers: {
+                'accept': '*/*',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.data.success) {
+            console.log('User profile updated successfully');
+            return true;
+        } else {
+            console.error('Failed to update user profile:', response.data.message);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        throw new Error('Failed to update user profile.');
+    }
+}; 
 
 const UserProfilePage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [avatar, setAvatar] = useState<string | null>(null); // For storing the avatar URL
-    const [userData, setUserData] = useState(fakeUserData);
+    // const [userData, setUserData] = useState(fakeUserData);
+    const [userData, setUserData] = useState<any>(null);
+    const navigate = useNavigate();
+
+
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -31,6 +106,43 @@ const UserProfilePage: React.FC = () => {
         setIsModalOpen(false);
     };
 
+
+    // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userProfileData = await getUserProfile();
+                setUserData(userProfileData);
+                setAvatar(userProfileData.avatar);
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                // Xử lý lỗi khi cần thiết
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // // Giả lập gọi API để lấy dữ liệu người dùng
+    // useEffect(() => {
+    //     // Giả lập một gọi API với setTimeout
+    //     setTimeout(() => {
+    //         const fetchedUserData = {
+    //             id: "1234567890",
+    //             lastname: "Phạm",
+    //             firstname: "Tum",
+    //             gender: "Không biết",
+    //             email: "tam.pham@example.com",
+    //             phone: "098-765-4321",
+    //             address: "456 Real Street, Realtown, RT 67890",
+    //             avatar: "/logo.png",
+    //             background: ""
+    //         };
+    //         setUserData(fetchedUserData);
+    //         setAvatar(fetchedUserData.avatar);
+    //     }, 2000); // Giả lập thời gian chờ 2 giây
+    // }, []);
+
     const handleSaveAvatar = (file: File) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -39,26 +151,59 @@ const UserProfilePage: React.FC = () => {
         reader.readAsDataURL(file);
     };
 
-    // Giả lập gọi API để lấy dữ liệu người dùng
-    useEffect(() => {
-        // Giả lập một gọi API với setTimeout
-        setTimeout(() => {
-            const fetchedUserData = {
-                lastname: "Phạm",
-                firstname: "Tum",
-                email: "tam.pham@example.com",
-                phone: "098-765-4321",
-                address: "456 Real Street, Realtown, RT 67890"
-            };
-            setUserData(fetchedUserData);
-        }, 2000); // Giả lập thời gian chờ 2 giây
-    }, []);
-
-    const handleUpdate = (e: React.FormEvent) => {
+    const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Xử lý cập nhật dữ liệu họ và tên ở đây
-        console.log("Updated user data:", userData);
+        
+        const { id, firstName, lastName, gender } = userData;
+    
+        try {
+            const success = await updateProfile(id, firstName, lastName, gender);
+    
+            if (success) {
+                console.log('User profile updated successfully');
+                
+                // Optional: Perform any actions needed after successful update
+    
+                // Set a timeout to refresh user profile data after 2 seconds
+                setTimeout(async () => {
+                    try {
+                        const userProfileData = await getUserProfile();
+                        setUserData(userProfileData);
+                        setAvatar(userProfileData.avatar);
+                        console.log('User profile data refreshed');
+                    } catch (error) {
+                        console.error('Error refreshing user profile:', error);
+                        // Handle error case as needed
+                    }
+                }, 2000); // Wait for 2 seconds before refreshing
+            } else {
+                console.error('Failed to update user profile');
+                // Handle error case as needed
+            }
+        } catch (error: any) {
+            console.error('Error updating user profile:', error);
+            // Handle error case as needed
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
+                if (axiosError.response?.status === 401) {
+                    console.error('Unauthorized - redirecting to login page');
+                    // Điều hướng người dùng đến trang đăng nhập khi nhận được lỗi 401
+                    navigate('/sign-in'); // Thay đổi đường dẫn tới trang đăng nhập của bạn
+                } else {
+                    console.error('Error updating user profile:', axiosError.message);
+                    // Handle other Axios errors
+                }
+            } else {
+                console.error('Error updating user profile:', error.message);
+                // Handle non-Axios errors
+            }
+        }
     };
+    
+
+    if (!userData) {
+        return <div>Loading...</div>; // Placeholder for loading state
+    }
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
@@ -126,9 +271,9 @@ const UserProfilePage: React.FC = () => {
                             {/* items-center */}
                             {/* Phần Avatar và Change Photo */}
                             <div className="mb-4 ml-16 mr-0 flex-shrink-0 sm:mb-0 sm:mr-4">
-                                <div className="flex h-44 w-44 items-center justify-center rounded-full bg-gray-200">
-                                    {avatar ? (
-                                        <img src={avatar} alt="Avatar" className="h-44 w-44 rounded-full object-cover" />
+                                <div className="flex h-44 w-44 items-center justify-center rounded-full bg-white">
+                                    {avatar || userData.avatar ? (
+                                        <img src={avatar ?? userData.avatar} alt="Avatar" className="h-40 w-40 rounded-full object-cover" />
                                     ) : (
                                         <span className="text-xl text-gray-400">140x140</span>
                                     )}
@@ -160,16 +305,16 @@ const UserProfilePage: React.FC = () => {
                                 <div className="space-y-3">
                                     <form className="mt-6 space-y-3" onSubmit={handleUpdate}>
                                         <div className="flex flex-wrap sm:flex-nowrap sm:space-x-3">
-                                            <div className="flex-1 min-w-[200px]">
+                                            <div className="flex-1 min-w-[100px]">
                                                 <label className="block text-sm font-medium text-gray-700">
                                                     Họ
                                                 </label>
                                                 <input
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
-                                                    name="lastname"
-                                                    value={userData.lastname}
-                                                    onChange={(e) => setUserData({ ...userData, lastname: e.target.value })}
+                                                    name="lastName"
+                                                    value={userData.lastName}
+                                                    onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-[200px]">
@@ -179,11 +324,23 @@ const UserProfilePage: React.FC = () => {
                                                 <input
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
-                                                    name="firstname"
-                                                    value={userData.firstname}
-                                                    onChange={(e) => setUserData({ ...userData, firstname: e.target.value })}
+                                                    name="firstName"
+                                                    value={userData.firstName}
+                                                    onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
                                                 />
                                             </div>
+                                            {/* <div className="flex-1 min-w-[20px]">
+            <label className="block text-sm font-medium text-gray-700">
+                Giới tính
+            </label>
+            <input
+                className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
+                type="text"
+                name="gender"
+                value={userData.gender}
+                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+            />
+        </div> */}
                                             <div className="flex items-end justify-end mt-4 mb-2 sm:mt-0">
                                                 <button
                                                     className="rounded bg-pink-500 px-2 py-1 text-white transition-colors duration-300 hover:bg-pink-600 text-xs"
@@ -214,7 +371,7 @@ const UserProfilePage: React.FC = () => {
                                             className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                             type="text"
                                             name="phone"
-                                            value={userData.phone}
+                                            value={userData.phoneNumber}
                                             readOnly
                                         />
                                     </div>
