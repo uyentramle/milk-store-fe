@@ -34,8 +34,8 @@ const loginApi = async (username: string, password: string): Promise<{ success: 
             password,
         }, {
             headers: {
-                'Content-Type': 'application/json',
-                'accept': '*/*'
+                'accept': '*/*', // xem trong api yêu cầu gì thì copy vào
+                'Content-Type': 'application/json' // xem trong api yêu cầu gì thì copy vào
             }
         });
 
