@@ -97,7 +97,15 @@ const UserProfilePage: React.FC = () => {
     const [userData, setUserData] = useState<any>(null);
     const navigate = useNavigate();
 
+    const navigateToSignInPage = () => {
+    navigate('/sign-in');
+  };
 
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('accessToken');
+        // Redirect to sign-in page
+navigateToSignInPage();    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -111,6 +119,11 @@ const UserProfilePage: React.FC = () => {
     // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
     useEffect(() => {
         const fetchData = async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+navigateToSignInPage();                return;
+            }
+
             try {
                 const userProfileData = await getUserProfile();
                 setUserData(userProfileData);
@@ -181,7 +194,7 @@ const UserProfilePage: React.FC = () => {
             }
         } catch (error: any) {
             console.error('Error updating user profile:', error);
-            navigate('/sign-in'); // Redirect user to login page when receiving 401 error
+            navigateToSignInPage(); // Redirect user to login page when receiving 401 error
             // // Handle error case as needed
             // if (axios.isAxiosError(error)) {
             //     const axiosError = error as AxiosError;
@@ -202,13 +215,13 @@ const UserProfilePage: React.FC = () => {
 
 
     if (!userData) {
-        return (
+navigateToSignInPage();        
+return (
             <div className="container mx-auto w-4/5 p-4 pt-10">
                 <div className="flex flex-col gap-10 lg:flex-row">
                     <div>Loading...</div>
                 </div>
             </div>); // Placeholder for loading state
-        // navigate('/sign-in');
     }
 
     return (
@@ -260,8 +273,9 @@ const UserProfilePage: React.FC = () => {
                                 <span>Đổi mật khẩu</span>
                             </a>
                             <a
-                                href="#"
+                                href=""
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                                onClick={handleLogout}
                             >
                                 {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
                                 <LogoutOutlined className="mr-2" />

@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Checkbox, } from 'antd';
-import { GoogleOutlined, } from '@ant-design/icons';
+import { Form, Input, Button, Checkbox, message, } from 'antd';
+import { GoogleOutlined, LineOutlined } from '@ant-design/icons';
 import {
     GoogleOAuthProvider,
     useGoogleLogin,
@@ -27,7 +27,7 @@ import FacebookLogin from '@greatsumini/react-facebook-login';
 //     });
 // };
 
-const loginApi = async (username: string, password: string): Promise<{ success: boolean, message?: string, accessToken?: string }> => {
+const loginApi = async (username: string, password: string): Promise<{ success: boolean, message?: string, accessToken?: string, refreshToken?: string }> => {
     try {
         const response = await axios.post('https://localhost:44329/api/Auth/Login', {
             username,
@@ -65,23 +65,42 @@ const SignInPage: React.FC = () => {
 
             if (response.success) {
                 console.log('Login Success');
+                message.success('Đăng nhập thành công');
                 // Lưu trữ accessToken nếu cần thiết
-                localStorage.setItem('accessToken', response.accessToken || '');
-                navigate('/'); // Điều hướng đến trang chủ sau khi đăng nhập thành công
+                if (response.accessToken) {
+                    localStorage.setItem('accessToken', response.accessToken);
+                    localStorage.setItem('refreshToken', response.refreshToken || '');
+                    navigate('/'); // Điều hướng đến trang chủ sau khi đăng nhập thành công
+                } else {
+                    message.error('Không có accessToken trong phản hồi.');
+                }
             } else {
                 console.error('Login Failed:', response.message);
-                alert(response.message);
+                // alert(response.message);
+                // message.error('Đăng nhập thất bại')
+                switch (response.message) {
+                    case 'Wrong password!':
+                        message.error('Mật khẩu không đúng.');
+                        break;
+                    case 'User not found by username, email, or phone number':
+                        message.error('Tên đăng nhập không chính xác');
+                        break;
+                    // message.error('Mật khẩu phải có ít nhất 6 ký tự và bao gồm ít nhất một ký tự viết hoa và một ký tự đặc biệt.');
+                    // break;
+                    default:
+                        message.error('Đã xảy ra lỗi, vui lòng thử lại sau.');
+                        break;
+                }
             }
         } catch (error) {
             console.error('Login Error:', error);
-            alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+            message.error('Đã xảy ra lỗi, vui lòng thử lại sau.');
         }
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log('Login Failed:', errorInfo);
     };
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-pink-100 mt-2">
@@ -125,7 +144,11 @@ const SignInPage: React.FC = () => {
                 </Form>
 
                 <div className="text-center mt-4">
+                    <LineOutlined className='mx-2' />
+
                     <span>Hoặc đăng nhập bằng</span>
+                    <LineOutlined className='mx-2' />
+
                     <div className="flex justify-center mt-2">
                         {/* này là button của chị guột nè */}
                         {/* <Button
@@ -225,7 +248,7 @@ export const CustomLoginButton = () => {
 
             const data = await response.json();
             console.log('Google Login API Response:', data);
-            
+
             // Xử lý dữ liệu trả về từ server (nếu cần)
             // Lưu trữ access token vào localStorage
             localStorage.setItem('accessToken', data.accessToken);
@@ -237,7 +260,7 @@ export const CustomLoginButton = () => {
             alert('Đăng nhập qua Google thất bại. Vui lòng thử lại sau.');
         }
     };
-    
+
     return (
         <Button
             onClick={() => login()}
