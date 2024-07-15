@@ -3,11 +3,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useForm } from 'antd/es/form/Form';
-import { 
-    Form, 
-    Input, 
-    Button, Typography, 
-    message } from 'antd';
+import {
+    Form,
+    Input,
+    Button, //Typography,
+    message
+} from 'antd';
 
 import {
     UserOutlined,
@@ -81,8 +82,8 @@ const ChangePasswordPage: React.FC = () => {
                             message.error('Đổi mật khẩu thất bại.');
                         }
                         break;
-                        // message.error('Mật khẩu phải có ít nhất 6 ký tự và bao gồm ít nhất một ký tự viết hoa và một ký tự đặc biệt.');
-                        // break;
+                    // message.error('Mật khẩu phải có ít nhất 6 ký tự và bao gồm ít nhất một ký tự viết hoa và một ký tự đặc biệt.');
+                    // break;
                     default:
                         message.error(error.response.data.message || 'Đổi mật khẩu thất bại.');
                         break;
@@ -98,14 +99,14 @@ const ChangePasswordPage: React.FC = () => {
         switch (error) {
             case 'Incorrect password.':
                 return 'Mật khẩu hiện tại không đúng.';
-                case 'Passwords must be at least 6 characters.':
-                    return 'Mật khẩu phải có ít nhất 6 ký tự.';
-                case 'Passwords must have at least one non alphanumeric character.':
-                    return 'Mật khẩu phải có ít nhất một ký tự đặc biệt.';
-                case 'Passwords must have at least one digit (\'0\'-\'9\').':
-                    return 'Mật khẩu phải có ít nhất một chữ số (\'0\'-\'9\').';
-                case 'Passwords must have at least one uppercase (\'A\'-\'Z\').':
-                    return 'Mật khẩu phải có ít nhất một ký tự viết hoa (\'A\'-\'Z\').';
+            case 'Passwords must be at least 6 characters.':
+                return 'Mật khẩu phải có ít nhất 6 ký tự.';
+            case 'Passwords must have at least one non alphanumeric character.':
+                return 'Mật khẩu phải có ít nhất một ký tự đặc biệt.';
+            case 'Passwords must have at least one digit (\'0\'-\'9\').':
+                return 'Mật khẩu phải có ít nhất một chữ số (\'0\'-\'9\').';
+            case 'Passwords must have at least one uppercase (\'A\'-\'Z\').':
+                return 'Mật khẩu phải có ít nhất một ký tự viết hoa (\'A\'-\'Z\').';
             default:
                 return error; // Hoặc trả về lỗi gốc nếu không có bản dịch
         }
@@ -254,7 +255,7 @@ const ChangePasswordPage: React.FC = () => {
                                 </b>
                             </div>
                             <label className="block text-sm font-medium text-gray-700">
-                                    Mật khẩu hiện tại
+                                Mật khẩu hiện tại
                             </label>
                             <Form.Item
                                 // label="Mật khẩu hiện tại"
@@ -264,8 +265,8 @@ const ChangePasswordPage: React.FC = () => {
                                 <Input.Password placeholder="••••••••" />
                             </Form.Item>
                             <label className="block text-sm font-medium text-gray-700">
-                                    Mật khẩu mới
-                                </label>
+                                Mật khẩu mới
+                            </label>
                             <Form.Item
                                 // label="Mật khẩu mới"
                                 name="newPassword"
@@ -274,8 +275,8 @@ const ChangePasswordPage: React.FC = () => {
                                 <Input.Password placeholder="••••••••" />
                             </Form.Item>
                             <label className="block text-sm font-medium text-gray-700">
-                                    Nhập lại mật khẩu mới
-                                </label>
+                                Nhập lại mật khẩu mới
+                            </label>
                             <Form.Item
                                 // label="Nhập lại mật khẩu mới"
                                 name="confirmPassword"
@@ -315,7 +316,7 @@ const ChangePasswordPage: React.FC = () => {
                                     </a>
                                 </div>
                             </Form.Item>
-                            
+
                         </Form>
                     </div>
                 </div>

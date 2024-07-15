@@ -18,7 +18,8 @@ const Header: React.FC = () => {
 
             <div className="flex items-center">
                 <a href="/">
-                    <img src="https://via.placeholder.com/50" alt="Logo" className="mr-4" />
+                    {/* <img src="https://via.placeholder.com/50" alt="Logo" className="mr-4" /> */}
+                    <img src="/logo.png" style={{ height: '50px' }} alt="Logo" className="mr-4" />
                 </a>
                 <a href="/">
                     <span className="text-xl font-bold text-pink-500">MILK STORE</span>
