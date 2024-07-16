@@ -1,24 +1,22 @@
 import React, { useState, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Button, Upload, Form, Switch } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { Input, Button, Form, Switch } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 interface FormData {
-    title: string;
-    content: string;
-    thumbnail: RcFile | null;
-    status: boolean;
+    name: string;
+    origin: string;
+    description: string;
+    active: boolean;
 }
 
-const CreateBlogPage: React.FC = () => {
+const CreateCategoryBlogPage: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
-        title: '',
-        content: '',
-        thumbnail: null,
-        status: false,
+        name: '',
+        origin: '',
+        description: '',
+        active: false,
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,15 +30,7 @@ const CreateBlogPage: React.FC = () => {
     const handleSwitchChange = (checked: boolean) => {
         setFormData((prevState) => ({
             ...prevState,
-            status: checked,
-        }));
-    };
-
-    const handleFileChange = (info: UploadChangeParam) => {
-        const { file } = info;
-        setFormData((prevState) => ({
-            ...prevState,
-            thumbnail: file as RcFile,
+            active: checked,
         }));
     };
 
@@ -57,23 +47,23 @@ const CreateBlogPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Bài viết mới</h1>
+            <h1 className="mb-6 text-3xl font-bold">Thêm danh mục bài viết</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
                 className="-mx-4 flex flex-wrap"
             >
                 <div className="w-full px-4">
-                    <div className="mb-4">
+                    <div className="mb-4 w-1/2">
                         <Form.Item
-                            label="Tiêu đề"
-                            name="title"
-                            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+                            label="Tên danh mục bài viết"
+                            name="name"
+                            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục bài viết' }]}
                         >
                             <Input
-                                id="title"
-                                name="title"
-                                value={formData.title}
+                                id="name"
+                                name="name"
+                                value={formData.name}
                                 onChange={handleChange}
                             />
                         </Form.Item>
@@ -82,10 +72,10 @@ const CreateBlogPage: React.FC = () => {
                     <div className="mb-4 pb-4">
                         <Form.Item
                             label="Mô tả"
-                            name="content"
+                            name="description"
                         >
                             <ReactQuill
-                                value={formData.content}
+                                value={formData.description}
                                 onChange={handleContentChange}
                                 className="h-60 mb-4"
                             />
@@ -94,31 +84,13 @@ const CreateBlogPage: React.FC = () => {
 
                     <div className="mb-4">
                         <Form.Item
-                            label="Hình ảnh đại diện"
-                            name="thumbnail"
-                            valuePropName="file"
-                            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                        >
-                            <Upload
-                                name="thumbnail"
-                                listType="picture"
-                                beforeUpload={() => false}
-                                onChange={handleFileChange}
-                            >
-                                <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-                            </Upload>
-                        </Form.Item>
-                    </div>
-
-                    <div className="mb-4">
-                        <Form.Item
                             label="Trạng thái"
-                            name="status"
+                            name="active"
                             valuePropName="checked"
                         >
                             <Switch
-                                id="status"
-                                checked={formData.status}
+                                id="active"
+                                checked={formData.active}
                                 onChange={handleSwitchChange}
                             />
                         </Form.Item>
@@ -131,7 +103,7 @@ const CreateBlogPage: React.FC = () => {
                         >
                             Thêm mới
                         </Button>
-                        <Link to="/admin/blogs">
+                        <Link to="/admin/categories">
                             <Button
                                 type="default"
                             >
@@ -145,4 +117,4 @@ const CreateBlogPage: React.FC = () => {
     );
 };
 
-export default CreateBlogPage;
+export default CreateCategoryBlogPage;

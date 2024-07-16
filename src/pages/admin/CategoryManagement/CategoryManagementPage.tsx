@@ -131,7 +131,7 @@ const CategoryBlogManagementPage: React.FC = () => {
                 </div>
                 <div>
                     <Link
-                        to="/admin/blogs/create"
+                        to="/admin/categories/create"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />

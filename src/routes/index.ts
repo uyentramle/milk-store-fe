@@ -28,7 +28,8 @@ import VoucherManagementPage from '../pages/admin/Voucher/VoucherManagementPage'
 import CreateVoucherPage from '../pages/admin/Voucher/CreateVoucherPage';
 import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
 import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
-import CategoryBlogManagementPage from '../pages/admin/CategoryBlogManagement/CategoryBlogManagementPage';
+import CategoryBlogManagementPage from '../pages/admin/CategoryManagement/CategoryManagementPage';
+import CreateCategoryBlogPage from '../pages/admin/CategoryManagement/CreateCategoryPage';
 import ProductTypeManagementPage from '../pages/admin/ProductTypeManagement/ProductTypeManagementPage';
 import CreateProductTypePage from '../pages/admin/ProductTypeManagement/CreateProductTypePage';
 
@@ -84,7 +85,8 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
-    { path: '/admin/blog-categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
 ];

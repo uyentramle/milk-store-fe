@@ -72,7 +72,7 @@ export default function MySider() {
         .set('5', '/admin/brands')
         .set('6', '/admin/vouchers')
         .set('7', '/admin/blogs')
-        .set('8', '/admin/blog-categories')
+        .set('8', '/admin/categories')
         .set('9', '/admin/product-types');
     return (
         <>
