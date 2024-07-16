@@ -1,15 +1,18 @@
-import { MenuOutlined } from '@ant-design/icons';
+import {
+    MenuOutlined,
+    GiftOutlined,
+    ProductOutlined,
+    TruckOutlined,
+    BuildOutlined,
+} from '@ant-design/icons';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
 import { Menu, MenuProps } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBeer, faTruck } from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import img from '/logo.jpg';
 
-library.add(faBeer, faTruck);
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -48,8 +51,10 @@ export default function MySider() {
         return [
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
             getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
-            getItem('Quản lý sản phẩm', '3', <FontAwesomeIcon icon={faBeer} />),
-            getItem('Quản lý đơn hàng', '4', <FontAwesomeIcon icon={faTruck} />),
+            getItem('Quản lý sản phẩm', '3', <ProductOutlined />),
+            getItem('Quản lý đơn hàng', '4', <TruckOutlined />),
+            getItem('Quản lý thương hiệu', '5', <BuildOutlined />),
+            getItem('Quản lý voucher', '5', <GiftOutlined />),
         ];
     };
     const navUrl = new Map<string, string>();
@@ -57,7 +62,8 @@ export default function MySider() {
         .set('1', '/admin/')
         .set('2', '/admin/accounts')
         .set('3', '/admin/products')
-        .set('4', '/admin/orders');
+        .set('4', '/admin/orders')
+        .set('5', '/admin/vouchers');
     return (
         <>
             <Sider
@@ -73,8 +79,8 @@ export default function MySider() {
                 }
                 width={256}
             >
-                <div className="demo-logo-vertical border-r-[1px] border-gray-200">
-                    <p>Logo</p>
+                <div className="demo-logo-vertical border-r-[1px] border-gray-200 pl-2 my-2">
+                    <img src={img} alt="Logo" className="h-16 w-16" />
                 </div>
                 <Menu
                     defaultSelectedKeys={['1']}
