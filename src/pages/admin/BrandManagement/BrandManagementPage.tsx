@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Select, Table, Image } from 'antd';
+import { Button, Input, Table, Image } from 'antd';
 import { Link } from 'react-router-dom';
-
-const { Option } = Select;
 
 interface Brand {
     id: number;
@@ -14,7 +12,7 @@ interface Brand {
     active: boolean;
 }
 
-const BrandPage: React.FC = () => {
+const BrandManagementPage: React.FC = () => {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
@@ -153,4 +151,4 @@ const BrandPage: React.FC = () => {
     );
 };
 
-export default BrandPage;
+export default BrandManagementPage;

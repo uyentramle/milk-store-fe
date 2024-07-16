@@ -24,6 +24,7 @@ import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
+import VoucherManagementPage from '../pages/admin/Voucher/VoucherManagementPage';
 
 import UserProfilePage from '../pages/client/User/UserProfilePage';
 import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
@@ -73,6 +74,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
