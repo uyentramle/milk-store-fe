@@ -54,7 +54,7 @@ export default function MySider() {
             getItem('Quản lý sản phẩm', '3', <ProductOutlined />),
             getItem('Quản lý đơn hàng', '4', <TruckOutlined />),
             getItem('Quản lý thương hiệu', '5', <BuildOutlined />),
-            getItem('Quản lý voucher', '5', <GiftOutlined />),
+            getItem('Quản lý voucher', '6', <GiftOutlined />),
         ];
     };
     const navUrl = new Map<string, string>();
@@ -63,7 +63,8 @@ export default function MySider() {
         .set('2', '/admin/accounts')
         .set('3', '/admin/products')
         .set('4', '/admin/orders')
-        .set('5', '/admin/vouchers');
+        .set('5', '/admin/brands')
+        .set('6', '/admin/vouchers');
     return (
         <>
             <Sider
