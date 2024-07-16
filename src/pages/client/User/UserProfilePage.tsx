@@ -13,6 +13,7 @@ import {
     CameraOutlined,
     UploadOutlined
 } from '@ant-design/icons';
+import { message } from 'antd';
 
 // const fakeUserData = {
 //     id: "1234567890",
@@ -79,9 +80,11 @@ const updateProfile = async (userId: string, firstName: string, lastName: string
 
         if (response.data.success) {
             console.log('User profile updated successfully');
+            message.success('Cập nhật hồ sơ người dùng thành công.');
             return true;
         } else {
             console.error('Failed to update user profile:', response.data.message);
+            message.success('Cập nhật hồ sơ người dùng thất bại.');
             return false;
         }
     } catch (error) {
