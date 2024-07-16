@@ -1,49 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Select, Image, } from 'antd';
+import { Button, Input, Table, Select, } from 'antd';
 import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 
-interface Blog {
+interface ProductType {
     id: number;
-    title: string;
+    name: string;
     description: string;
-    thumbnail: string;
-    status: boolean;
+    active: boolean;
 }
 
-const BlogManagementPage: React.FC = () => {
-    const [blogs, setBlogs] = useState<Blog[]>([]);
+const ProductTypeManagementPage: React.FC = () => {
+    const [productTypes, setProductTypes] = useState<ProductType[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
 
     useEffect(() => {
-        const fetchedBlogs: Blog[] = [
+        const fetchedProductTypes: ProductType[] = [
             {
                 id: 1,
-                title: '5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu',
-                description: '5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu',
-                thumbnail: 'https://cdn1.concung.com/img/news/2021/1053-1633086650-cover.webp',
-                status: true,
+                name: 'Sữa bột cao cấp',
+                description: '',
+                active: true,
             },
             {
                 id: 2,
-                title: 'Sữa Vinamilk Organic Gold - Sự lựa chọn hoàn hảo cho sức khỏe của bé',
-                description: 'Sữa Vinamilk Organic Gold - Sự lựa chọn hoàn hảo cho sức khỏe của bé',
-                thumbnail: 'https://cdn1.concung.com/img/news/2023/2430-1692244686-cover.webp',
-                status: true,
+                name: 'Sữa tươi các loại',
+                description: 'Sữa tươi từ các trang trại địa phương.',
+                active: true,
+            },
+            {
+                id: 3,
+                name: 'Sữa bột pha sẵn',
+                description: '',
+                active: true,
+            },
+            {
+                id: 4,
+                name: 'Sữa hạt dinh dưỡng',
+                description: '',
+                active: true,
             },
         ];
-        setBlogs(fetchedBlogs);
+        setProductTypes(fetchedProductTypes);
     }, []);
 
-    const filteredBlogs = blogs.filter((b) => {
-        const matchesSearch = `${b.title} ${b.description}`
+    const filteredBlogs = productTypes.filter((p) => {
+        const matchesSearch = `${p.name}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         const matchesStatus =
-            filterStatus === 'All' || (filterStatus === 'Active' && b.status) || (filterStatus === 'Inactive' && !b.status);
+            filterStatus === 'All' || (filterStatus === 'Active' && p.active) || (filterStatus === 'Inactive' && !p.active);
         return matchesSearch && matchesStatus;
     });
 
@@ -55,15 +64,9 @@ const BlogManagementPage: React.FC = () => {
             render: (_text: any, _record: any, index: number) => index + 1,
         },
         {
-            title: 'Hình ảnh',
-            dataIndex: 'thumbnail',
-            key: 'thumbnail',
-            render: (text: string) => <Image src={text} alt="blog" width={64} />,
-        },
-        {
             title: 'Tiêu đề',
-            dataIndex: 'title',
-            key: 'title',
+            dataIndex: 'name',
+            key: 'name',
             render: (text: string) => <span className="font-semibold text-pink-500">{text}</span>,
         },
         {
@@ -73,14 +76,14 @@ const BlogManagementPage: React.FC = () => {
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'active',
+            key: 'active',
             render: (text: boolean) => (text ? 'Active' : 'Inactive'),
         },
         {
             title: 'Cập nhật',
             key: 'update',
-            render: (_text: any, _record: Blog) => (
+            render: (_text: any, _record: ProductType) => (
                 <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
                     Edit
                 </Button>
@@ -89,7 +92,7 @@ const BlogManagementPage: React.FC = () => {
         {
             title: 'Xóa',
             key: 'delete',
-            render: (_text: any, _record: Blog) => (
+            render: (_text: any, _record: ProductType) => (
                 <Button type="primary" danger icon={<DeleteOutlined />} className="bg-red-500">
                     Delete
                 </Button>
@@ -99,7 +102,7 @@ const BlogManagementPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý bài viết</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý danh mục sản phẩm</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
@@ -128,7 +131,7 @@ const BlogManagementPage: React.FC = () => {
                 </div>
                 <div>
                     <Link
-                        to="/admin/blogs/create"
+                        to="/admin/product-types/create"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />
@@ -144,4 +147,4 @@ const BlogManagementPage: React.FC = () => {
     );
 };
 
-export default BlogManagementPage;
+export default ProductTypeManagementPage;

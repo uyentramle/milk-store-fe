@@ -73,7 +73,7 @@ export default function MySider() {
         .set('6', '/admin/vouchers')
         .set('7', '/admin/blogs')
         .set('8', '/admin/blog-categories')
-        .set('9', '/admin/product-categories');
+        .set('9', '/admin/product-types');
     return (
         <>
             <Sider
@@ -90,7 +90,7 @@ export default function MySider() {
                 width={256}
             >
                 <div className="demo-logo-vertical border-r-[1px] border-gray-200 pl-2 my-2">
-                    <img src={img} alt="Logo" className="h-16 w-16" />
+                    <a href='/'><img src={img} alt="Logo" className="h-16 w-16" /></a>
                 </div>
                 <Menu
                     defaultSelectedKeys={['1']}

@@ -1,8 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Button, Upload, Form, Switch } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { Input, Button, Form, Switch } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -10,16 +8,14 @@ interface FormData {
     name: string;
     origin: string;
     description: string;
-    image: RcFile | null;
     active: boolean;
 }
 
-const CreateBrandPage: React.FC = () => {
+const CreateProductTypePage: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         origin: '',
         description: '',
-        image: null,
         active: false,
     });
 
@@ -38,14 +34,6 @@ const CreateBrandPage: React.FC = () => {
         }));
     };
 
-    const handleFileChange = (info: UploadChangeParam) => {
-        const { file } = info;
-        setFormData((prevState) => ({
-            ...prevState,
-            image: file as RcFile,
-        }));
-    };
-
     const handleContentChange = (value: string) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -59,7 +47,7 @@ const CreateBrandPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Thêm thương hiệu</h1>
+            <h1 className="mb-6 text-3xl font-bold">Thêm danh mục sản phẩm</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
@@ -68,51 +56,19 @@ const CreateBrandPage: React.FC = () => {
                 <div className="w-full px-4">
                     <div className="mb-4 w-1/2">
                         <Form.Item
-                            label="Tên thương hiệu"
+                            label="Tên danh mục sản phẩm"
                             name="name"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên thương hiệu' }]}
+                            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục sản phẩm' }]}
                         >
                             <Input
                                 id="name"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </Form.Item>
                     </div>
 
-                    <div className="mb-4 w-1/2">
-                        <Form.Item
-                            label="Nguồn gốc"
-                            name="origin"
-                            rules={[{ required: true, message: 'Vui lòng nhập nguồn gốc' }]}
-                        >
-                            <Input
-                                id="origin"
-                                name="origin"
-                                value={formData.origin}
-                                onChange={handleChange}
-                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </Form.Item>
-                    </div>
-
-                    {/* <div className="mb-4">
-                        <Form.Item
-                            label="Mô tả"
-                            name="description"
-                            rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
-                        >
-                            <Input.TextArea
-                                id="description"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </Form.Item>
-                    </div> */}
                     <div className="mb-4 pb-4">
                         <Form.Item
                             label="Mô tả"
@@ -123,24 +79,6 @@ const CreateBrandPage: React.FC = () => {
                                 onChange={handleContentChange}
                                 className="h-60 mb-4"
                             />
-                        </Form.Item>
-                    </div>
-
-                    <div className="mb-4">
-                        <Form.Item
-                            label="Hình ảnh"
-                            name="image"
-                            valuePropName="file"
-                            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                        >
-                            <Upload
-                                name="image"
-                                listType="picture"
-                                beforeUpload={() => false}
-                                onChange={handleFileChange}
-                            >
-                                <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-                            </Upload>
                         </Form.Item>
                     </div>
 
@@ -165,7 +103,7 @@ const CreateBrandPage: React.FC = () => {
                         >
                             Thêm mới
                         </Button>
-                        <Link to="/admin/brands">
+                        <Link to="/admin/product-types">
                             <Button
                                 type="default"
                             >
@@ -179,4 +117,4 @@ const CreateBrandPage: React.FC = () => {
     );
 };
 
-export default CreateBrandPage;
+export default CreateProductTypePage;

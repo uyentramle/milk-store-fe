@@ -29,6 +29,8 @@ import CreateVoucherPage from '../pages/admin/Voucher/CreateVoucherPage';
 import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
 import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
 import CategoryBlogManagementPage from '../pages/admin/CategoryBlogManagement/CategoryBlogManagementPage';
+import ProductTypeManagementPage from '../pages/admin/ProductTypeManagement/ProductTypeManagementPage';
+import CreateProductTypePage from '../pages/admin/ProductTypeManagement/CreateProductTypePage';
 
 import UserProfilePage from '../pages/client/User/UserProfilePage';
 import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
@@ -83,6 +85,8 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/blog-categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
