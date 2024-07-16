@@ -4,6 +4,9 @@ import {
     ProductOutlined,
     TruckOutlined,
     BuildOutlined,
+    FormOutlined,
+    SnippetsOutlined,
+    DatabaseOutlined,
 } from '@ant-design/icons';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
@@ -52,9 +55,12 @@ export default function MySider() {
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
             getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
             getItem('Quản lý sản phẩm', '3', <ProductOutlined />),
+            getItem('Quản lý danh mục sản phẩm', '9', <DatabaseOutlined />),
             getItem('Quản lý đơn hàng', '4', <TruckOutlined />),
             getItem('Quản lý thương hiệu', '5', <BuildOutlined />),
-            getItem('Quản lý voucher', '5', <GiftOutlined />),
+            getItem('Quản lý voucher', '6', <GiftOutlined />),
+            getItem('Quản lý bài viết', '7', <FormOutlined />),
+            getItem('Quản lý danh mục bài viết', '8', <SnippetsOutlined />),
         ];
     };
     const navUrl = new Map<string, string>();
@@ -63,7 +69,11 @@ export default function MySider() {
         .set('2', '/admin/accounts')
         .set('3', '/admin/products')
         .set('4', '/admin/orders')
-        .set('5', '/admin/vouchers');
+        .set('5', '/admin/brands')
+        .set('6', '/admin/vouchers')
+        .set('7', '/admin/blogs')
+        .set('8', '/admin/categories')
+        .set('9', '/admin/product-types');
     return (
         <>
             <Sider
@@ -80,7 +90,7 @@ export default function MySider() {
                 width={256}
             >
                 <div className="demo-logo-vertical border-r-[1px] border-gray-200 pl-2 my-2">
-                    <img src={img} alt="Logo" className="h-16 w-16" />
+                    <a href='/'><img src={img} alt="Logo" className="h-16 w-16" /></a>
                 </div>
                 <Menu
                     defaultSelectedKeys={['1']}

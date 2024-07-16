@@ -22,6 +22,16 @@ import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
+import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
+import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
+import VoucherManagementPage from '../pages/admin/Voucher/VoucherManagementPage';
+import CreateVoucherPage from '../pages/admin/Voucher/CreateVoucherPage';
+import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
+import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
+import CategoryBlogManagementPage from '../pages/admin/CategoryManagement/CategoryManagementPage';
+import CreateCategoryBlogPage from '../pages/admin/CategoryManagement/CreateCategoryPage';
+import ProductTypeManagementPage from '../pages/admin/ProductTypeManagement/ProductTypeManagementPage';
+import CreateProductTypePage from '../pages/admin/ProductTypeManagement/CreateProductTypePage';
 
 import UserProfilePage from '../pages/client/User/UserProfilePage';
 import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
@@ -69,6 +79,16 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
