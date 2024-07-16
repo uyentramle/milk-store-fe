@@ -1,52 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Image, Select } from 'antd';
+import { Button, Input, Table, Select, } from 'antd';
 import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 
-interface Brand {
+interface CategoryBlog {
     id: number;
     name: string;
-    origin: string;
     description: string;
-    image: string;
-    active: boolean;
+    status: boolean;
 }
 
-const BrandManagementPage: React.FC = () => {
-    const [brands, setBrands] = useState<Brand[]>([]);
+const CategoryBlogManagementPage: React.FC = () => {
+    const [categoryBlogs, setCategoryBlogs] = useState<CategoryBlog[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
 
     useEffect(() => {
-        const fetchedBrands: Brand[] = [
+        const fetchedCategoryBlogs: CategoryBlog[] = [
             {
                 id: 1,
-                name: 'Vinamilk',
-                origin: 'Việt Nam',
-                description: 'Fresh organic whole milk from local farms.',
-                image: 'https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png',
-                active: true,
+                name: 'Sữa Việt',
+                description: 'Sữa tươi từ các trang trại địa phương.',
+                status: true,
             },
             {
                 id: 2,
-                name: 'TH True Milk',
-                origin: 'Việt Nam',
-                description: 'Fresh organic whole milk from local farms.',
-                image: 'https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png',
-                active: true,
+                name: 'Vitamin',
+                description: 'Vitamin tự nhiên từ rau củ.',
+                status: true,
+            },
+            {
+                id: 3,
+                name: 'Trẻ em',
+                description: '',
+                status: true,
+            },
+            {
+                id: 4,
+                name: 'Mẹ bầu',
+                description: '',
+                status: true,
             },
         ];
-        setBrands(fetchedBrands);
+        setCategoryBlogs(fetchedCategoryBlogs);
     }, []);
 
-    const filteredBrands = brands.filter((brand) => {
-        const matchesSearch = `${brand.name} ${brand.origin} ${brand.description}`
+    const filteredBlogs = categoryBlogs.filter((b) => {
+        const matchesSearch = `${b.name}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         const matchesStatus =
-            filterStatus === 'All' || (filterStatus === 'Active' && brand.active) || (filterStatus === 'Inactive' && !brand.active);
+            filterStatus === 'All' || (filterStatus === 'Active' && b.status) || (filterStatus === 'Inactive' && !b.status);
         return matchesSearch && matchesStatus;
     });
 
@@ -58,21 +64,10 @@ const BrandManagementPage: React.FC = () => {
             render: (_text: any, _record: any, index: number) => index + 1,
         },
         {
-            title: 'Tên',
+            title: 'Tiêu đề',
             dataIndex: 'name',
             key: 'name',
             render: (text: string) => <span className="font-semibold text-pink-500">{text}</span>,
-        },
-        {
-            title: 'Hình ảnh',
-            dataIndex: 'image',
-            key: 'image',
-            render: (text: string) => <Image src={text} alt="brand" width={64} height={64} />,
-        },
-        {
-            title: 'Nguồn gốc',
-            dataIndex: 'origin',
-            key: 'origin',
         },
         {
             title: 'Mô tả',
@@ -81,14 +76,14 @@ const BrandManagementPage: React.FC = () => {
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'active',
-            key: 'active',
+            dataIndex: 'status',
+            key: 'status',
             render: (text: boolean) => (text ? 'Active' : 'Inactive'),
         },
         {
             title: 'Cập nhật',
             key: 'update',
-            render: (_text: any, _record: any) => (
+            render: (_text: any, _record: CategoryBlog) => (
                 <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
                     Edit
                 </Button>
@@ -97,7 +92,7 @@ const BrandManagementPage: React.FC = () => {
         {
             title: 'Xóa',
             key: 'delete',
-            render: (_text: any, _record: any) => (
+            render: (_text: any, _record: CategoryBlog) => (
                 <Button type="primary" danger icon={<DeleteOutlined />} className="bg-red-500">
                     Delete
                 </Button>
@@ -107,7 +102,7 @@ const BrandManagementPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý thương hiệu</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý Bài viết</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
@@ -136,7 +131,7 @@ const BrandManagementPage: React.FC = () => {
                 </div>
                 <div>
                     <Link
-                        to="/admin/brands/create"
+                        to="/admin/blogs/create"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />
@@ -146,10 +141,10 @@ const BrandManagementPage: React.FC = () => {
             </div>
 
             <div className="overflow-x-auto">
-                <Table columns={columns} dataSource={filteredBrands} rowKey="id" />
+                <Table columns={columns} dataSource={filteredBlogs} rowKey="id" />
             </div>
         </div>
     );
 };
 
-export default BrandManagementPage;
+export default CategoryBlogManagementPage;
