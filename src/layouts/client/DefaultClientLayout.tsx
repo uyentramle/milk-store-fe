@@ -4,7 +4,7 @@ import Header from '../client/Components/Header/Header';
 
 const DefaultClientLayout = ({ children }: DefaultLayoutProps) => {
     return (
-        <div>
+        <div className='overflow-x-hidden'>
             <Header />
             <div className="main-content">
                 {children}
