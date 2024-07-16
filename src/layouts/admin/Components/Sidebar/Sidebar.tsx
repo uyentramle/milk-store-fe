@@ -4,6 +4,9 @@ import {
     ProductOutlined,
     TruckOutlined,
     BuildOutlined,
+    FormOutlined,
+    SnippetsOutlined,
+    DatabaseOutlined,
 } from '@ant-design/icons';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
@@ -52,9 +55,12 @@ export default function MySider() {
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
             getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
             getItem('Quản lý sản phẩm', '3', <ProductOutlined />),
+            getItem('Quản lý danh mục sản phẩm', '9', <DatabaseOutlined />),
             getItem('Quản lý đơn hàng', '4', <TruckOutlined />),
             getItem('Quản lý thương hiệu', '5', <BuildOutlined />),
             getItem('Quản lý voucher', '6', <GiftOutlined />),
+            getItem('Quản lý bài viết', '7', <FormOutlined />),
+            getItem('Quản lý danh mục bài viết', '8', <SnippetsOutlined />),
         ];
     };
     const navUrl = new Map<string, string>();
@@ -64,7 +70,10 @@ export default function MySider() {
         .set('3', '/admin/products')
         .set('4', '/admin/orders')
         .set('5', '/admin/brands')
-        .set('6', '/admin/vouchers');
+        .set('6', '/admin/vouchers')
+        .set('7', '/admin/blogs')
+        .set('8', '/admin/blog-categories')
+        .set('9', '/admin/product-categories');
     return (
         <>
             <Sider
