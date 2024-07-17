@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Select, } from 'antd';
+import { Button, Input, Table, Select, Spin, } from 'antd';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const { Option } = Select;
 
@@ -23,37 +24,60 @@ const VoucherManagementPage: React.FC = () => {
     const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Expired' | 'Used' | 'All'>('All');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchedVouchers: Voucher[] = [
-            {
-                id: 1,
-                code: 'Happy10DayVN',
-                description: 'Giảm 10% cho đơn hàng từ 100.000đ với 100 khách hàng đầu tiên.',
-                discount_type: 'Percentage',
-                discount_value: 10,
-                start_date: new Date(),
-                end_date: new Date(),
-                usage_limit: 100,
-                used_count: 0,
-                minimum_order_value: 100000,
-                status: 'Active',
-            },
-            {
-                id: 2,
-                code: 'Happy20DayVN',
-                description: 'Giảm 20.000đ cho đơn hàng từ 200.000đ với 100 khách hàng đầu tiên.',
-                discount_type: 'FixedAmount',
-                discount_value: 20000,
-                start_date: new Date(),
-                end_date: new Date(),
-                usage_limit: 100,
-                used_count: 0,
-                minimum_order_value: 200000,
-                status: 'Active',
-            },
-        ];
-        setVouchers(fetchedVouchers);
+        // const fetchedVouchers: Voucher[] = [
+        //     {
+        //         id: 1,
+        //         code: 'Happy10DayVN',
+        //         description: 'Giảm 10% cho đơn hàng từ 100.000đ với 100 khách hàng đầu tiên.',
+        //         discount_type: 'Percentage',
+        //         discount_value: 10,
+        //         start_date: new Date(),
+        //         end_date: new Date(),
+        //         usage_limit: 100,
+        //         used_count: 0,
+        //         minimum_order_value: 100000,
+        //         status: 'Active',
+        //     },
+        //     {
+        //         id: 2,
+        //         code: 'Happy20DayVN',
+        //         description: 'Giảm 20.000đ cho đơn hàng từ 200.000đ với 100 khách hàng đầu tiên.',
+        //         discount_type: 'FixedAmount',
+        //         discount_value: 20000,
+        //         start_date: new Date(),
+        //         end_date: new Date(),
+        //         usage_limit: 100,
+        //         used_count: 0,
+        //         minimum_order_value: 200000,
+        //         status: 'Active',
+        //     },
+        // ];
+        // setVouchers(fetchedVouchers);
+
+        const fetchVouchers = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get('https://localhost:7251/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
+                    headers: {
+                        'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458'
+                    }
+                });
+                const fetchedVouchers = response.data.data.items;
+                setVouchers(fetchedVouchers);
+            } catch (error) {
+                console.error('Error fetching vouchers:', error);
+                setError('Failed to fetch vouchers.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVouchers();
     }, []);
 
     const filteredVouchers = vouchers.filter((v) => {
@@ -145,13 +169,23 @@ const VoucherManagementPage: React.FC = () => {
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />
-                        New
+                        Thêm mới
                     </Link>
                 </div>
             </div>
 
             <div className="overflow-x-auto">
-                <Table columns={columns} dataSource={filteredVouchers} rowKey="id" />
+                {loading ? (
+                    <div className="flex justify-center items-center">
+                        <Spin size="large" />
+                    </div>
+                ) : error ? (
+                    <div className="flex justify-center items-center">
+                        <span className="text-red-500">{error}</span>
+                    </div>
+                ) : (
+                    <Table columns={columns} dataSource={filteredVouchers} rowKey="id" />
+                )}
             </div>
         </div>
     );
