@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Select, Spin, } from 'antd';
-import { Link } from 'react-router-dom';
+import { Button, Input, Table, Select, Spin, Modal, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -27,51 +27,23 @@ const VoucherManagementPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        // const fetchedVouchers: Voucher[] = [
-        //     {
-        //         id: 1,
-        //         code: 'Happy10DayVN',
-        //         description: 'Giảm 10% cho đơn hàng từ 100.000đ với 100 khách hàng đầu tiên.',
-        //         discount_type: 'Percentage',
-        //         discount_value: 10,
-        //         start_date: new Date(),
-        //         end_date: new Date(),
-        //         usage_limit: 100,
-        //         used_count: 0,
-        //         minimum_order_value: 100000,
-        //         status: 'Active',
-        //     },
-        //     {
-        //         id: 2,
-        //         code: 'Happy20DayVN',
-        //         description: 'Giảm 20.000đ cho đơn hàng từ 200.000đ với 100 khách hàng đầu tiên.',
-        //         discount_type: 'FixedAmount',
-        //         discount_value: 20000,
-        //         start_date: new Date(),
-        //         end_date: new Date(),
-        //         usage_limit: 100,
-        //         used_count: 0,
-        //         minimum_order_value: 200000,
-        //         status: 'Active',
-        //     },
-        // ];
-        // setVouchers(fetchedVouchers);
+    const navigate = useNavigate();
 
+    useEffect(() => {
         const fetchVouchers = async () => {
             setLoading(true);
             setError(null);
             try {
                 const response = await axios.get('https://localhost:7251/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
                     headers: {
-                        'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458'
+                        'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
                     }
                 });
                 const fetchedVouchers = response.data.data.items;
                 setVouchers(fetchedVouchers);
             } catch (error) {
-                console.error('Error fetching vouchers:', error);
-                setError('Failed to fetch vouchers.');
+                console.error('Lỗi tìm nạp vouchers:', error);
+                setError('Không thể lấy vouchers.');
             } finally {
                 setLoading(false);
             }
@@ -79,6 +51,33 @@ const VoucherManagementPage: React.FC = () => {
 
         fetchVouchers();
     }, []);
+
+    const handleDelete = async (id: number) => {
+        Modal.confirm({
+            title: 'Bạn có chắc muốn xóa voucher này không?',
+            okText: 'Có',
+            okType: 'danger',
+            cancelText: 'Không',
+            onOk: async () => {
+                try {
+                    await axios.delete(`https://localhost:7251/api/Voucher/DeleteVoucher?id=${id}`, {
+                        headers: {
+                            'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
+                        }
+                    });
+                    setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
+                    message.success('Voucher đã xóa thành công.');
+                } catch (error) {
+                    console.error('Lỗi xóa voucher:', error);
+                    message.error('Không thể xóa voucher.');
+                }
+            },
+        });
+    };
+
+    const handleEdit = (id: number) => {
+        navigate(`/admin/vouchers/update/${id}`);
+    };
 
     const filteredVouchers = vouchers.filter((v) => {
         const matchesSearch = `${v.code} ${v.description}`
@@ -117,8 +116,13 @@ const VoucherManagementPage: React.FC = () => {
             title: 'Cập nhật',
             key: 'update',
             render: (_text: any, _record: Voucher) => (
-                <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
-                    Edit
+                <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    className="bg-blue-500"
+                    onClick={() => handleEdit(_record.id)}
+                >
+                    Cập nhật
                 </Button>
             ),
         },
@@ -126,8 +130,14 @@ const VoucherManagementPage: React.FC = () => {
             title: 'Xóa',
             key: 'delete',
             render: (_text: any, _record: Voucher) => (
-                <Button type="primary" danger icon={<DeleteOutlined />} className="bg-red-500">
-                    Delete
+                <Button
+                    type="primary"
+                    danger
+                    icon={<DeleteOutlined />}
+                    className="bg-red-500"
+                    onClick={() => handleDelete(_record.id)}
+                >
+                    Xóa
                 </Button>
             ),
         },

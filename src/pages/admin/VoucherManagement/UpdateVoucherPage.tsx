@@ -1,11 +1,12 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Input, Button, Form, DatePicker, Select, message } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
 
 interface FormData {
+    id: number;
     code: string;
     description: string;
     discount_type: 'Percentage' | 'FixedAmount';
@@ -13,13 +14,13 @@ interface FormData {
     start_date?: Date;
     end_date?: Date;
     usage_limit?: number;
-    used_count?: number;
     minimum_order_amount: number;
     status: 'Active' | 'Disabled';
 }
 
-const CreateVoucherPage: React.FC = () => {
+const UpdateVoucherPage: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
+        id: 0,
         code: '',
         description: '',
         discount_type: 'Percentage',
@@ -27,12 +28,42 @@ const CreateVoucherPage: React.FC = () => {
         start_date: undefined,
         end_date: undefined,
         usage_limit: undefined,
-        used_count: undefined,
         minimum_order_amount: 0,
         status: 'Active',
     });
 
+    const { id } = useParams<{ id: string }>(); 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchVoucher = async () => {
+            try {
+                const response = await axios.get(`https://localhost:7251/api/Voucher/GetVoucherById?id=${id}`, {
+                    headers: {
+                        'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', // Replace with actual token
+                    },
+                });
+                const voucherData = response.data;
+                setFormData({
+                    id: voucherData.id,
+                    code: voucherData.code,
+                    description: voucherData.description,
+                    discount_type: voucherData.discount_type,
+                    discount_value: voucherData.discount_value,
+                    start_date: new Date(voucherData.start_date),
+                    end_date: new Date(voucherData.end_date),
+                    usage_limit: voucherData.usage_limit,
+                    minimum_order_amount: voucherData.minimum_order_amount,
+                    status: voucherData.status,
+                });
+            } catch (error) {
+                console.error('Lỗi tìm nạp voucher:', error);
+                message.error('Không thể tìm nạp voucher.');
+            }
+        };
+
+        fetchVoucher();
+    }, [id]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target as HTMLInputElement;
@@ -57,8 +88,8 @@ const CreateVoucherPage: React.FC = () => {
     };
 
     const handleSubmit = async (values: FormData) => {
-
         const requestBody = {
+            id: values.id,
             code: values.code,
             description: values.description,
             discountType: values.discount_type,
@@ -71,27 +102,27 @@ const CreateVoucherPage: React.FC = () => {
         };
 
         try {
-            const response = await axios.post('https://localhost:7251/api/Voucher/CreateVoucher', requestBody, {
+            const response = await axios.put('https://localhost:7251/api/Voucher/UpdateVoucher', requestBody, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', // This should be replaced with the actual token
+                    'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', // Replace with actual token
                 },
             });
             if (response.data.success) {
-                message.success('Voucher được tạo thành công.');
+                message.success('Voucher được cập nhật thành công.');
                 navigate('/admin/vouchers');
             } else {
-                message.error('Không tạo được voucher.');
+                message.error('Không thể cập nhật voucher.');
             }
         } catch (error) {
-            console.error('Lỗi tạo voucher:', error);
-            message.error('Đã xảy ra lỗi khi tạo voucher.');
+            console.error('Lỗi cập nhật voucher:', error);
+            message.error('Không thể cập nhật voucher.');
         }
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Thêm Voucher mới</h1>
+            <h1 className="mb-6 text-3xl font-bold">Cập nhật Voucher</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
@@ -205,21 +236,6 @@ const CreateVoucherPage: React.FC = () => {
                         </Form.Item>
                     </div>
 
-                    {/* <div className="mb-4">
-                        <Form.Item
-                            label="Số lần đã sử dụng"
-                            name="used_count"
-                        >
-                            <Input
-                                id="used_count"
-                                name="used_count"
-                                type="number"
-                                value={formData.used_count}
-                                onChange={handleChange}
-                            />
-                        </Form.Item>
-                    </div> */}
-
                     <div className="mb-4">
                         <Form.Item
                             label="Giá trị đơn hàng tối thiểu"
@@ -257,7 +273,7 @@ const CreateVoucherPage: React.FC = () => {
                             type="primary"
                             htmlType="submit"
                         >
-                            Thêm mới
+                            Cập nhật
                         </Button>
                         <Link to="/admin/vouchers">
                             <Button
@@ -273,4 +289,4 @@ const CreateVoucherPage: React.FC = () => {
     );
 };
 
-export default CreateVoucherPage;
+export default UpdateVoucherPage;

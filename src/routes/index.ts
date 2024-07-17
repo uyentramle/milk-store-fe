@@ -26,6 +26,7 @@ import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementP
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
 import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
 import CreateVoucherPage from '../pages/admin/VoucherManagement/CreateVoucherPage';
+import UpdateVoucherPage from '../pages/admin/VoucherManagement/UpdateVoucherPage';
 import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
 import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
 import CategoryBlogManagementPage from '../pages/admin/CategoryManagement/CategoryManagementPage';
@@ -83,6 +84,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
