@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Image, Select } from 'antd';
+import { Button, Input, Table, Image, Select, Spin, } from 'antd';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const { Option } = Select;
 
@@ -10,7 +11,7 @@ interface Brand {
     name: string;
     origin: string;
     description: string;
-    image: string;
+    image: string | null;
     active: boolean;
 }
 
@@ -18,27 +19,35 @@ const BrandManagementPage: React.FC = () => {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const defaultImageUrl = 'https://via.placeholder.com/64';
 
     useEffect(() => {
-        const fetchedBrands: Brand[] = [
-            {
-                id: 1,
-                name: 'Vinamilk',
-                origin: 'Việt Nam',
-                description: 'Fresh organic whole milk from local farms.',
-                image: 'https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png',
-                active: true,
-            },
-            {
-                id: 2,
-                name: 'TH True Milk',
-                origin: 'Việt Nam',
-                description: 'Fresh organic whole milk from local farms.',
-                image: 'https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png',
-                active: true,
-            },
-        ];
-        setBrands(fetchedBrands);
+        const fetchBrands = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get('https://localhost:7251/api/Brand/GetBrands?pageIndex=0&pageSize=10');
+                const fetchedBrands = response.data.data.items.map((brand: any) => ({
+                    id: brand.id,
+                    name: brand.name,
+                    origin: brand.brandOrigin,
+                    description: brand.description,
+                    image: brand.imageUrl,
+                    active: brand.active,
+                }));
+                setBrands(fetchedBrands);
+            } catch (error) {
+                console.error('Error fetching brands:', error);
+                setError('Failed to fetch brands.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBrands();
     }, []);
 
     const filteredBrands = brands.filter((brand) => {
@@ -67,7 +76,14 @@ const BrandManagementPage: React.FC = () => {
             title: 'Hình ảnh',
             dataIndex: 'image',
             key: 'image',
-            render: (text: string) => <Image src={text} alt="brand" width={64} height={64} />,
+            render: (text: string | null) => (
+                <Image
+                    src={text || defaultImageUrl}
+                    alt="brand"
+                    width={64}
+                    fallback={defaultImageUrl}
+                />
+            ),
         },
         {
             title: 'Nguồn gốc',
@@ -140,13 +156,23 @@ const BrandManagementPage: React.FC = () => {
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />
-                        New
+                        Thêm mới
                     </Link>
                 </div>
             </div>
 
             <div className="overflow-x-auto">
-                <Table columns={columns} dataSource={filteredBrands} rowKey="id" />
+                {loading ? (
+                    <div className="flex justify-center items-center">
+                        <Spin size="large" />
+                    </div>
+                ) : error ? (
+                    <div className="flex justify-center items-center">
+                        <span className="text-red-500">{error}</span>
+                    </div>
+                ) : (
+                    <Table columns={columns} dataSource={filteredBrands} rowKey="id" />
+                )}
             </div>
         </div>
     );
