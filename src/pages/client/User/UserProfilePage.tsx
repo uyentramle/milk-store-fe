@@ -73,7 +73,7 @@ const updateProfile = async (userId: string, firstName: string, lastName: string
         }, {
             headers: {
                 'accept': '*/*',
-                'Content-Type': 'application/json',
+                'content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
             }
         });
@@ -101,14 +101,15 @@ const UserProfilePage: React.FC = () => {
     const navigate = useNavigate();
 
     const navigateToSignInPage = () => {
-    navigate('/sign-in');
-  };
+        navigate('/sign-in');
+    };
 
     const handleLogout = () => {
         // Clear local items
         localStorage.removeItem('accessToken');
         // Redirect to sign-in page
-navigateToSignInPage();    };
+        navigateToSignInPage();
+    };
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -124,7 +125,7 @@ navigateToSignInPage();    };
         const fetchData = async () => {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
-navigateToSignInPage();                return;
+                navigateToSignInPage(); return;
             }
 
             try {
@@ -216,10 +217,9 @@ navigateToSignInPage();                return;
         }
     };
 
-
     if (!userData) {
-navigateToSignInPage();        
-return (
+        navigateToSignInPage();
+        return (
             <div className="container mx-auto w-4/5 p-4 pt-10">
                 <div className="flex flex-col gap-10 lg:flex-row">
                     <div>Loading...</div>
@@ -357,32 +357,32 @@ return (
                                                 </button>
                                             </div>
                                         </div>
-                                            <div className="">
-                                                <label className="block text-sm font-medium text-gray-700">Giới tính</label>
-                                                <select
-                                                    className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
-                                                    name="gender"
-                                                    value={userData.gender}
-                                                    onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
-                                                >
-                                                    <option value="Male">Nam</option>
-                                                    <option value="Female">Nữ</option>
-                                                    <option value="Unknown">Chưa xác định</option>
-                                                </select>
-                                            </div>
+                                        <div className="">
+                                            <label className="block text-sm font-medium text-gray-700">Giới tính</label>
+                                            <select
+                                                className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
+                                                name="gender"
+                                                value={userData.gender}
+                                                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                            >
+                                                <option value="Male">Nam</option>
+                                                <option value="Female">Nữ</option>
+                                                <option value="Unknown">Chưa xác định</option>
+                                            </select>
+                                        </div>
                                     </form>
                                     <div>
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                    Email
-                                                </label>
-                                                <input
-                                                    className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
-                                                    type="email"
-                                                    name="email"
-                                                    value={userData.email}
-                                                    readOnly
-                                                />
-                                            </div>                
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Email
+                                        </label>
+                                        <input
+                                            className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
+                                            type="email"
+                                            name="email"
+                                            value={userData.email}
+                                            readOnly
+                                        />
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">
                                             Số điện thoại
@@ -407,7 +407,6 @@ return (
                                             readOnly
                                         />
                                     </div>
-
                                 </div>
                             </div>
                         </div>
