@@ -49,19 +49,19 @@ const SignUpPage: React.FC = () => {
   // };
 
   const [countdown, setCountdown] = useState(60);
-    const [canResend, setCanResend] = useState(false);
+  const [canResend, setCanResend] = useState(false);
 
-    useEffect(() => {
-        if (countdown > 0) {
-            const timer = setTimeout(() => {
-                setCountdown(countdown - 1);
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-        else {
-          setCanResend(true); // Khi hết thời gian đếm ngược, cho phép gửi lại
-        }
-    }, [countdown]);
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+    else {
+      setCanResend(true); // Khi hết thời gian đếm ngược, cho phép gửi lại
+    }
+  }, [countdown]);
 
   const sendVerificationCode = async (phoneNumberOrEmail: any) => {
     try {
@@ -336,13 +336,13 @@ const SignUpPage: React.FC = () => {
                 />
               </Form.Item>
               <Button type="text"
-              className={`border border-gray-300 text-gray-500`}
+                className={`border border-gray-300 text-gray-500`}
 
-               style={{ display: 'inline-block', width: 'calc(32% - 2px)' }} 
-               onClick={handleResendVerificationCode}
-               disabled={!canResend}>
-        {canResend ? <><CheckOutlined /> Gửi lại </> : <><LoadingOutlined /> Gửi lại ({countdown}s)</>}
-        </Button>
+                style={{ display: 'inline-block', width: 'calc(32% - 2px)' }}
+                onClick={handleResendVerificationCode}
+                disabled={!canResend}>
+                {canResend ? <><CheckOutlined /> Gửi lại </> : <><LoadingOutlined /> Gửi lại ({countdown}s)</>}
+              </Button>
               <Form.Item
               // style={{ display: 'inline-block', width: 'calc(15% - 2px)' }}
               >
