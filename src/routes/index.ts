@@ -60,7 +60,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
-    { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
 
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
