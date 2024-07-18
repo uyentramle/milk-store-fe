@@ -51,18 +51,16 @@ interface UserAddressModalProps {
     isOpen: boolean;
     onClose: () => void;
     address?: UserAddress;
-    // onUpdateSuccess?: () => void; // Optional callback for update success
-    onAdd?: (address: UserAddress) => void;
 }
 
-const fetchData = async (setUserAddresses: React.Dispatch<React.SetStateAction<any>>) => {
-    try {
-        const userAddressData = await getUserAddress();
-        setUserAddresses(userAddressData);
-    } catch (error) {
-        console.error('Error fetching user address:', error);
-    }
-};
+// const fetchData = async (setUserAddresses: React.Dispatch<React.SetStateAction<any>>) => {
+//     try {
+//         const userAddressData = await getUserAddress();
+//         setUserAddresses(userAddressData);
+//     } catch (error) {
+//         console.error('Error fetching user address:', error);
+//     }
+// };
 
 const getUserAddress = async (): Promise<any> => {
     const accessToken = localStorage.getItem('accessToken');
@@ -137,22 +135,27 @@ const UserAddressPage: React.FC = () => {
     // };
 
     useEffect(() => {
-        // const fetchData = async () => {
-        //     // const accessToken = localStorage.getItem('accessToken');
-        //     // if (!accessToken) {
-        //     //     navigateToSignInPage(); return;
-        //     // }
+        const fetchData = async () => {
+            // const accessToken = localStorage.getItem('accessToken');
+            // if (!accessToken) {
+            //     navigateToSignInPage(); return;
+            // }
 
-        //     try {
-        //         const userAddressData = await getUserAddress();
-        //         setUserAddresses(userAddressData);
-        //     } catch (error) {
-        //         console.error('Error fetching user address:', error);
-        //         // Xử lý lỗi khi cần thiết
-        //     }
-        // };
+            try {
+                const userAddressData = await getUserAddress();
+                setUserAddresses(userAddressData);
+            } catch (error) {
+                console.error('Error fetching user address:', error);
+                // Xử lý lỗi khi cần thiết
+            }
+        };
 
-        fetchData(setUserAddresses);
+        // fetchData(setUserAddresses);
+
+        const interval = setInterval(fetchData, 0); // Cập nhật mỗi 1 giây
+
+        return () => clearInterval(interval);
+
     }, []);
 
 
@@ -173,16 +176,6 @@ const UserAddressPage: React.FC = () => {
         setIsEditModalOpen(false);
         setSelectedAddress(null); // Clear selected address
     };
-
-    const handleAddAddress = (newAddress: any) => {
-        setUserAddresses([...userAddresses, newAddress]);
-
-        fetchData(setUserAddresses);
-    };
-
-    // const handleAddAddress = (newAddress: UserAddress) => {
-    //     setUserAddresses((prevAddresses: UserAddress[]) => [...prevAddresses, newAddress]);
-    // };
 
     const handleDeleteAddress = async (addressId: number) => {
         try {
@@ -337,9 +330,9 @@ const UserAddressPage: React.FC = () => {
             { }
             {/* <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} /> */}
             {/* <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} /> */}
-            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} onAdd={handleAddAddress} />
+            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress}/>
 
-            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} onAdd={handleAddAddress} />
+            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal}/>
             {/* {selectedAddress && (
                 <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
             )} */}
@@ -351,7 +344,7 @@ export default UserAddressPage;
 
 // Add and Edit Address Modal
 // const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
-const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserAddress) => void }> = ({ isOpen, onClose, onAdd }) => {
+const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
     // State for controlling the modal animation
     const [modalClass, setModalClass] = useState('');
     const [form] = Form.useForm();
@@ -450,11 +443,13 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                 }
             });
 
-            message.success('Thêm địa chỉ thành công');
+            if (response.data.success) {
+                message.success('Thêm địa chỉ thành công');
+                onClose();
+            }
 
-            onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
+            // onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
             // window.location.reload(); // Reload trang sau khi thêm thành công
-            onClose();
         } catch (error) {
             console.error('Error adding address:', error);
             message.error('Thêm địa chỉ thất bại');
@@ -478,6 +473,8 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
             visible={isOpen}
             onCancel={onClose}
             footer={null}
+            width={540}
+            style={{ textAlign: 'center' }}
             className={modalClass}
         >
             <Form
@@ -489,6 +486,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Họ và tên"
                     name="fullName"
                     rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -496,7 +494,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Số điện thoại"
                     name="phoneNumber"
                     rules={[
-                        { required: true, message: 'Vui lòng nhập số điện thoại' },
+                        // { required: true, message: 'Vui lòng nhập số điện thoại' },
                         // { type: 'string', pattern: new RegExp(/^[0-9]+$/), message: 'Số điện thoại chưa hợp lệ' },
                         {
 
@@ -512,6 +510,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                             },
                         },
                     ]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -519,6 +518,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Địa chỉ"
                     name="addressLine"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -544,7 +544,6 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     <Input />
                 </Form.Item> */}
                 <Form.Item>
-
                     <AddressForm
                         selectedCity={selectedCity}
                         selectedDistrict={selectedDistrict}
@@ -554,6 +553,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                 <Form.Item
                     name="isDefault"
                     valuePropName="checked"
+                    style={{ textAlign: 'left' }}
                 >
                     <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
                 </Form.Item>
@@ -568,7 +568,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
     );
 };
 
-const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserAddress) => void }> = ({ isOpen, onClose, address, onAdd }) => {
+const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose, address }) => {
     const [form] = Form.useForm();
     const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined);
     const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(undefined);
@@ -609,13 +609,15 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                 }
             });
 
-            message.success('Cập nhật địa chỉ thành công');
+            if (response.data.success) {
+                message.success('Cập nhật địa chỉ thành công');
+                onClose();
+            }
 
             // await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi cập nhật thành công
             // window.location.reload(); // Reload trang sau khi cập nhật thành công
-            onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
+            // onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
 
-            onClose();
         } catch (error) {
             console.error('Error updating address:', error);
             message.error('Cập nhật địa chỉ thất bại');
@@ -663,6 +665,7 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
             title="Cập nhật địa chỉ"
             visible={isOpen}
             onCancel={onClose}
+            style={{ textAlign: 'center' }}
             footer={[
                 <Button key="back" onClick={onClose}>
                     Hủy
@@ -671,12 +674,14 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                     Lưu thay đổi
                 </Button>,
             ]}
+            width={500}
         >
             <Form form={form} layout="vertical">
                 <Form.Item
                     name="fullName"
                     label="Họ và tên"
                     rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -684,13 +689,13 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                     name="phoneNumber"
                     label="Số điện thoại"
                     rules={[
-                        // { required: true, message: 'Vui lòng nhập số điện thoại hoặc email' },
+                        { required: true, message: 'Vui lòng nhập số điện thoại hoặc email' },
                         // { type: 'string', pattern: new RegExp(/^[0-9]+$/), message: 'Số điện thoại chưa hợp lệ' },
                         {
                             validator: (_, value) => {
-                                if (!value) {
-                                    return Promise.reject('Vui lòng nhập số điện thoại');
-                                }
+                                // if (!value) {
+                                //     return Promise.reject('Vui lòng nhập số điện thoại');
+                                // }
                                 const isPhone = /^0\d{9}$/.test(value) || /^\+84\s?\d{9,10}$/.test(value);
                                 if (!isPhone) {
                                     return Promise.reject('Định dạng số điện thoại không hợp lệ');
@@ -698,13 +703,15 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                                 return Promise.resolve();
                             },
                         },
-                    ]}                >
+                    ]}
+                    style={{ textAlign: 'left' }} >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     name="addressLine"
                     label="Địa chỉ"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -716,7 +723,8 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                         onDistrictChange={handleDistrictChange}
                     />
                 </Form.Item>
-                <Form.Item name="isDefault" valuePropName="checked">
+                <Form.Item name="isDefault" valuePropName="checked" style={{ textAlign: 'left' }}
+                >
                     <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
                 </Form.Item>
             </Form>

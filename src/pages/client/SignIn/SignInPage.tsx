@@ -35,7 +35,7 @@ const loginApi = async (username: string, password: string): Promise<{ success: 
         }, {
             headers: {
                 'accept': '*/*', // xem trong api yêu cầu gì thì copy vào
-                'Content-Type': 'application/json' // xem trong api yêu cầu gì thì copy vào
+                'content-Type': 'application/json' // xem trong api yêu cầu gì thì copy vào
             }
         });
 
@@ -257,7 +257,7 @@ export const CustomLoginButton = () => {
             navigate('/'); // Điều hướng đến trang chủ
         } catch (error) {
             console.error('Google Login API Error:', error);
-            alert('Đăng nhập qua Google thất bại. Vui lòng thử lại sau.');
+            message.error('Đăng nhập qua Google thất bại. Vui lòng thử lại sau.');
         }
     };
 
@@ -282,11 +282,11 @@ export const CustomFacebookLoginButton = () => {
                 await callFacebookLoginApi(response.accessToken); // Gọi hàm để gửi accessToken đến server
             } else {
                 console.error('Facebook Login failed');
-                alert('Đăng nhập qua Facebook thất bại.');
+                message.error('Đăng nhập qua Facebook thất bại.');
             }
         } catch (error) {
             console.error('Facebook Login Error:', error);
-            alert('Đăng nhập qua Facebook thất bại. Vui lòng thử lại sau.');
+            message.error('Đăng nhập qua Facebook thất bại. Vui lòng thử lại sau.');
         }
     };
 
@@ -317,7 +317,7 @@ export const CustomFacebookLoginButton = () => {
             navigate('/'); // Điều hướng đến trang chủ
         } catch (error) {
             console.error('Facebook Login API Error:', error);
-            alert('Đăng nhập qua Facebook thất bại. Vui lòng thử lại sau.');
+            message.error('Đăng nhập qua Facebook thất bại. Vui lòng thử lại sau.');
         }
     };
 
@@ -330,7 +330,7 @@ export const CustomFacebookLoginButton = () => {
             onSuccess={handleFacebookResponse}
             onFail={(error) => {
                 console.log('Login Failed!', error);
-                alert('Đăng nhập qua Facebook thất bại.');
+                message.error('Đăng nhập qua Facebook thất bại.');
             }}
             onProfileSuccess={(response) => {
                 console.log('Get Profile Success!', response);
