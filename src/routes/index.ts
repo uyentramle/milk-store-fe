@@ -40,6 +40,7 @@ import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
 import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
 import UserAddressPage from '../pages/client/User/UserAddressPage';
 import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
+import PointHistoryTransaction from '../pages/client/User/PointHistoryTransaction';
 
 import { DefaultLayoutProps } from '../types/layout.type';
 
@@ -69,7 +70,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
-
+    { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
 ];
 
 const privateRoutes: RouteProps[] = [];
@@ -86,7 +87,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
-    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:voucherId', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
