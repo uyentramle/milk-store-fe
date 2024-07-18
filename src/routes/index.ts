@@ -24,8 +24,9 @@ import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
-import VoucherManagementPage from '../pages/admin/Voucher/VoucherManagementPage';
-import CreateVoucherPage from '../pages/admin/Voucher/CreateVoucherPage';
+import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
+import CreateVoucherPage from '../pages/admin/VoucherManagement/CreateVoucherPage';
+import UpdateVoucherPage from '../pages/admin/VoucherManagement/UpdateVoucherPage';
 import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
 import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
 import CategoryBlogManagementPage from '../pages/admin/CategoryManagement/CategoryManagementPage';
@@ -59,7 +60,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
-    { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
 
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
@@ -83,6 +84,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },

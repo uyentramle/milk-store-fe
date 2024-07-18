@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Form, Input, Button, Steps, message, Checkbox, } from 'antd';
 // import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import {
   UserOutlined,
   LockOutlined,
   CheckCircleFilled,
+  CheckOutlined,
   LoadingOutlined,
   GoogleOutlined,
 } from '@ant-design/icons';
@@ -21,6 +22,8 @@ const SignUpPage: React.FC = () => {
   const [form] = Form.useForm();
   const [phoneNumberOrEmail, setPhoneNumberOrEmail] = useState<string>('');
   const [registerToken, setRegisterToken] = useState<string>('');
+
+
   // const navigate = useNavigate();
 
   // const onFinish = (values: any) => {
@@ -44,6 +47,21 @@ const SignUpPage: React.FC = () => {
   // const navigateToSignInPage = () => {
   //   navigate('/sign-in');
   // };
+
+  const [countdown, setCountdown] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+    else {
+      setCanResend(true); // Khi hết thời gian đếm ngược, cho phép gửi lại
+    }
+  }, [countdown]);
 
   const sendVerificationCode = async (phoneNumberOrEmail: any) => {
     try {
@@ -79,6 +97,8 @@ const SignUpPage: React.FC = () => {
   const handleResendVerificationCode = () => {
     if (phoneNumberOrEmail) {
       sendVerificationCode(phoneNumberOrEmail);
+      setCountdown(60); // Đặt lại đếm ngược về 60 giây
+      setCanResend(false); // Vô hiệu hóa nút gửi lại
     } else {
       message.error('Vui lòng nhập số điện thoại hoặc email trước khi gửi lại.');
     }
@@ -92,7 +112,7 @@ const SignUpPage: React.FC = () => {
       });
       if (response.data.success) {
         message.success('Xác minh thành công');
-        form.setFieldsValue({ registerToken: response.data.data.token });
+        // form.setFieldsValue({ registerToken: response.data.data.token });
         setRegisterToken(response.data.data.token);
         setPhoneNumberOrEmail(phoneNumberOrEmail);
         // console.log(response.data.data.token);
@@ -300,8 +320,9 @@ const SignUpPage: React.FC = () => {
               {/* <p className="mb-4">mi****02@gmail.com</p> */}
               <Form.Item
                 name="verificationCode"
+                className="mb-10"
                 rules={[{ required: true, message: 'Mã xác nhận không được để trống' }]}
-                style={{ display: 'inline-block', width: 'calc(75% - 8px)', marginRight: '10px' }}
+                style={{ display: 'inline-block', width: 'calc(68% - 8px)', marginRight: '10px' }}
               >
                 <Input
                   placeholder="Mã Xác Nhận"
@@ -314,7 +335,14 @@ const SignUpPage: React.FC = () => {
                   }}
                 />
               </Form.Item>
-              <Button type="default" className="" style={{ display: 'inline-block', width: 'calc(25% - 8px)' }} onClick={handleResendVerificationCode}><LoadingOutlined /> Gửi lại </Button>
+              <Button type="text"
+                className={`border border-gray-300 text-gray-500`}
+
+                style={{ display: 'inline-block', width: 'calc(32% - 2px)' }}
+                onClick={handleResendVerificationCode}
+                disabled={!canResend}>
+                {canResend ? <><CheckOutlined /> Gửi lại </> : <><LoadingOutlined /> Gửi lại ({countdown}s)</>}
+              </Button>
               <Form.Item
               // style={{ display: 'inline-block', width: 'calc(15% - 2px)' }}
               >
