@@ -1,121 +1,92 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-interface Product {
-  id: number;
-  imageUrl: string;
-  name: string;
-  color: string;
+interface CartItemProps {
+  imgSrc: string;
+  title: string;
   price: number;
   quantity: number;
+  discountPrice?: number;
+  discountText?: string;
 }
 
-const sampleProducts: Product[] = [
-  {
-    id: 1,
-    imageUrl: "https://via.placeholder.com/150",
-    name: "Dark Denim Shirt",
-    color: "Dark Blue",
-    price: 120.00,
-    quantity: 1,
-  },
-  {
-    id: 2,
-    imageUrl: "https://via.placeholder.com/150",
-    name: "Denim Trendy Jacket",
-    color: "Sky Blue",
-    price: 120.00,
-    quantity: 1,
-  },
-  {
-    id: 3,
-    imageUrl: "https://via.placeholder.com/150",
-    name: "Retro Shirt For Women",
-    color: "Magenta",
-    price: 220.00,
-    quantity: 2,
-  }
-];
-
-const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState(sampleProducts);
-
-  const handleQuantityChange = (id: number, quantity: number) => {
-    setCartItems(cartItems.map(item =>
-      item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-    ));
-  };
-
-  const handleRemove = (id: number) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-
-  const handleCheckout = () => {
-    console.log("Proceed to checkout");
-  };
-
+const CartItem: React.FC<CartItemProps> = ({ imgSrc, title, price, quantity, discountPrice, discountText }) => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="text-center my-8">
-        <h1 className="text-3xl font-bold">Your Shopping Cart</h1>
-      </div>
-      <div className="container mx-auto p-4">
-        {cartItems.map(item => (
-          <div key={item.id} className="flex items-center justify-between p-4 mb-4 bg-white rounded-lg shadow-md">
-            <img className="w-24 h-24 rounded-lg" src={item.imageUrl} alt={item.name} />
-            <div className="flex flex-col ml-4">
-              <span className="font-semibold">{item.name}</span>
-              <span className="text-gray-500">#{item.id}</span>
-              <span className="text-gray-500">{item.color}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button className="text-lg font-bold" onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>-</button>
-              <input 
-                type="number" 
-                value={item.quantity} 
-                min={1} 
-                className="w-12 text-center border rounded"
-                onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
-              />
-              <button className="text-lg font-bold" onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>+</button>
-            </div>
-            <div className="flex items-center justify-end w-20">
-              <span className="text-lg font-semibold">${item.price.toFixed(2)}</span>
-            </div>
-            <button className="text-red-500" onClick={() => handleRemove(item.id)}>×</button>
-          </div>
-        ))}
-        <div className="p-4 mt-8 bg-white rounded-lg shadow-md">
-          <div className="flex justify-between mb-4">
-            <span className="text-lg font-semibold">Subtotal</span>
-            <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between mb-4">
-            <input
-              type="text"
-              placeholder="Promo Code?"
-              className="w-full p-2 mr-2 border rounded"
-            />
-            <button className="px-4 py-2 text-white bg-purple-500 rounded">
-              Apply
-            </button>
-          </div>
-          <button
-            className="w-full px-4 py-2 text-white bg-purple-500 rounded"
-            onClick={handleCheckout}
-          >
-            Checkout
-          </button>
+    <div className="flex items-center justify-between border-b pb-4 mb-4">
+      <div className="flex items-center">
+        <img src={imgSrc} alt={title} className="w-16 h-16 rounded-lg" />
+        <div className="ml-4">
+          <p className="font-semibold">{title}</p>
+          {discountText && <p className="text-sm text-red-500">{discountText}</p>}
         </div>
-        <div className="flex justify-between mt-4">
-          <button className="px-4 py-2 text-white bg-gray-800 rounded">
-            Back to Shop
-          </button>
+      </div>
+      <div className="text-right">
+        <p className="text-lg font-semibold">
+          {discountPrice && <span className="line-through text-gray-500">{discountPrice}₫</span>} {price}₫
+        </p>
+        <div className="flex items-center mt-2">
+          <button className="bg-gray-300 text-gray-600 px-2 py-1 rounded-md">-</button>
+          <input type="text" value={quantity} className="w-12 text-center mx-2 border rounded-md" readOnly />
+          <button className="bg-gray-300 text-gray-600 px-2 py-1 rounded-md">+</button>
         </div>
       </div>
     </div>
   );
 };
 
-export default CartPage;
+const ShoppingCart: React.FC = () => {
+  return (
+    <div className="bg-gray-100 min-h-screen p-6 pt-24"> {/* Added pt-24 for padding-top */}
+    <title>Cart</title>
+      <div className="container mx-auto bg-white shadow-md rounded-lg p-6">
+        <div className="mb-4">
+          <p className="text-gray-600 mt-2">
+            Đăng nhập để hưởng ưu đãi dành riêng cho thành viên <a href="#" className="text-blue-500">Đăng nhập ngay</a>
+          </p>
+        </div>
+        <div>
+          <CartItem
+            imgSrc="https://via.placeholder.com/50"
+            title="Sữa Friso Gold Pro số 4 800g 3 - 6 tuổi"
+            price={595000}
+            quantity={1}
+          />
+          <CartItem
+            imgSrc="https://via.placeholder.com/50"
+            title="Xúc Xích Tiệt Trùng Goldkids Gà & Cá"
+            price={37800}
+            quantity={1}
+            discountPrice={42000}
+            discountText="Giảm 10% Xúc xích Gà và Cá"
+          />
+          <CartItem
+            imgSrc="https://via.placeholder.com/50"
+            title="Similac Mom Hương Vani, 400g"
+            price={235000}
+            quantity={1}
+          />
+        </div>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="flex justify-between mb-2">
+            <p className="text-gray-600">Tạm tính</p>
+            <p className="font-semibold">872.000₫</p>
+          </div>
+          <div className="flex justify-between mb-2">
+            <p className="text-gray-600">Giảm giá sản phẩm</p>
+            <p className="font-semibold">-4.200₫</p>
+          </div>
+          <div className="flex justify-between mb-4">
+            <p className="text-gray-600">Tiền tích lũy</p>
+            <p className="font-semibold">+868₫</p>
+          </div>
+          <div className="flex justify-between font-bold text-xl">
+            <p>Tổng tiền</p>
+            <p className="text-pink-500">867.800₫</p>
+          </div>
+          <button className="w-full bg-pink-500 text-white py-3 mt-4 rounded-md">Đăng nhập ngay để mua hàng</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ShoppingCart;

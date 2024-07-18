@@ -21,8 +21,8 @@
 
 .fixed-sidebar {
     position: sticky !important;
-    top: 85px !important; 
-  }
+    top: 85px !important;
+}
 
 /* Layout */
 .ant-layout-header {
@@ -112,13 +112,26 @@
 }
 
 /* Select */
-.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+.ant-select:after(.ant-select-customize-input) .ant-select-selector {
     border-color: #e83c7e !important;
 }
 
 .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
     border-color: #d32f6e !important;
     box-shadow: 0 0 0 2px rgba(231, 60, 126, 0.2) !important;
+}
+
+.ant-select:hover:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-color: #e83c7e !important;
+}
+
+.ant-select-item .ant-select-item-option .ant-select-item-option-selected .ant-select-item-option-content {
+    color: 0 0 0 2px rgba(231, 60, 126, 0.2) !important;
+}
+
+/* Switch */
+.ant-switch-checked {
+    background-color: #e83c7e !important;
 }
 
 /* Steps */
@@ -164,7 +177,7 @@
 .product-title {
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;  
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }
