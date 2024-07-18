@@ -253,13 +253,13 @@ const UserAddressPage: React.FC = () => {
                                 <RetweetOutlined className="mr-2" />
                                 <span>Đổi mật khẩu</span>
                             </a>
-                            {/* <a
+                            <a
                                 href="/point-history-transaction"
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
                             >
                                 <DollarOutlined className="mr-2" />
                                 <span>Lịch sử điểm thưởng</span>
-                            </a> */}
+                            </a>
                             <a
                                 href=""
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
@@ -739,4 +739,8 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose, ad
         </Modal>
     );
 };
+
+function fetchData(setUserAddresses: React.Dispatch<any>) {
+    throw new Error('Function not implemented.');
+}
 
