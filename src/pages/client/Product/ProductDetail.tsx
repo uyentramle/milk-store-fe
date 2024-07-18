@@ -175,7 +175,7 @@ const ProductDetail = () => {
                     <div className="flex items-left gap-4">
                       <img className="w-10 h-10 rounded-full" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8fFLTRZVbZdcVd87wwkINBEfJhfVZEdOuw&sttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSG02ZvQT0Wk3y8ve9h_zt2ZGGQ4p4eDdHQ0w&s" alt="" />
                       <div className="font-medium dark:text-black">
-                        <a href='/brand-name'>
+                        <a href='/brand-name/3'>
                           <div>TH True Milk</div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">Xem cửa hàng</div>
                         </a>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Pagination, Card, Badge, Rate } from 'antd';
+import { Button, Pagination, Card, Badge, Rate, Spin, } from 'antd';
 import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 // import { jwtDecode } from 'jwt-decode';
@@ -103,17 +103,28 @@ const getBrandDetail = async (brandId: string): Promise<any> => {
             }
         });
 
-        const { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted } = response.data.data;
-
-        return { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted };
+        // const { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted } = response.data.data;
+        // return { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted };
+        return response.data.data;
     } catch (error) {
-        console.error('Lỗi tìm nạp thương hiệu:', error);
-        throw new Error('Không thể tìm nạp thương hiệu.');
+        console.error('Lỗi tìm nạp từ port 7251:', error);
+        try {
+            const response = await axios.get(`https://localhost:44329/api/Brand/ViewBrandDetail/${brandId}`, {
+                headers: {
+                    'accept': '*/*'
+                }
+            });
+            return response.data.data;
+
+        } catch (fallbackError) {
+            console.error('Lỗi tìm nạp từ port 44329:', fallbackError);
+            throw fallbackError;
+        }
     }
 };
 
 const BrandDetailPage: React.FC = () => {
-    const { brandId } = useParams<{ brandId: string }>(); 
+    const { brandId } = useParams<{ brandId: string }>();
     const [brandData, setBrandData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -138,15 +149,15 @@ const BrandDetailPage: React.FC = () => {
     }, [brandId]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex justify-center items-center min-h-screen"><Spin size="large" /></div>;
     }
 
     if (error) {
-        return <div>{error}</div>;
+        return <div className="text-center text-red-500">{error}</div>;
     }
 
     if (!brandData) {
-        return <div>No brand data found.</div>;
+        return <div className="text-center">No brand data found.</div>;
     }
 
     return (

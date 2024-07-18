@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const CreateProductPage = () => {
+const CreateProductPage: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         image: null,
@@ -16,7 +16,7 @@ const CreateProductPage = () => {
         age: '',
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e: { target: { name: any; value: any; type: any; files: any; }; }) => {
         const { name, value, type, files } = e.target;
         setFormData((prevState) => ({
             ...prevState,
@@ -24,14 +24,14 @@ const CreateProductPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         // Handle form submission, e.g., send data to server
         console.log(formData);
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Create Milk Product for Children</h1>
             <form onSubmit={handleSubmit} className="-mx-4 flex flex-wrap">
                 <div className="w-1/2 px-4">
