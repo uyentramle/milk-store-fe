@@ -40,8 +40,22 @@ const BrandManagementPage: React.FC = () => {
                 }));
                 setBrands(fetchedBrands);
             } catch (error) {
-                console.error('Error fetching brands:', error);
-                setError('Failed to fetch brands.');
+                console.error('Lỗi tìm nạp từ port 7251:', error);
+                try {
+                    const fallbackResponse = await axios.get('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=10');
+                    const fetchedBrands = fallbackResponse.data.data.items.map((brand: any) => ({
+                        id: brand.id,
+                        name: brand.name,
+                        origin: brand.brandOrigin,
+                        description: brand.description,
+                        image: brand.imageUrl,
+                        active: brand.active,
+                    }));
+                    setBrands(fetchedBrands);
+                } catch (fallbackError) {
+                    console.error('Lỗi tìm nạp từ port 44329:', fallbackError);
+                    setError('Không thể lấy từ cả hai ports.');
+                }
             } finally {
                 setLoading(false);
             }
