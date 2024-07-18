@@ -9,10 +9,12 @@ import ProductDetail from '../pages/client/Product/ProductDetail';
 import SignUpPage from '../pages/client/SignUp/SignUpPage';
 import SignInPage from '../pages/client/SignIn/SignInPage';
 import ForgotPasswordPage from '../pages/client/ForgotPassword/ForgotPasswordPage';
+
+import ShoppingCart from '../pages/client/Cart/Cart';
 import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
-import CartPage from '../pages/client/Cart/Cart';
 import ContactPage from '../pages/client/Contact/ContactPage';
+
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
@@ -20,6 +22,23 @@ import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
+import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
+import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
+import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
+import CreateVoucherPage from '../pages/admin/VoucherManagement/CreateVoucherPage';
+import UpdateVoucherPage from '../pages/admin/VoucherManagement/UpdateVoucherPage';
+import BlogManagementPage from '../pages/admin/BlogManagement/BlogManagementPage';
+import CreateBlogPage from '../pages/admin/BlogManagement/CreateBlogPage';
+import CategoryBlogManagementPage from '../pages/admin/CategoryManagement/CategoryManagementPage';
+import CreateCategoryBlogPage from '../pages/admin/CategoryManagement/CreateCategoryPage';
+import ProductTypeManagementPage from '../pages/admin/ProductTypeManagement/ProductTypeManagementPage';
+import CreateProductTypePage from '../pages/admin/ProductTypeManagement/CreateProductTypePage';
+
+import UserProfilePage from '../pages/client/User/UserProfilePage';
+import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
+import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
+import UserAddressPage from '../pages/client/User/UserAddressPage';
+import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
 
 import { DefaultLayoutProps } from '../types/layout.type';
 
@@ -35,12 +54,21 @@ const publicRoutes: RouteProps[] = [
     { path: '/sign-in', component: SignInPage, layout: DefaultAuthenLayout },
     { path: '/forgot-password', component: ForgotPasswordPage, layout: DefaultAuthenLayout },
     { path: '/blog', component: BlogPage, layout: DefaultClientLayout },
+
+    { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
     { path: '/blog-detail', component: BlogPageDetail, layout: DefaultClientLayout },
     { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
-    { path: '/cart', component: CartPage, layout: DefaultClientLayout },
+
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
-    { path: '/brand-name', component: BrandDetailPage, layout: DefaultClientLayout },
+    { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
+
+    { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
+    { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
+    { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
+    { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
+    { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
+
 ];
 
 const privateRoutes: RouteProps[] = [];
@@ -52,6 +80,17 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };

@@ -13,7 +13,7 @@ export default function MyHeader() {
         {
             key: '2',
             icon: <LogoutOutlined></LogoutOutlined>,
-            label: <div onClick={() => {}}>Đăng xuất</div>,
+            label: <div onClick={() => { }}>Đăng xuất</div>,
         },
     ];
 

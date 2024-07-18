@@ -6,6 +6,7 @@ import {
     BellOutlined,
     UserOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const linkClass = "text-pink-500 hover:text-pink-800";
 const menuStyle = "text-pink-500 hover:text-pink-800 font-medium";
@@ -20,11 +21,23 @@ const productMenu = (
 );
 
 const Header: React.FC = () => {
+    const navigate = useNavigate();
+
+    const handleAvatarClick = () => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            navigate('/user-profile'); // Nếu đã đăng nhập, chuyển hướng đến /user-profile
+        } else {
+            navigate('/sign-in'); // Nếu chưa đăng nhập, chuyển hướng đến /sign-in
+        }
+    };
+
     return (
         <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50 mx-auto">
             <a href="/">
                 <div className="flex items-center">
-                    <img src="https://marketplace.canva.com/EAE8wGDEkQU/1/0/1600w/canva-pink-cute-calf-illustration-organic-milk-and-dairy-logo-oTfX7cOvpos.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" />
+                    {/* <img src="https://marketplace.canva.com/EAE8wGDEkQU/1/0/1600w/canva-pink-cute-calf-illustration-organic-milk-and-dairy-logo-oTfX7cOvpos.jpg" style={{height:'50px'}} alt="Logo" className="mr-4" /> */}
+                    <img src="/logo.png" style={{ height: '50px' }} alt="Logo" className="mr-4" />
                     <span className="text-xl font-bold text-pink-500">MILK STORE</span>
                 </div>
             </a>
@@ -48,7 +61,13 @@ const Header: React.FC = () => {
                 <Badge count={8}>
                     <BellOutlined className={linkClass} style={{ fontSize: '24px' }} />
                 </Badge>
-                <a href="/sign-in" className="">
+                {/* <a href="/sign-in" className="" >
+                    <Avatar
+                        style={{ backgroundColor: '#e83c7e' }}
+                        icon={<UserOutlined />}
+                    />
+                </a> */}
+                <a href="" className="" onClick={handleAvatarClick}>
                     <Avatar
                         style={{ backgroundColor: '#e83c7e' }}
                         icon={<UserOutlined />}
