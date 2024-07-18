@@ -11,7 +11,8 @@ import {
     RetweetOutlined,
     LogoutOutlined,
     CameraOutlined,
-    UploadOutlined
+    UploadOutlined,
+    DollarOutlined,
 } from '@ant-design/icons';
 import { message } from 'antd';
 
@@ -275,6 +276,13 @@ const UserProfilePage: React.FC = () => {
                                 <RetweetOutlined className="mr-2" />
                                 <span>Đổi mật khẩu</span>
                             </a>
+                            {/* <a
+                                href="/point-history-transaction"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                <DollarOutlined className="mr-2" />
+                                <span>Lịch sử điểm thưởng</span>
+                            </a> */}
                             <a
                                 href=""
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
