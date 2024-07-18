@@ -48,7 +48,7 @@ const CreateAccountPage: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Create New Account</h1>
             <div className="flex">
                 <div className="w-1/2 pr-4">
