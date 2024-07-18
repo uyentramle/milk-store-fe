@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { message } from 'antd';
 
 interface Brand {
     id: number;
@@ -46,7 +49,6 @@ const CreateProductPage = () => {
         type: '',
         brand: '',
         age: '',
-        status: '',
     });
 
     const [productTypes, setProductTypes] = useState<Type[]>([]);
@@ -106,66 +108,132 @@ const CreateProductPage = () => {
             type: '',
             brand: '',
             age: '',
-            status: '',
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validation logic
         if (!formData.thumbnail) {
-            alert("Ảnh bìa không được bỏ trống");
+            message.error("Ảnh bìa không được bỏ trống");
             return;
         }
 
         if (formData.images.length === 0) {
-            alert("Ảnh sản phẩm không được bỏ trống");
+            message.error("Ảnh sản phẩm không được bỏ trống");
             return;
         }
 
         if (formData.price < 0) {
-            alert("Giá gốc không được là số âm");
+            message.error("Giá gốc không được là số âm");
             return;
         }
 
         if (formData.discount < 0) {
-            alert("Giá giảm không được là số âm");
+            message.error("Giá giảm không được là số âm");
             return;
         }
 
         if (formData.discount > formData.price) {
-            alert("Giá giảm không được lớn hơn giá gốc");
+            message.error("Giá giảm không được lớn hơn giá gốc");
             return;
         }
 
         if (formData.weight < 0 || formData.weight > 10) {
-            alert("Cân nặng không hợp lệ (phải từ 0 đến 10Kg)");
+            message.error("Cân nặng không hợp lệ (phải từ 0 đến 10Kg)");
             return;
         }
 
         if (formData.quantity < 0 || formData.quantity > 100000) {
-            alert("Số lượng không hợp lệ (phải từ 0 đến 100000)");
+            message.error("Số lượng không hợp lệ (phải từ 0 đến 100000)");
             return;
         }
 
         if (!formData.type) {
-            alert("Vui lòng chọn loại sản phẩm");
+            message.error("Vui lòng chọn loại sản phẩm");
             return;
         }
-        
+
         if (!formData.brand) {
-            alert("Vui lòng chọn thương hiệu");
+            message.error("Vui lòng chọn thương hiệu");
             return;
         }
 
         if (!formData.age) {
-            alert("Vui lòng chọn độ tuổi");
+            message.error("Vui lòng chọn độ tuổi");
             return;
         }
-        // Handle form submission, e.g., send data to server
-        console.log(formData);
+
+        const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjQ3NWQ1YTNiLTEzOTctNGI5OS04ZWVlLTMyNDk2MDIyNWZmNiIsIm5hbWUiOiJhZG1pbiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiI4ZjczNDY1ZC0wYWYxLTQwMTUtYmU5My0yMzdiOGNjM2QwNTMiLCJ1c2VySWQiOiI4ZjczNDY1ZC0wYWYxLTQwMTUtYmU5My0yMzdiOGNjM2QwNTMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcyMTMxNTI1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzAxOCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwMTgifQ.7NRU_5-yNmCh0KmRCFJyLEAneAVoWb4ya5ZbOio0Ync"
+        // const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            throw new Error('Access token not found.');
+        }
+
+        const decodedToken: any = jwtDecode(accessToken);
+        const createdBy = decodedToken.id;
+        const createData = new FormData();
+        createData.append('Name', formData.name);
+        createData.append('Sku', formData.sku);
+        createData.append('Description', formData.description || '');
+        createData.append('Price', formData.price.toString());
+        createData.append('Weight', formData.weight.toString());
+        createData.append('Discount', formData.discount.toString());
+        createData.append('Quantity', formData.quantity.toString());
+        createData.append('TypeId', formData.type.toString());
+        createData.append('BrandId', formData.brand.toString());
+        createData.append('AgeId', formData.age.toString());
+        createData.append('CreatedBy', createdBy);
+
+        try {
+            const response = await axios.post('https://localhost:7251/api/Product/CreateProduct', createData, {
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.data.success) {
+                message.success('Tạo sản phẩm thành công');
+                console.log("Created product successfully");
+                const responeData = await axios.get(`https://localhost:7251/api/Product/GetProductBySku?sku=${formData.sku}`);
+                const productId = responeData.data.data.id;
+                if (responeData.data.success && productId != null) {
+                    console.log("Get Product by sku successfully");
+                    if (formData.images.length > 0 && formData.thumbnail !== null) {
+                        const formData1 = new FormData();
+                        formData1.append('ProductId', productId.toString());
+                        formData1.append('CreatedBy', createdBy);
+                        formData1.append('thumbnailFile', formData.thumbnail);
+                        formData.images.forEach((image) => {
+                            formData1.append('imageFiles', image);
+                        });
+                        const response1 = await axios.post('https://localhost:7251/api/ProductImage/CreateProductImage', formData1, {
+                            headers: {
+                                'accept': '*/*',
+                                'Content-Type': 'multipart/form-data',
+                                'Authorization': `Bearer ${accessToken}`,
+                            },
+                        });
+
+                        if (response1.data.success) {
+                            console.log("Created product image successfully");
+                            message.success('Thêm hình ảnh sản phẩm thành công');
+                            handleReset();
+                        }
+                    }
+                }
+            } else {
+                message.error(response.data.message || 'Không thể tạo sản phẩm');
+            }
+        } catch (error) {
+            console.error('Error creating product:', error);
+            message.error('Tạo sản phẩm thất bại');
+        }
     };
+
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -395,6 +463,14 @@ const CreateProductPage = () => {
                     </div>
                 </div>
                 <div className="flex justify-end space-x-4">
+                    <Link to="/admin/products">
+                        <button
+                            type="button"
+                            className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                        >
+                            Trở về
+                        </button>
+                    </Link>
                     <button
                         type="button"
                         onClick={handleReset}

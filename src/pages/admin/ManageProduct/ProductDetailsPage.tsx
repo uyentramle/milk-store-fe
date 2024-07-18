@@ -121,7 +121,7 @@ const ProductDetailPage: React.FC = () => {
                         {images.map((img, index) => (
                             <img
                                 key={index}
-                                src={img.thumbnailUrl}
+                                src={img.imageUrl}
                                 alt={`Thumbnail ${index}`}
                                 className="w-20 h-20 object-cover cursor-pointer"
                                 onClick={() => setMainImage(img.imageUrl)}
