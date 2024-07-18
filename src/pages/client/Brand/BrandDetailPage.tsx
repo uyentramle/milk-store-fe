@@ -1,7 +1,9 @@
-import React from "react";
-import { Button, Pagination, Row, Col, Card, Badge, Rate, } from 'antd';
-import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined, } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Button, Pagination, Card, Badge, Rate } from 'antd';
+import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { useParams } from 'react-router-dom';
+// import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const products = [
     {
@@ -87,7 +89,66 @@ const products = [
     },
 ];
 
+const getBrandDetail = async (brandId: string): Promise<any> => {
+    // const accessToken = localStorage.getItem('accessToken');
+
+    // if (!accessToken) {
+    //     throw new Error('Access token not found.');
+    // }
+
+    try {
+        const response = await axios.get(`https://localhost:7251/api/Brand/ViewBrandDetail/${brandId}`, {
+            headers: {
+                'accept': '*/*'
+            }
+        });
+
+        const { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted } = response.data.data;
+
+        return { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted };
+    } catch (error) {
+        console.error('Lỗi tìm nạp thương hiệu:', error);
+        throw new Error('Không thể tìm nạp thương hiệu.');
+    }
+};
+
 const BrandDetailPage: React.FC = () => {
+    const { brandId } = useParams<{ brandId: string }>(); 
+    const [brandData, setBrandData] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const defaultImageUrl = 'https://via.placeholder.com/64';
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (brandId) {
+                    const brandDetailData = await getBrandDetail(brandId);
+                    setBrandData(brandDetailData);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.error('Lỗi tìm nạp thông tin thương hiệu:', error);
+                setError('Không thể tìm nạp thông tin thương hiệu.');
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [brandId]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
+    if (!brandData) {
+        return <div>No brand data found.</div>;
+    }
+
     return (
         <div className="min-h-screen flex flex-wrap w-full">
             {/* <div className="bg-white">
@@ -95,10 +156,10 @@ const BrandDetailPage: React.FC = () => {
             </div> */}
             <div className="p-4">
                 <div className="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
-                    <img src="https://cdn1.concung.com/img/m/2023/07/266_logo_vuong1689324985.png" alt="Vinamilk" className="h-20 w-20 rounded-full shadow border-2" />
+                    <img src={brandData.imageUrl || defaultImageUrl} alt="{brandData.name}" className="h-20 w-20 rounded-full shadow border-2" />
                     <div className="pr-4">
                         <h2 className="font-bold text-xl pb-2">
-                            Vinamilk
+                            {brandData.name}
                             <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/icon/trustbrand.png" alt="Trust Brand" className="h-3 inline-block mx-2" />
                         </h2>
                         <button className="bg-pink-500 text-white px-4 py-2 rounded mr-2">Theo Dõi</button>

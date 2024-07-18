@@ -1,26 +1,29 @@
 import React, { useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { Input, Button, Upload, Form, Switch } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { Input, Button, Upload, Form, Switch, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import axios from 'axios';
 
 interface FormData {
     name: string;
-    origin: string;
-    description: string;
-    image: RcFile | null;
+    brandOrigin: string;
+    description?: string | null;
+    imageUrl?: string | null;
     active: boolean;
 }
 
 const CreateBrandPage: React.FC = () => {
+    const navigate = useNavigate();
+    
     const [formData, setFormData] = useState<FormData>({
         name: '',
-        origin: '',
-        description: '',
-        image: null,
-        active: false,
+        brandOrigin: '',
+        description: undefined,
+        imageUrl: undefined,
+        active: true,
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -49,12 +52,46 @@ const CreateBrandPage: React.FC = () => {
     const handleContentChange = (value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            content: value,
+            description: value,
         }));
     };
 
-    const handleSubmit = (values: FormData) => {
-        console.log(values);
+    const handleSubmit = async (values: FormData) => {
+        const data = {
+            name: values.name,
+            brandOrigin: values.brandOrigin,
+            description: values.description ? values.description : null,
+            imageUrl: "string",
+            active: values.active,
+        };
+        // const data = new FormData();
+        // data.append('name', formData.name);
+        // data.append('brandOrigin', formData.brandOrigin);
+        // data.append('description', formData.description || '');
+        // if (formData.imageUrl) {
+        //     data.append('imageUrl', formData.imageUrl);
+        // }
+        // data.append('active', formData.active.toString());
+
+        try {
+            const response = await axios.post('https://localhost:7251/api/Brand/CreateBrand', data, {
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', // Thay thế bằng token thực tế
+                },
+            });
+
+            if (response.data.success) {
+                message.success('Brand được tạo thành công.');
+                navigate('/admin/brands');
+            } else {
+                message.error('Không tạo được brand.');
+            }
+        } catch (error) {
+            console.error('Lỗi tạo brand:', error);
+            message.error('Đã xảy ra lỗi khi tạo brand.');
+        }
     };
 
     return (
@@ -85,13 +122,13 @@ const CreateBrandPage: React.FC = () => {
                     <div className="mb-4 w-1/2">
                         <Form.Item
                             label="Nguồn gốc"
-                            name="origin"
+                            name="brandOrigin"
                             rules={[{ required: true, message: 'Vui lòng nhập nguồn gốc' }]}
                         >
                             <Input
-                                id="origin"
-                                name="origin"
-                                value={formData.origin}
+                                id="brandOrigin"
+                                name="brandOrigin"
+                                value={formData.brandOrigin}
                                 onChange={handleChange}
                                 className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -119,7 +156,8 @@ const CreateBrandPage: React.FC = () => {
                             name="description"
                         >
                             <ReactQuill
-                                value={formData.description}
+                                theme="snow"
+                                value={formData.description || ''}
                                 onChange={handleContentChange}
                                 className="h-60 mb-4"
                             />
@@ -129,12 +167,12 @@ const CreateBrandPage: React.FC = () => {
                     <div className="mb-4">
                         <Form.Item
                             label="Hình ảnh"
-                            name="image"
+                            name="imageUrl"
                             valuePropName="file"
                             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
                         >
                             <Upload
-                                name="image"
+                                name="imageUrl"
                                 listType="picture"
                                 beforeUpload={() => false}
                                 onChange={handleFileChange}
