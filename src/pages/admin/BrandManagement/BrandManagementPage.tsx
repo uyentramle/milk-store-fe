@@ -70,7 +70,12 @@ const BrandManagementPage: React.FC = () => {
             title: 'Tên',
             dataIndex: 'name',
             key: 'name',
-            render: (text: string) => <span className="font-semibold text-pink-500">{text}</span>,
+            render: (text: string, brand: Brand) =>
+                <a href={`/brand-name/${brand.id}`} target='_blank'>
+                    <span className="font-semibold text-pink-500">
+                        {text}
+                    </span>
+                </a>,
         },
         {
             title: 'Hình ảnh',
