@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import { Form, Input, Button } from 'antd';
@@ -15,6 +15,8 @@ import {
     DollarOutlined,
 } from '@ant-design/icons';
 import { message } from 'antd';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../../services/Firebase/firebase';
 
 // const fakeUserData = {
 //     id: "1234567890",
@@ -27,6 +29,19 @@ import { message } from 'antd';
 //     avatar: "",
 //     background: ""
 // };
+
+// Định nghĩa interface cho dữ liệu người dùng
+interface UserProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    avatar: string;
+    background: string;
+  }
 
 // Hàm để gọi API và trả về thông tin người dùng đã được lọc
 const getUserProfile = async (): Promise<any> => {
@@ -99,6 +114,12 @@ const UserProfilePage: React.FC = () => {
     const [avatar, setAvatar] = useState<string | null>(null); // For storing the avatar URL
     // const [userData, setUserData] = useState(fakeUserData);
     const [userData, setUserData] = useState<any>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const userId = userData?.id;
+    const [tempUserData, setTempUserData] = useState<Partial<UserProfile>>({});
+    const [isEditing, setIsEditing] = useState(false);
+    const inputRef = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
     const navigate = useNavigate();
 
     const navigateToSignInPage = () => {
@@ -112,7 +133,8 @@ const UserProfilePage: React.FC = () => {
         navigateToSignInPage();
     };
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (userId: string) => {
+        setCurrentUserId(userId);
         setIsModalOpen(true);
     };
 
@@ -120,28 +142,49 @@ const UserProfilePage: React.FC = () => {
         setIsModalOpen(false);
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setTempUserData({
+            ...tempUserData,
+            [name]: value
+        });
+        // setUserData({
+        //     ...userData,
+        //     [name]: value
+        // });
+    };
+    const fetchData = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            navigateToSignInPage(); return;
+        }
 
+        try {
+            const userProfileData = await getUserProfile();
+            setUserData(userProfileData);
+            setAvatar(userProfileData.avatar);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Xử lý lỗi khi cần thiết
+        }
+    };
     // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
     useEffect(() => {
-        const fetchData = async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                navigateToSignInPage(); return;
-            }
+        // fetchData();
 
-            try {
-                const userProfileData = await getUserProfile();
-                setUserData(userProfileData);
-                setAvatar(userProfileData.avatar);
-            } catch (error) {
-                console.error('Error fetching user profile:', error);
-                // Xử lý lỗi khi cần thiết
-            }
-        };
+        // const intervalId = setTimeout(() => {
+        //     if (!isEditing) {
+        //         fetchData();
+        //     }
+        // }, 2000);
 
-        fetchData();
-    }, []);
+        // return () => clearTimeout(intervalId);  
+        
+        const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
+        return () => clearInterval(interval);
+    }, [isEditing]);
+    
     // // Giả lập gọi API để lấy dữ liệu người dùng
     // useEffect(() => {
     //     // Giả lập một gọi API với setTimeout
@@ -173,10 +216,13 @@ const UserProfilePage: React.FC = () => {
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { id, firstName, lastName, gender } = userData;
+        // const { id, firstName, lastName, gender } = userData;
+
+        const { id, gender } = userData;
 
         try {
-            const success = await updateProfile(id, firstName, lastName, gender);
+            // const success = await updateProfile(id, firstName, lastName, gender);
+            const success = await updateProfile(id, tempUserData.firstName ?? userData.firstName, tempUserData.lastName ?? userData.lastName, tempUserData.gender ?? gender);
 
             if (success) {
                 // Optional: Perform any actions needed after successful update
@@ -187,6 +233,7 @@ const UserProfilePage: React.FC = () => {
                         const userProfileData = await getUserProfile();
                         setUserData(userProfileData);
                         setAvatar(userProfileData.avatar);
+                        setIsEditing(false);
                         console.log('User profile data refreshed');
                     } catch (error) {
                         console.error('Error refreshing user profile:', error);
@@ -312,7 +359,7 @@ const UserProfilePage: React.FC = () => {
                                 <div className="mt-4 flex flex-col items-center justify-center">
                                     <button
                                         className="rounded bg-pink-500 px-3 py-1.5 text-white transition-colors duration-300 hover:bg-pink-600"
-                                        onClick={handleOpenModal}
+                                        onClick={() =>handleOpenModal(userId)}
                                     >
                                         {/* <i className="fa fa-fw fa-camera mr-2"></i> */}
                                         <CameraOutlined className="mr-2" />
@@ -342,8 +389,13 @@ const UserProfilePage: React.FC = () => {
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
                                                     name="lastName"
-                                                    value={userData.lastName}
-                                                    onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                                                    // value={userData.lastName}
+                                                    // onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                                                    ref={el => inputRef.current['lastName'] = el}
+                                        value={tempUserData.lastName || userData.lastName || ''}
+                                        onChange={handleInputChange}
+                                        onFocus={() => setIsEditing(true)}
+                                        onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-[150px]">
@@ -352,8 +404,13 @@ const UserProfilePage: React.FC = () => {
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
                                                     name="firstName"
-                                                    value={userData.firstName}
-                                                    onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
+                                                    // value={userData.firstName}
+                                                    // onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
+                                                    ref={el => inputRef.current['firstName'] = el}
+                                        value={tempUserData.firstName || userData.firstName || ''}
+                                        onChange={handleInputChange}
+                                        onFocus={() => setIsEditing(true)}
+                                        onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex items-end justify-end mt-4 mb-2 sm:mt-0">
@@ -370,8 +427,12 @@ const UserProfilePage: React.FC = () => {
                                             <select
                                                 className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                 name="gender"
-                                                value={userData.gender}
-                                                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                                // value={userData.gender}
+                                                // onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                                value={tempUserData.gender ?? userData.gender ?? ''}
+                                    onChange={handleInputChange}
+                                    onFocus={() => setIsEditing(true)}
+                                    onBlur={() => setIsEditing(false)}
                                             >
                                                 <option value="Male">Nam</option>
                                                 <option value="Female">Nữ</option>
@@ -421,17 +482,26 @@ const UserProfilePage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} />
+            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} userId={currentUserId}/>
         </div>
     );
 };
 
 export default UserProfilePage;
 
-const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void }> = ({ isOpen, onClose, onSave }) => {
+const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void, userId: string | null}> = ({ isOpen, onClose, onSave, userId: userIdd }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [modalClass, setModalClass] = useState('');
+
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        throw new Error('Access token not found.');
+    }
+
+    const decodedToken: any = jwtDecode(accessToken);
+    const userId = decodedToken.userId;
 
     useEffect(() => {
         // Add or remove transition class based on modal state
@@ -458,6 +528,26 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
     }, [onClose]);
 
 
+    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         setSelectedFile(file);
+
+    //         const reader = new FileReader();
+    //         reader.onload = () => {
+    //             setPreview(reader.result as string);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
+
+     // const handleSave = () => {
+    //     if (selectedFile) {
+    //         onSave(selectedFile);
+    //         onClose();
+    //     }
+    // };
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -471,10 +561,60 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
         }
     };
 
-    const handleSave = () => {
+    const handleUpload = async (file: File) => {
+        const storageRef = ref(storage, `avatars/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        return new Promise<string>((resolve, reject) => {
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Handle progress if needed
+                },
+                (error) => {
+                    console.error('Upload failed:', error);
+                    reject(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
+    };
+
+   const handleSave = async () => {
         if (selectedFile) {
-            onSave(selectedFile);
-            onClose();
+            try {
+                const url = await handleUpload(selectedFile);
+                console.log('Uploaded file URL:', url);
+
+                // Gọi API để cập nhật URL ảnh đại diện của người dùng
+            const response = await axios.put('https://localhost:44329/api/Account/UpdateUserAvatar', {
+                    userId: userIdd,
+                    avatarUrl: url
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': '*/*',
+                        'authorization': `Bearer ${accessToken}` // xem trong api yêu cầu gì thì copy vào
+                    }
+                });
+
+                if (response.data.success) {
+                    console.log('Avatar updated successfully');
+                    message.success('Cập nhật ảnh đại diện thành công.');
+
+                    onClose();
+                } else {
+                    console.error('Failed to update avatar:', response.data.message);
+                    message.error('Cập nhật ảnh đại diện thất bại.');
+                }
+
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
         }
     };
 
