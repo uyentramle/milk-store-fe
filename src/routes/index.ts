@@ -18,6 +18,7 @@ import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
+import ProductDetailPage from '../pages/admin/ManageProduct/ProductDetailsPage';
 
 
 
@@ -47,6 +48,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/accounts', component: ManageAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
 ];

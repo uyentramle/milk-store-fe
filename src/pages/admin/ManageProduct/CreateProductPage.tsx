@@ -1,10 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+interface Brand {
+    id: number;
+    name: string;
+    brandOrigin: string;
+    description: string;
+    active: boolean;
+    imageUrl: string | null;
+    totalFollow: number;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
+
+interface Type {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
+
+interface AgeRange {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
 
 const CreateProductPage = () => {
     const [formData, setFormData] = useState({
         name: '',
-        image: null,
+        thumbnail: null,
+        images: [],
         sku: '',
         description: '',
         price: 0,
@@ -14,208 +46,370 @@ const CreateProductPage = () => {
         type: '',
         brand: '',
         age: '',
+        status: '',
     });
+
+    const [productTypes, setProductTypes] = useState<Type[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
+
+    useEffect(() => {
+        fetch('https://localhost:7251/api/ProductType/GetAllProductType')
+            .then((response) => response.json())
+            .then((data) => setProductTypes(data.data))
+            .catch((error) => console.error('Error fetching product types:', error));
+
+        fetch('https://localhost:7251/api/AgeRange/GetAllAgeRange')
+            .then((response) => response.json())
+            .then((data) => setAgeRanges(data.data))
+            .catch((error) => console.error('Error fetching age ranges:', error));
+
+        fetch('https://localhost:7251/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
+            .then((response) => response.json())
+            .then((data) => setBrands(data.data.items))
+            .catch((error) => console.error('Error fetching brands:', error));
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: type === 'file' ? files[0] : value,
-        }));
+        if (type === 'file') {
+            if (name === 'thumbnail') {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    thumbnail: files[0],
+                }));
+            } else if (name === 'images') {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    images: [...prevState.images, ...Array.from(files)],
+                }));
+            }
+        } else {
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+            }));
+        }
+    };
+
+    const handleReset = () => {
+        setFormData({
+            name: '',
+            thumbnail: null,
+            images: [],
+            sku: '',
+            description: '',
+            price: 0,
+            weight: 0,
+            discount: 0,
+            quantity: 0,
+            type: '',
+            brand: '',
+            age: '',
+            status: '',
+        });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validation logic
+        if (!formData.thumbnail) {
+            alert("Ảnh bìa không được bỏ trống");
+            return;
+        }
+
+        if (formData.images.length === 0) {
+            alert("Ảnh sản phẩm không được bỏ trống");
+            return;
+        }
+
+        if (formData.price < 0) {
+            alert("Giá gốc không được là số âm");
+            return;
+        }
+
+        if (formData.discount < 0) {
+            alert("Giá giảm không được là số âm");
+            return;
+        }
+
+        if (formData.discount > formData.price) {
+            alert("Giá giảm không được lớn hơn giá gốc");
+            return;
+        }
+
+        if (formData.weight < 0 || formData.weight > 10) {
+            alert("Cân nặng không hợp lệ (phải từ 0 đến 10Kg)");
+            return;
+        }
+
+        if (formData.quantity < 0 || formData.quantity > 100000) {
+            alert("Số lượng không hợp lệ (phải từ 0 đến 100000)");
+            return;
+        }
+
+        if (!formData.type) {
+            alert("Vui lòng chọn loại sản phẩm");
+            return;
+        }
+        
+        if (!formData.brand) {
+            alert("Vui lòng chọn thương hiệu");
+            return;
+        }
+
+        if (!formData.age) {
+            alert("Vui lòng chọn độ tuổi");
+            return;
+        }
         // Handle form submission, e.g., send data to server
         console.log(formData);
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Create Milk Product for Children</h1>
-            <form onSubmit={handleSubmit} className="-mx-4 flex flex-wrap">
-                <div className="w-1/2 px-4">
-                    <div className="mb-4">
-                        <label htmlFor="name" className="mb-2 block font-bold">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+            <h1 className="mb-6 text-3xl font-bold">Tạo sản phẩm</h1>
+            <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+                <div className="flex space-x-6">
+                    <div className="flex-1 flex flex-col space-y-4">
+                        <label className="font-bold">Ảnh bìa <span className="text-red-500">*</span></label>
+                        <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 relative">
+                            {formData.thumbnail ? (
+                                <img
+                                    src={URL.createObjectURL(formData.thumbnail)}
+                                    alt="Thumbnail"
+                                    className="object-cover h-full w-full"
+                                />
+                            ) : (
+                                <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                    <input
+                                        type="file"
+                                        name="thumbnail"
+                                        accept="image/*"
+                                        onChange={handleChange}
+                                        className="hidden"
+                                    />
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
+                                </label>
+                            )}
+                        </div>
+                        <label className="font-bold">Ảnh sản phẩm <span className="text-red-500">*</span></label>
+                        <div className="relative w-full h-12">
+                            <input
+                                type="file"
+                                name="images"
+                                accept="image/*"
+                                multiple
+                                onChange={handleChange}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            <div className="absolute inset-0 w-full h-full bg-pink-500 text-white rounded-md flex justify-center items-center z-0 ">
+                                Thêm ảnh sản phẩm
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                            {formData.images.length > 0 && formData.images.length <= 6 &&
+                                formData.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={URL.createObjectURL(image)}
+                                        alt={`Product ${index}`}
+                                        className="w-40 h-40 object-cover"
+                                    />
+                                ))}
+                            {formData.images.length > 6 &&
+                                formData.images.map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={URL.createObjectURL(image)}
+                                        alt={`Product ${index}`}
+                                        className="w-20 h-20 object-cover"
+                                    />
+                                ))}
+                            {formData.images.length === 0 &&
+                                <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                    <input
+                                        type="file"
+                                        name="images"
+                                        accept="image/*"
+                                        onChange={handleChange}
+                                        className="hidden"
+                                    />
+                                    <img src="https://i.pinimg.com/originals/ae/8a/c2/ae8ac2fa217d23aadcc913989fcc34a2.png" alt="Add Thumbnail" className="h-40 opacity-50" />
+                                </label>
+                            }
+                        </div>
                     </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="image" className="mb-2 block font-bold">
-                            Image
-                        </label>
-                        <input
-                            type="file"
-                            id="image"
-                            name="image"
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="sku" className="mb-2 block font-bold">
-                            Sku
-                        </label>
-                        <input
-                            type="text"
-                            id="sku"
-                            name="sku"
-                            value={formData.sku}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="description" className="mb-2 block font-bold">
-                            Description
-                        </label>
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        ></textarea>
+                    <div className="flex-1">
+                        <div className="mb-4">
+                            <label htmlFor="name" className="block font-bold">
+                                Tên sản phẩm <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="sku" className="block font-bold">
+                                Mã sản phẩm <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="sku"
+                                name="sku"
+                                value={formData.sku}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="description" className="block font-bold">
+                                Mô tả
+                            </label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            ></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="price" className="block font-bold">
+                                Giá gốc <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                value={formData.price}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="weight" className="block font-bold">
+                                Cân nặng (kg) <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="weight"
+                                name="weight"
+                                value={formData.weight}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="discount" className="block font-bold">
+                                Giá giảm
+                            </label>
+                            <input
+                                type="number"
+                                id="discount"
+                                name="discount"
+                                value={formData.discount}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="quantity" className="block font-bold">
+                                Số lượng <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                value={formData.quantity}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="type" className="block font-bold">
+                                Phân loại <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="type"
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value="">Chọn phân loại</option>
+                                {productTypes.map((type) => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="brand" className="block font-bold">
+                                Thương hiệu <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="brand"
+                                name="brand"
+                                value={formData.brand}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value="">Chọn thương hiệu</option>
+                                {brands.map((brand) => (
+                                    <option key={brand.id} value={brand.id}>{brand.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="age" className="block font-bold">
+                                Độ tuổi <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="age"
+                                name="age"
+                                value={formData.age}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value="">Chọn độ tuổi</option>
+                                {ageRanges.map((ageRange) => (
+                                    <option key={ageRange.id} value={ageRange.id}>{ageRange.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
-
-                <div className="w-1/2 px-4">
-                    <div className="mb-4">
-                        <label htmlFor="weght" className="mb-2 block font-bold">
-                            Weight
-                        </label>
-                        <input
-                            type="number"
-                            id="weght"
-                            name="weght"
-                            value={formData.weight}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="price" className="mb-2 block font-bold">
-                            Price
-                        </label>
-                        <input
-                            type="number"
-                            id="price"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="discount" className="mb-2 block font-bold">
-                            Discount
-                        </label>
-                        <input
-                            type="number"
-                            id="discount"
-                            name="discount"
-                            value={formData.discount}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="quantity" className="mb-2 block font-bold">
-                            Quantity
-                        </label>
-                        <input
-                            type="number"
-                            id="quantity"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="age" className="mb-2 block font-bold">
-                            Age
-                        </label>
-                        <input
-                            type="number"
-                            id="age"
-                            name="age"
-                            value={formData.age}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="brand" className="mb-2 block font-bold">
-                            Brand
-                        </label>
-                        <input
-                            type="text"
-                            id="brand"
-                            name="price"
-                            value={formData.brand}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="type" className="mb-2 block font-bold">
-                            Type
-                        </label>
-                        <input
-                            type="text"
-                            id="type"
-                            name="type"
-                            value={formData.type}
-                            onChange={handleChange}
-                            className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                </div>
-            </form>
-            <div className="mt-6 flex justify-end space-x-4">
+                <div className="flex justify-end space-x-4">
+                    <button
+                        type="button"
+                        onClick={handleReset}
+                        className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                    >
+                        Làm mới
+                    </button>
                     <button
                         type="submit"
-                        className="mr-2 rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-700"
+                        className="rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-700"
                     >
-                        Create Product
+                        Thêm mới
                     </button>
-                    <Link to="/admin/products">
-                        <button
-                            type="button"
-                            className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
-                        >
-                            Back
-                        </button>
-                    </Link>
                 </div>
+            </form>
         </div>
     );
 };
