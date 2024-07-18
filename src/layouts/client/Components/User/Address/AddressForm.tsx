@@ -61,19 +61,19 @@ const useData = () => {
     //   setSelectedDistrict(value);
     // };
   
-    const getCityName = (code: string) => cities.find(city => city.code === code)?.name || '';
-  const getDistrictName = (code: string) => districts.find(district => district.code === code)?.name || '';
+  //   const getCityName = (code: string) => cities.find(city => city.code === code)?.name || '';
+  // const getDistrictName = (code: string) => districts.find(district => district.code === code)?.name || '';
   
     return (
       <div style={{ display: 'flex', gap: '6px' }}>
         <Form.Item
                     label="Thành phố"
                     name="city"
-                    rules={[{ required: true, message: 'Vui lòng nhập phường/xã' }]}
-                    style={{ flex: 1 }}
+                    rules={[{ required: true, message: 'Vui lòng chọn Tỉnh/Thành phố' }]}
+                    style={{ flex: 1, textAlign: 'center' }}
                 >
         <Select 
-          placeholder="Chọn tỉnh/thành phố"
+          placeholder="Chọn Tỉnh/Thành phố"
           onChange={handleCityChange}
           value={selectedCity}
         >
@@ -85,9 +85,10 @@ const useData = () => {
         <Form.Item
                     label="Quận/Huyện"
                     name="district"
-                    style={{ flex: 1 }}>
+                    rules={[{ required: true, message: 'Vui lòng chọn Quận/Huyện' }]}
+                    style={{ flex: 1, textAlign: 'center'  }}>
         <Select 
-          placeholder="Chọn quận/huyện"
+          placeholder="Chọn Quận/Huyện"
           onChange={handleDistrictChange}
           value={selectedDistrict}
           disabled={!selectedCity}
@@ -103,9 +104,10 @@ const useData = () => {
         <Form.Item
                     label="Phường/Xã"
                     name="ward"
-                    style={{ flex: 1 }}>
+                    rules={[{ required: true, message: 'Vui lòng chọn Phường/Xã' }]}
+                    style={{ flex: 1, textAlign: 'center' }}>
         <Select 
-          placeholder="Chọn phường/xã"
+          placeholder="Chọn Phường/Xã"
           value={selectedDistrict ? undefined : undefined}
           disabled={!selectedDistrict}
         >
