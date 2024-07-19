@@ -1,17 +1,15 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Input, Button, Form, Switch, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-// import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
-// import { jwtDecode } from 'jwt-decode';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../services/Firebase/firebase';
 
-
 interface FormData {
+    id: number;
     name: string;
     brandOrigin: string;
     description?: string | null;
@@ -19,25 +17,58 @@ interface FormData {
     active: boolean;
 }
 
-const CreateBrandPage: React.FC = () => {
+const UpdateBrandPage: React.FC = () => {
+    const { brandId } = useParams<{ brandId: string }>(); // Fetch ID from URL params
+    const [formData, setFormData] = useState<FormData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [image, setImage] = useState<string | null>(null);
-    const navigate = useNavigate();
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    // const [userData, setUserData] = useState<any>(null);
-    // const userId = userData?.id;
+    useEffect(() => {
+        const fetchBrandDetails = async () => {
+            try {
+                const response = await axios.get(`https://localhost:44329/api/Brand/ViewBrandDetail/${brandId}`, {
+                    headers: {
+                        'accept': '*/*',
+                    },
+                });
 
-    // const navigateToSignInPage = () => {
-    //   navigate('/sign-in');
-    // };
+                if (response.data.success) {
+                    setFormData({
+                        ...response.data.data,
+                        id: response.data.data.id,
+                    });
+                    setImage(response.data.data.imageUrl || null);
+                } else {
+                    console.error('Không thể tải thông tin thương hiệu.');
+                }
+            } catch (error) {
+                console.error('Lỗi khi tải thông tin thương hiệu port 44329:', error);
+                try {
+                    const response = await axios.get(`https://localhost:7251/api/Brand/ViewBrandDetail/${brandId}`, {
+                        headers: {
+                            'accept': '*/*',
+                        },
+                    });
 
-    // const handleLogout = () => {
-    //   // Clear local items
-    //   localStorage.removeItem('accessToken');
-    //   // Redirect to sign-in page
-    //   navigateToSignInPage();
-    // };
+                    if (response.data.success) {
+                        setFormData({
+                            ...response.data.data,
+                            id: response.data.data.id,
+                        });
+                        setImage(response.data.data.imageUrl || null);
+                    } else {
+                        console.error('Không thể tải thông tin thương hiệu.');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi tải thông tin thương hiệu:', error);
+                }
+            }
+        };
+
+        fetchBrandDetails();
+    }, [brandId]);
 
     const handleOpenModal = (userId: string) => {
         setCurrentUserId(userId);
@@ -48,42 +79,32 @@ const CreateBrandPage: React.FC = () => {
         setIsModalOpen(false);
     };
 
-    const [formData, setFormData] = useState<FormData>({
-        name: '',
-        brandOrigin: '',
-        description: undefined,
-        imageUrl: undefined,
-        active: true,
-    });
-
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target as HTMLInputElement;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-        }));
+        if (formData) {
+            const { name, value, type } = e.target as HTMLInputElement;
+            setFormData({
+                ...formData,
+                [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+            });
+        }
     };
 
     const handleSwitchChange = (checked: boolean) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            active: checked,
-        }));
+        if (formData) {
+            setFormData({
+                ...formData,
+                active: checked,
+            });
+        }
     };
 
-    // const handleFileChange = (info: UploadChangeParam) => {
-    //   const { file } = info;
-    //   setFormData((prevState) => ({
-    //     ...prevState,
-    //     image: file as RcFile,
-    //   }));
-    // };
-
     const handleContentChange = (value: string) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            description: value,
-        }));
+        if (formData) {
+            setFormData({
+                ...formData,
+                description: value,
+            });
+        }
     };
 
     const handleSaveImage = (file: File) => {
@@ -96,63 +117,56 @@ const CreateBrandPage: React.FC = () => {
 
     const handleSubmit = async (values: FormData) => {
         const data = {
+            id: brandId,
             name: values.name,
             brandOrigin: values.brandOrigin,
-            description: values.description ? values.description : null,
-            imageUrl: "string",
+            description: values.description || null,
+            imageUrl: image || "",
             active: values.active,
         };
-        // const data = new FormData();
-        // data.append('name', formData.name);
-        // data.append('brandOrigin', formData.brandOrigin);
-        // data.append('description', formData.description || '');
-        // if (formData.imageUrl) {
-        //     data.append('imageUrl', formData.imageUrl);
-        // }
-        // data.append('active', formData.active.toString());
 
         try {
-            const response = await axios.post('https://localhost:44329/api/Brand/CreateBrand', data, {
+            const response = await axios.put('https://localhost:44329/api/Brand/UpdateBrand', data, {
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'application/json',
-                    // 'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', 
                 },
             });
 
             if (response.data.success) {
-                message.success('Thương hiệu được tạo thành công.');
+                message.success('Thương hiệu được cập nhật thành công.');
                 navigate('/admin/brands');
             } else {
-                message.error('Không tạo được thương hiệu.');
+                message.error('Không cập nhật được thương hiệu.');
             }
         } catch (error) {
-            console.error('Lỗi tạo thương hiệu port 44329:', error);
+            console.error('Error during update with port 44329:', error);
             try {
-                const response = await axios.post('https://localhost:7251/api/Brand/CreateBrand', data, {
+                const response = await axios.put('https://localhost:7251/api/Brand/UpdateBrand', data, {
                     headers: {
                         'accept': '*/*',
                         'Content-Type': 'application/json',
-                        // 'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', 
                     },
                 });
 
                 if (response.data.success) {
-                    message.success('Thương hiệu được tạo thành công.');
+                    message.success('Thương hiệu được cập nhật thành công.');
                     navigate('/admin/brands');
                 } else {
-                    message.error('Không tạo được thương hiệu.');
+                    message.error('Không cập nhật được thương hiệu.');
                 }
             } catch (error) {
-                console.error('Lỗi tạo thương hiệu:', error);
-                message.error('Đã xảy ra lỗi khi tạo thương hiệu.');
+                console.error('Error during update with port 7251:', error);
+                message.error('Đã xảy ra lỗi khi cập nhật thương hiệu.');
             }
         }
     };
 
+    if (!formData) return <div>Đang tải...</div>;
+
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Thêm thương hiệu</h1>
+            <h1 className="mb-6 text-3xl font-bold">Cập nhật thương hiệu</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
@@ -160,6 +174,12 @@ const CreateBrandPage: React.FC = () => {
             >
                 <div className="w-full px-4">
                     <div className="mb-4 w-1/2">
+                        <Input
+                            id="id"
+                            name="id"
+                            value={formData.id}
+                            type="hidden"
+                        />
                         <Form.Item
                             label="Tên thương hiệu"
                             name="name"
@@ -191,21 +211,6 @@ const CreateBrandPage: React.FC = () => {
                         </Form.Item>
                     </div>
 
-                    {/* <div className="mb-4">
-            <Form.Item
-              label="Mô tả"
-              name="description"
-              rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
-            >
-              <Input.TextArea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </Form.Item>
-          </div> */}
                     <div className="mb-4 pb-4">
                         <Form.Item
                             label="Mô tả"
@@ -224,19 +229,9 @@ const CreateBrandPage: React.FC = () => {
                         <Form.Item
                             label="Hình ảnh"
                             name="imageUrl"
-                            valuePropName="file"
-                            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
                         >
-                            {/* <Upload
-                name="imageUrl"
-                listType="picture"
-                beforeUpload={() => false}
-                onChange={handleFileChange}
-              >
-                <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-              </Upload> */}
                             {image && (
-                                <img src={image} alt="Preview" className="w-48 h-48 object-cover shadow-md mb-4" />
+                                <img src={image ?? formData.imageUrl} alt="Preview" className="w-48 h-48 object-cover shadow-md mb-4" />
                             )}
                             <Button
                                 onClick={() => handleOpenModal('04593eb6-fc18-4b07-b22a-3b0e4be00b59')}
@@ -268,7 +263,7 @@ const CreateBrandPage: React.FC = () => {
                             type="primary"
                             htmlType="submit"
                         >
-                            Thêm mới
+                            Cập nhật
                         </Button>
                         <Link to="/admin/brands">
                             <Button
@@ -284,7 +279,7 @@ const CreateBrandPage: React.FC = () => {
     );
 };
 
-export default CreateBrandPage;
+export default UpdateBrandPage;
 
 const ImageModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void, userId: string | null }> = ({ isOpen, onClose, onSave, userId: userIdd }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);

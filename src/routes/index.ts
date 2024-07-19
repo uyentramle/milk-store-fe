@@ -26,6 +26,7 @@ import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
 import ProductDetailPage from '../pages/admin/ManageProduct/ProductDetailsPage';
 import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
+import UpdateBrandPage from '../pages/admin/BrandManagement/UpdateBrandPage';
 import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
 import CreateVoucherPage from '../pages/admin/VoucherManagement/CreateVoucherPage';
 import UpdateVoucherPage from '../pages/admin/VoucherManagement/UpdateVoucherPage';
@@ -92,6 +93,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands/update/:brandId', component: UpdateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/update/:voucherId', component: UpdateVoucherPage, layout: DefaultAdminLayout },
