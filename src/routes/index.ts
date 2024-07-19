@@ -44,6 +44,7 @@ import PointHistoryTransaction from '../pages/client/User/PointHistoryTransactio
 
 import { DefaultLayoutProps } from '../types/layout.type';
 import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
+import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
 
 interface RouteProps {
     path: string;
@@ -86,6 +87,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/update/:productId', component: UpdateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },

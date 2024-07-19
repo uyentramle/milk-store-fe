@@ -165,8 +165,7 @@ const CreateProductPage = () => {
             return;
         }
 
-        const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjQ3NWQ1YTNiLTEzOTctNGI5OS04ZWVlLTMyNDk2MDIyNWZmNiIsIm5hbWUiOiJhZG1pbiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiI4ZjczNDY1ZC0wYWYxLTQwMTUtYmU5My0yMzdiOGNjM2QwNTMiLCJ1c2VySWQiOiI4ZjczNDY1ZC0wYWYxLTQwMTUtYmU5My0yMzdiOGNjM2QwNTMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcyMTMxNTI1OCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzAxOCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwMTgifQ.7NRU_5-yNmCh0KmRCFJyLEAneAVoWb4ya5ZbOio0Ync"
-        // const accessToken = localStorage.getItem('accessToken');
+        const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
             throw new Error('Access token not found.');
         }
@@ -366,6 +365,19 @@ const CreateProductPage = () => {
                             />
                         </div>
                         <div className="mb-4">
+                            <label htmlFor="discount" className="block font-bold">
+                                Giá giảm
+                            </label>
+                            <input
+                                type="number"
+                                id="discount"
+                                name="discount"
+                                value={formData.discount}
+                                onChange={handleChange}
+                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
                             <label htmlFor="weight" className="block font-bold">
                                 Cân nặng (kg) <span className="text-red-500">*</span>
                             </label>
@@ -377,19 +389,6 @@ const CreateProductPage = () => {
                                 onChange={handleChange}
                                 className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="discount" className="block font-bold">
-                                Giá giảm
-                            </label>
-                            <input
-                                type="number"
-                                id="discount"
-                                name="discount"
-                                value={formData.discount}
-                                onChange={handleChange}
-                                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                         <div className="mb-4">
