@@ -17,7 +17,8 @@ import ContactPage from '../pages/client/Contact/ContactPage';
 
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
-import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
+// import ManageAccountPage from '../pages/admin/AccountManagement/AccountManagementPage';
+import AccountManagementPage from '../pages/admin/AccountManagement/AccountManagementPage';
 import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
@@ -75,7 +76,7 @@ const privateRoutes: RouteProps[] = [];
 
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
-    { path: '/admin/accounts', component: ManageAccountPage, layout: DefaultAdminLayout },
+    { path: '/admin/accounts', component: AccountManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },

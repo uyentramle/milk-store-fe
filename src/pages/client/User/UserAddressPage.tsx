@@ -185,7 +185,7 @@ const UserAddressPage: React.FC = () => {
                 }
             });
             // setUserAddresses(userAddresses.filter((address: { id: number; }) => address.id !== addressId)); // Cập nhật state addresses sau khi xóa
-            await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
+            // await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
             message.success('Xóa địa chỉ thành công');
 
         } catch (error) {
