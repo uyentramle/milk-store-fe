@@ -74,6 +74,7 @@ const ProductDetailPage: React.FC = () => {
     const [mainImage, setMainImage] = useState<string>('');
 
     useEffect(() => {
+        try{
         const fetchProductDetails = async () => {
             try {
                 const response = await fetch(`https://localhost:7251/api/Product/GetProductById?id=${id}`);
@@ -101,9 +102,41 @@ const ProductDetailPage: React.FC = () => {
                 console.error('Error fetching product images:', error);
             }
         };
-
         fetchProductDetails();
         fetchProductImages();
+    }catch(error){
+        const fetchProductDetails = async () => {
+            try {
+                const response = await fetch(`https://localhost:44329/api/Product/GetProductById?id=${id}`);
+                const data = await response.json();
+                if (data.success) {
+                    setProduct(data.data);
+                } else {
+                    console.error('Failed to fetch product details:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        };
+
+        const fetchProductImages = async () => {
+            try {
+                const response = await fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${id}`);
+                const data = await response.json();
+                if (data.success) {
+                    setImages(data.data.map((item: any) => item.image, setMainImage(data.data[0].image.imageUrl)));
+                } else {
+                    console.error('Failed to fetch product images:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching product images:', error);
+            }
+        };
+        fetchProductDetails();
+        fetchProductImages();
+    }
+
+        
     }, [id]);
 
     if (!product) {

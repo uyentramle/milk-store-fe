@@ -86,6 +86,7 @@ const ManageProductPage: React.FC = () => {
     const [productsPerPage] = useState(5);
 
     useEffect(() => {
+        try{
         fetch('https://localhost:7251/api/Product/GetAllProducts')
             .then((response) => response.json())
             .then((data) => {
@@ -112,6 +113,34 @@ const ManageProductPage: React.FC = () => {
             .catch((error) => {
                 console.error('Error fetching products:', error);
             });
+        }catch(error){
+            fetch('https://localhost:44329/api/Product/GetAllProducts')
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    const fetchedProducts = data.data;
+                    const productImagesPromises = fetchedProducts.map((product: Product) =>
+                        fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
+                            .then((response) => response.json())
+                            .then((imageData) => {
+                                if (imageData.success && imageData.data.length > 0) {
+                                    product.image = imageData.data[0].image.imageUrl;
+                                }
+                                return product;
+                            })
+                    );
+
+                    Promise.all(productImagesPromises).then((updatedProducts) => {
+                        setProducts(updatedProducts);
+                    });
+                } else {
+                    console.error('Failed to fetch products:', data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching products:', error);
+            });
+        }
     }, []);
 
     const handlePageChange = (page: number) => {
@@ -133,7 +162,7 @@ const ManageProductPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Manage Milk Products</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý sản phẩm</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
