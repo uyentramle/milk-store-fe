@@ -7,7 +7,7 @@ import {
     ExclamationCircleOutlined
 } from '@ant-design/icons';
 import { Button, Input, Table, Image, Select, Spin, Modal, notification, } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, } from 'react-router-dom';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -62,6 +62,8 @@ const BrandManagementPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const navigate = useNavigate();
+
     const defaultImageUrl = 'https://via.placeholder.com/64';
 
     useEffect(() => {
@@ -103,6 +105,10 @@ const BrandManagementPage: React.FC = () => {
 
         fetchBrands();
     }, []);
+
+    const handleEdit = (brandId: number) => {
+        navigate(`/admin/brands/update/${brandId}`);
+    };
 
     const handleDeleteBrand = (brandId: number) => {
         confirm({
@@ -166,11 +172,11 @@ const BrandManagementPage: React.FC = () => {
             dataIndex: 'origin',
             key: 'origin',
         },
-        {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            key: 'description',
-        },
+        // {
+        //     title: 'Mô tả',
+        //     dataIndex: 'description',
+        //     key: 'description',
+        // },
         {
             title: 'Trạng thái',
             dataIndex: 'active',
@@ -181,7 +187,10 @@ const BrandManagementPage: React.FC = () => {
             title: 'Cập nhật',
             key: 'update',
             render: (_text: any, _record: any) => (
-                <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
+                <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={() => handleEdit(_record.id)} >
                     Cập nhật
                 </Button>
             ),
@@ -201,61 +210,61 @@ const BrandManagementPage: React.FC = () => {
         },
     ];
 
-return (
-    <div className="container mx-auto px-4 pb-8">
-        <h1 className="mb-6 text-3xl font-bold">Quản lý thương hiệu</h1>
-        <div className="mb-4 flex justify-between">
-            <div className="flex">
-                <div className="relative mr-4">
-                    <Input
-                        type="text"
-                        placeholder="Tìm kiếm..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        suffix={<SearchOutlined />}
-                    />
+    return (
+        <div className="container mx-auto px-4 pb-8">
+            <h1 className="mb-6 text-3xl font-bold">Quản lý thương hiệu</h1>
+            <div className="mb-4 flex justify-between">
+                <div className="flex">
+                    <div className="relative mr-4">
+                        <Input
+                            type="text"
+                            placeholder="Tìm kiếm..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            suffix={<SearchOutlined />}
+                        />
+                    </div>
+                    <div>
+                        <Select
+                            id="status-filter"
+                            className='w-48'
+                            value={filterStatus}
+                            onChange={(value) =>
+                                setFilterStatus(value as 'Active' | 'Inactive' | 'All')
+                            }
+                        >
+                            <Option value="All">Tất cả</Option>
+                            <Option value="Active">Hoạt động</Option>
+                            <Option value="Inactive">Không hoạt động</Option>
+                        </Select>
+                    </div>
                 </div>
                 <div>
-                    <Select
-                        id="status-filter"
-                        className='w-48'
-                        value={filterStatus}
-                        onChange={(value) =>
-                            setFilterStatus(value as 'Active' | 'Inactive' | 'All')
-                        }
+                    <Link
+                        to="/admin/brands/create"
+                        className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
-                        <Option value="All">Tất cả</Option>
-                        <Option value="Active">Hoạt động</Option>
-                        <Option value="Inactive">Không hoạt động</Option>
-                    </Select>
+                        <PlusOutlined className="mr-2" />
+                        Thêm mới
+                    </Link>
                 </div>
             </div>
-            <div>
-                <Link
-                    to="/admin/brands/create"
-                    className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
-                >
-                    <PlusOutlined className="mr-2" />
-                    Thêm mới
-                </Link>
-            </div>
-        </div>
 
-        <div className="overflow-x-auto">
-            {loading ? (
-                <div className="flex justify-center items-center">
-                    <Spin size="large" />
-                </div>
-            ) : error ? (
-                <div className="flex justify-center items-center">
-                    <span className="text-red-500">{error}</span>
-                </div>
-            ) : (
-                <Table columns={columns} dataSource={filteredBrands} rowKey="id" />
-            )}
+            <div className="overflow-x-auto">
+                {loading ? (
+                    <div className="flex justify-center items-center">
+                        <Spin size="large" />
+                    </div>
+                ) : error ? (
+                    <div className="flex justify-center items-center">
+                        <span className="text-red-500">{error}</span>
+                    </div>
+                ) : (
+                    <Table columns={columns} dataSource={filteredBrands} rowKey="id" />
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
 };
 
 export default BrandManagementPage;

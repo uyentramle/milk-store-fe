@@ -167,7 +167,11 @@ const BrandDetailPage: React.FC = () => {
             </div> */}
             <div className="p-4">
                 <div className="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
-                    <img src={brandData.imageUrl || defaultImageUrl} alt="{brandData.name}" className="h-20 w-20 rounded-full shadow border-2" />
+                    <img
+                        src={brandData.imageUrl || defaultImageUrl}
+                        alt={brandData.name}
+                        className="h-20 w-20 rounded-full shadow border-2 object-cover"
+                    />
                     <div className="pr-4">
                         <h2 className="font-bold text-xl pb-2">
                             {brandData.name}

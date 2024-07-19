@@ -134,6 +134,11 @@
     background-color: #e83c7e !important;
 }
 
+/* Spin */
+.ant-spin-dot-item {
+    background-color: #e83c7e !important;
+}
+
 /* Steps */
 .ant-steps .ant-steps-item-process .ant-steps-item-icon {
     background-color: #e83c7e !important;
