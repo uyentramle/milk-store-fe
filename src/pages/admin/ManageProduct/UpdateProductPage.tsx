@@ -236,7 +236,7 @@ const UpdateProductPage = () => {
         updateProductData.append('BrandId', formData.brandId.toString());
         updateProductData.append('AgeId', formData.ageId.toString());
         updateProductData.append('UpdatedBy', UpdatedBy);
-
+        try{
         try
         {
             const updateProduct = await axios.post(`https://localhost:7251/api/Product/UpdateProduct`, updateProductData,{
@@ -297,6 +297,69 @@ const UpdateProductPage = () => {
         }
         catch (error) {
             message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
+        }}
+        catch (error) {
+            try
+        {
+            const updateProduct = await axios.post(`https://localhost:44329/api/Product/UpdateProduct`, updateProductData,{
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+            if (updateProduct.data.success) {
+                message.success('Cập nhật sản phẩm thành công!');
+                const productImage = new FormData();
+                productImage.append('ProductId', productId);
+                productImage.append('UpdatedBy', UpdatedBy);
+
+                if (!checkThumbnailChanged && !checkImagesChanged){
+                    return;
+                } else if (checkThumbnailChanged && !checkImagesChanged) {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    productImage.append('imageFiles', '');
+                    productImage.append('imageIds', '');
+                } else if (!checkThumbnailChanged && checkImagesChanged) {
+                    productImage.append('thumbnailFile', '');
+                    for (let i = 0; i < images.length; i++) 
+                        {
+                            productImage.append('imageFiles', images[i]);
+                        }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
+                    }
+                } else {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    for (let i = 0; i < images.length; i++)
+                        {
+                            productImage.append('imageFiles', images[i]);
+                        }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
+                    }
+                }
+                const updateProductImage = await axios.post(`https://localhost:44329/api/ProductImage/UpdateProductImage`, productImage,{
+                    headers: {
+                        'accept': '*/*',
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (updateProductImage.data.success) {
+                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
+                }
+                
+            }
+            else {
+                message.error('Cập nhật sản phẩm thất bại!');
+            }
+
+        }
+        catch (error) {
+            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
+        }
         }
     };
 
