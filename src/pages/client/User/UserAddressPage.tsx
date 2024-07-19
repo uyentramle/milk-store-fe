@@ -12,6 +12,7 @@ import {
     LogoutOutlined,
     EditOutlined,
     DeleteOutlined,
+    DollarOutlined,
 } from '@ant-design/icons';
 import AddressForm from '../../../layouts/client/Components/User/Address/AddressForm';
 import cities from '../../../layouts/client/Components/User/Address/data/provinces.json';
@@ -251,6 +252,13 @@ const UserAddressPage: React.FC = () => {
                                 {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
                                 <RetweetOutlined className="mr-2" />
                                 <span>Đổi mật khẩu</span>
+                            </a>
+                            <a
+                                href="/point-history-transaction"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                <DollarOutlined className="mr-2" />
+                                <span>Lịch sử điểm thưởng</span>
                             </a>
                             <a
                                 href=""
@@ -731,4 +739,8 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose, ad
         </Modal>
     );
 };
+
+function fetchData(setUserAddresses: React.Dispatch<any>) {
+    throw new Error('Function not implemented.');
+}
 

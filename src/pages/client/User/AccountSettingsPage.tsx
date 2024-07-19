@@ -15,6 +15,7 @@ import {
     KeyOutlined,
     TwitterOutlined,
     GoogleOutlined,
+    DollarOutlined,
     // FacebookFilled,
 } from '@ant-design/icons';
 
@@ -138,8 +139,8 @@ const AccountSettingsPage: React.FC = () => {
 
     // const [phoneNumber, setPhoneNumber] = useState('(+**)397****07'); // Sử dụng useState để quản lý giá trị số điện thoại, dòng này có thể bỏ do dùng để test
 
-    const [username, setUsername] = useState(''); 
-    const [email, setEmail] = useState(''); 
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [googleEmail, setGoogleEmail] = useState('');
     const [facebookEmail, setFacebookEmail] = useState('');
@@ -215,6 +216,13 @@ const AccountSettingsPage: React.FC = () => {
                                 <RetweetOutlined className="mr-2" />
                                 <span>Đổi mật khẩu</span>
                             </a>
+                            <a
+                                href="/point-history-transaction"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                <DollarOutlined className="mr-2" />
+                                <span>Lịch sử điểm thưởng</span>
+                            </a>
                             {/* <a
                                 href=""
                                 className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
@@ -251,7 +259,7 @@ const AccountSettingsPage: React.FC = () => {
                                     Đã Liên Kết
                                 </button>
                             </div> */}
-                            <LinkedAccount username={username} setUsername={setUsername}/>
+                            <LinkedAccount username={username} setUsername={setUsername} />
 
                             {/* <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
@@ -305,17 +313,17 @@ const AccountSettingsPage: React.FC = () => {
                                     Đổi
                                 </a> */}
                                 {username ? (
-                    <a
-                        href="/change-password"
-                        className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700"
-                    >
-                        Đổi
-                    </a>
-                ) : (
-                    <div className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700  bg-gray-300">
-                        Hãy liên kết với tên người dùng
-                    </div>
-                )}
+                                    <a
+                                        href="/change-password"
+                                        className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700"
+                                    >
+                                        Đổi
+                                    </a>
+                                ) : (
+                                    <div className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700  bg-gray-300">
+                                        Hãy liên kết với tên người dùng
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <h6 className="mb-4 mt-8 border-t pt-5 text-xl">Tài khoản liên kết</h6>
@@ -339,7 +347,7 @@ const AccountSettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <button className="mt-1 rounded bg-gray-300 px-2 py-1 text-sm text-gray-700">
-                                {facebookEmail ? 'Hủy liên kết' : 'Liên Kết'}
+                                    {facebookEmail ? 'Hủy liên kết' : 'Liên Kết'}
                                 </button>
                             </div>
 
@@ -370,7 +378,7 @@ const AccountSettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <button className="mt-1 rounded bg-gray-300 px-2 py-1 text-sm text-gray-700">
-                                {googleEmail ? 'Hủy liên kết' : 'Liên Kết'}
+                                    {googleEmail ? 'Hủy liên kết' : 'Liên Kết'}
                                 </button>
                             </div>
                         </div>
@@ -433,8 +441,8 @@ const LinkedAccount: React.FC<LinkedAccountProps> = ({ username, setUsername }) 
                 setConfirmPassword(''); // Clear the input field
             } else {
                 // Handle general failure
-        message.error(response.data.message || 'Liên kết tài khoản thất bại.');
-        }
+                message.error(response.data.message || 'Liên kết tài khoản thất bại.');
+            }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 // Handle specific errors based on server response
@@ -626,7 +634,7 @@ export const LinkedEmail: React.FC<LinkedEmailProps> = ({ email, setEmail }) => 
                 userId,
                 newEmail
             };
-            
+
             const response = await axios.post('https://localhost:44329/api/Account/SendVerificationCodeEmail', data, {
                 headers: {
                     'accept': '*/*',
@@ -634,26 +642,27 @@ export const LinkedEmail: React.FC<LinkedEmailProps> = ({ email, setEmail }) => 
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
-    
+
             // Check the success field in the response
-        if (response.data.success) {
-            // If successful, show success message and update state
-            message.success('Mã xác thực đã được gửi đến email của bạn.');
-            setEmailSent(true);
-        } 
-        // else {
-        //     // If not successful, show error message based on the message from API
-        //     message.error(response.data.message);
-        // }
+            if (response.data.success) {
+                // If successful, show success message and update state
+                message.success('Mã xác thực đã được gửi đến email của bạn.');
+                setEmailSent(true);
+            }
+            // else {
+            //     // If not successful, show error message based on the message from API
+            //     message.error(response.data.message);
+            // }
         } catch (error: any) {
             // Handle other errors, e.g., network error
             if (error.response && error.response.status === 400 && error.response.data.message === 'Email is already in use.') {
                 message.error('Email đã được sử dụng. Vui lòng nhập một địa chỉ email khác.');
             } else {
                 message.error('Gửi mã xác thực thất bại.');
-            }        }
+            }
+        }
     };
-    
+
 
     const verifyNewEmail = async (newEmail: string, code: string) => {
         const accessToken = localStorage.getItem('accessToken');

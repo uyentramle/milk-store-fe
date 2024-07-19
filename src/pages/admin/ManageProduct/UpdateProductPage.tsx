@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { message } from 'antd';
+import { message, Checkbox } from 'antd';
 
 interface Brand {
     id: number;
@@ -35,7 +35,21 @@ interface AgeRange {
     active: boolean;
 }
 
-const CreateProductPage = () => {
+interface Image {
+    id: number;
+    imageUrl: string;
+    thumbnailUrl: string;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string;
+    updatedBy: string;
+    deletedAt: string;
+    deletedBy: string;
+    isDeleted: boolean;
+    type: string;
+}
+
+const UpdateProductPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         thumbnail: null,
@@ -46,16 +60,50 @@ const CreateProductPage = () => {
         weight: 0,
         discount: 0,
         quantity: 0,
-        type: '',
-        brand: '',
-        age: '',
+        typeId: 0,
+        brandId: 0,
+        ageId: 0,
     });
 
+    const { productId } = useParams<{ productId: string }>();
     const [productTypes, setProductTypes] = useState<Type[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const [images, setImages] = useState<Image[]>([]);
+    const [checkThumbnailChanged, setThumbnailChanged] = useState(false);
+    const [checkImagesChanged, setImagesChanged] = useState(false);
+
+
 
     useEffect(() => {
+        fetch(`https://localhost:7251/api/Product/GetProductById?id=${productId}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    fetch(`https://localhost:7251/api/ProductImage/GetProductImagesById?productImageId=${productId}`)
+                    .then((response) => response.json())
+                    .then((productImageData) => {
+                        setFormData({
+                            name: data.data.name,
+                            thumbnail: productImageData.data[0].image.thumbnailUrl,
+                            images: productImageData.data.map((item: any) => item.image),
+                            sku: data.data.sku,
+                            description: data.data.description,
+                            price: data.data.price,
+                            weight: data.data.weight,
+                            discount: data.data.discount,
+                            quantity: data.data.quantity,
+                            typeId: data.data.typeId,
+                            brandId: data.data.brandId,
+                            ageId: data.data.ageId,
+                        });
+                    });
+                }
+            })
+            .catch((error) => console.error('Error fetching product:', error));
+
         fetch('https://localhost:7251/api/ProductType/GetAllProductType')
             .then((response) => response.json())
             .then((data) => setProductTypes(data.data))
@@ -85,6 +133,7 @@ const CreateProductPage = () => {
                     ...prevState,
                     images: [...prevState.images, ...Array.from(files)],
                 }));
+                setImages((prevState) => [...prevState, ...Array.from(files)]);
             }
         } else {
             setFormData((prevState) => ({
@@ -93,6 +142,7 @@ const CreateProductPage = () => {
             }));
         }
     };
+    
 
     const handleReset = () => {
         setFormData({
@@ -105,9 +155,9 @@ const CreateProductPage = () => {
             weight: 0,
             discount: 0,
             quantity: 0,
-            type: '',
-            brand: '',
-            age: '',
+            typeId: '',
+            brandId: '',
+            ageId: '',
         });
     };
 
@@ -150,17 +200,17 @@ const CreateProductPage = () => {
             return;
         }
 
-        if (!formData.type) {
+        if (!formData.typeId) {
             message.error("Vui lòng chọn loại sản phẩm");
             return;
         }
 
-        if (!formData.brand) {
+        if (!formData.brandId) {
             message.error("Vui lòng chọn thương hiệu");
             return;
         }
 
-        if (!formData.age) {
+        if (!formData.ageId) {
             message.error("Vui lòng chọn độ tuổi");
             return;
         }
@@ -171,121 +221,198 @@ const CreateProductPage = () => {
         }
 
         const decodedToken: any = jwtDecode(accessToken);
-        const createdBy = decodedToken.id;
-        const createData = new FormData();
-        createData.append('Name', formData.name);
-        createData.append('Sku', formData.sku);
-        createData.append('Description', formData.description || '');
-        createData.append('Price', formData.price.toString());
-        createData.append('Weight', formData.weight.toString());
-        createData.append('Discount', formData.discount.toString());
-        createData.append('Quantity', formData.quantity.toString());
-        createData.append('TypeId', formData.type.toString());
-        createData.append('BrandId', formData.brand.toString());
-        createData.append('AgeId', formData.age.toString());
-        createData.append('CreatedBy', createdBy);
+        const UpdatedBy = decodedToken.id;
 
+        const updateProductData = new FormData();
+        updateProductData.append('Id', productId);
+        updateProductData.append('Name', formData.name);
+        updateProductData.append('Sku', formData.sku);
+        updateProductData.append('Description', formData.description);
+        updateProductData.append('Price', formData.price.toString());
+        updateProductData.append('Weight', formData.weight.toString());
+        updateProductData.append('Discount', formData.discount.toString());
+        updateProductData.append('Quantity', formData.quantity.toString());
+        updateProductData.append('TypeId', formData.typeId.toString());
+        updateProductData.append('BrandId', formData.brandId.toString());
+        updateProductData.append('AgeId', formData.ageId.toString());
+        updateProductData.append('UpdatedBy', UpdatedBy);
         try{
-        try {
-            const response = await axios.post('https://localhost:7251/api/Product/CreateProduct', createData, {
+        try
+        {
+            const updateProduct = await axios.post(`https://localhost:7251/api/Product/UpdateProduct`, updateProductData,{
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${accessToken}`,
                 },
             });
+            if (updateProduct.data.success) {
+                message.success('Cập nhật sản phẩm thành công!');
+                const productImage = new FormData();
+                productImage.append('ProductId', productId);
+                productImage.append('UpdatedBy', UpdatedBy);
 
-            if (response.data.success) {
-                message.success('Tạo sản phẩm thành công');
-                console.log("Created product successfully");
-                const responeData = await axios.get(`https://localhost:7251/api/Product/GetProductBySku?sku=${formData.sku}`);
-                const productId = responeData.data.data.id;
-                if (responeData.data.success && productId != null) {
-                    console.log("Get Product by sku successfully");
-                    if (formData.images.length > 0 && formData.thumbnail !== null) {
-                        const formData1 = new FormData();
-                        formData1.append('ProductId', productId.toString());
-                        formData1.append('CreatedBy', createdBy);
-                        formData1.append('thumbnailFile', formData.thumbnail);
-                        formData.images.forEach((image) => {
-                            formData1.append('imageFiles', image);
-                        });
-                        const response1 = await axios.post('https://localhost:7251/api/ProductImage/CreateProductImage', formData1, {
-                            headers: {
-                                'accept': '*/*',
-                                'Content-Type': 'multipart/form-data',
-                                'Authorization': `Bearer ${accessToken}`,
-                            },
-                        });
-
-                        if (response1.data.success) {
-                            console.log("Created product image successfully");
-                            message.success('Thêm hình ảnh sản phẩm thành công');
-                            handleReset();
+                if (!checkThumbnailChanged && !checkImagesChanged){
+                    return;
+                } else if (checkThumbnailChanged && !checkImagesChanged) {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    productImage.append('imageFiles', '');
+                    productImage.append('imageIds', '');
+                } else if (!checkThumbnailChanged && checkImagesChanged) {
+                    productImage.append('thumbnailFile', '');
+                    for (let i = 0; i < images.length; i++) 
+                        {
+                            productImage.append('imageFiles', images[i]);
                         }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
+                    }
+                } else {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    for (let i = 0; i < images.length; i++)
+                        {
+                            productImage.append('imageFiles', images[i]);
+                        }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
                     }
                 }
-            } else {
-                message.error(response.data.message || 'Không thể tạo sản phẩm');
+                const updateProductImage = await axios.post(`https://localhost:7251/api/ProductImage/UpdateProductImage`, productImage,{
+                    headers: {
+                        'accept': '*/*',
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (updateProductImage.data.success) {
+                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
+                }
+                
             }
-        } catch (error) {
-            console.error('Error creating product:', error);
-            message.error('Tạo sản phẩm thất bại');
+            else {
+                message.error('Cập nhật sản phẩm thất bại!');
+            }
+
         }
-    } catch (error) {
-        try {
-            const response = await axios.post('https://localhost:44329/api/Product/CreateProduct', createData, {
+        catch (error) {
+            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
+        }}
+        catch (error) {
+            try
+        {
+            const updateProduct = await axios.post(`https://localhost:44329/api/Product/UpdateProduct`, updateProductData,{
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${accessToken}`,
                 },
             });
+            if (updateProduct.data.success) {
+                message.success('Cập nhật sản phẩm thành công!');
+                const productImage = new FormData();
+                productImage.append('ProductId', productId);
+                productImage.append('UpdatedBy', UpdatedBy);
 
-            if (response.data.success) {
-                message.success('Tạo sản phẩm thành công');
-                console.log("Created product successfully");
-                const responeData = await axios.get(`https://localhost:44329/api/Product/GetProductBySku?sku=${formData.sku}`);
-                const productId = responeData.data.data.id;
-                if (responeData.data.success && productId != null) {
-                    console.log("Get Product by sku successfully");
-                    if (formData.images.length > 0 && formData.thumbnail !== null) {
-                        const formData1 = new FormData();
-                        formData1.append('ProductId', productId.toString());
-                        formData1.append('CreatedBy', createdBy);
-                        formData1.append('thumbnailFile', formData.thumbnail);
-                        formData.images.forEach((image) => {
-                            formData1.append('imageFiles', image);
-                        });
-                        const response1 = await axios.post('https://localhost:44329/api/ProductImage/CreateProductImage', formData1, {
-                            headers: {
-                                'accept': '*/*',
-                                'Content-Type': 'multipart/form-data',
-                                'Authorization': `Bearer ${accessToken}`,
-                            },
-                        });
-
-                        if (response1.data.success) {
-                            console.log("Created product image successfully");
-                            message.success('Thêm hình ảnh sản phẩm thành công');
-                            handleReset();
+                if (!checkThumbnailChanged && !checkImagesChanged){
+                    return;
+                } else if (checkThumbnailChanged && !checkImagesChanged) {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    productImage.append('imageFiles', '');
+                    productImage.append('imageIds', '');
+                } else if (!checkThumbnailChanged && checkImagesChanged) {
+                    productImage.append('thumbnailFile', '');
+                    for (let i = 0; i < images.length; i++) 
+                        {
+                            productImage.append('imageFiles', images[i]);
                         }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
+                    }
+                } else {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                    for (let i = 0; i < images.length; i++)
+                        {
+                            productImage.append('imageFiles', images[i]);
+                        }
+                    for (let i = 0; i < formData.images.length; i++){
+                        productImage.append('imageIds', formData.images[i].id);
                     }
                 }
-            } else {
-                message.error(response.data.message || 'Không thể tạo sản phẩm');
+                const updateProductImage = await axios.post(`https://localhost:44329/api/ProductImage/UpdateProductImage`, productImage,{
+                    headers: {
+                        'accept': '*/*',
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (updateProductImage.data.success) {
+                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
+                }
+                
             }
-        } catch (error) {
-            console.error('Error creating product:', error);
-            message.error('Tạo sản phẩm thất bại');
+            else {
+                message.error('Cập nhật sản phẩm thất bại!');
+            }
+
         }
-    }
+        catch (error) {
+            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
+        }
+        }
     };
 
+    const handleThumbnailClick = () => {
+        setItemToDelete('thumbnail');
+        setShowDeletePopup(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete === 'thumbnail') {
+            setFormData((prevState) => ({
+                ...prevState,
+                thumbnail: null,
+            }));
+            setThumbnailChanged(true)
+        } else if (itemToDelete && itemToDelete.startsWith('image-')) {
+            const imageId = parseInt(itemToDelete.split('-')[1], 10);
+            setFormData((prevState) => ({
+                ...prevState,
+                images: prevState.images.filter((img) => img.id !== imageId),
+            }));
+            setImagesChanged(true)
+        }
+        setShowDeletePopup(false);
+        setItemToDelete(null);
+    };
+    
+    const DeletePopup = () => (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-md shadow-md">
+                <p className="mb-4">Bạn có chắc chắn muốn xóa ảnh này?</p>
+                <div className="flex justify-end space-x-4">
+                    <button
+                        className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                        onClick={() => setShowDeletePopup(false)}
+                    >
+                        Hủy
+                    </button>
+                    <button
+                        className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
+                        onClick={handleConfirmDelete}
+                    >
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+        
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Tạo sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Cập nhật sản phẩm</h1>
             <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
                 <div className="flex space-x-6">
                     <div className="flex-1 flex flex-col space-y-4">
@@ -293,9 +420,10 @@ const CreateProductPage = () => {
                         <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 relative">
                             {formData.thumbnail ? (
                                 <img
-                                    src={URL.createObjectURL(formData.thumbnail)}
+                                    src={formData.thumbnail ? formData.thumbnail :  URL.createObjectURL(formData.thumbnail)}
                                     alt="Thumbnail"
                                     className="object-cover h-full w-full"
+                                    onClick={handleThumbnailClick}
                                 />
                             ) : (
                                 <label className="w-full h-full flex justify-center items-center cursor-pointer">
@@ -329,18 +457,26 @@ const CreateProductPage = () => {
                                 formData.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={URL.createObjectURL(image)}
+                                        src={image.imageUrl ? image.imageUrl : URL.createObjectURL(image)}
                                         alt={`Product ${index}`}
                                         className="w-40 h-40 object-cover"
+                                        onClick={() => {
+                                            setItemToDelete(`image-${image.id}`);
+                                            setShowDeletePopup(true);
+                                        }}
                                     />
                                 ))}
                             {formData.images.length > 6 &&
                                 formData.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={URL.createObjectURL(image)}
+                                        src={image.imageUrl ? image.imageUrl : URL.createObjectURL(image)}
                                         alt={`Product ${index}`}
                                         className="w-20 h-20 object-cover"
+                                        onClick={() => {
+                                            setItemToDelete(`image-${image.id}`);
+                                            setShowDeletePopup(true);
+                                        }}
                                     />
                                 ))}
                             {formData.images.length === 0 &&
@@ -460,8 +596,8 @@ const CreateProductPage = () => {
                             </label>
                             <select
                                 id="type"
-                                name="type"
-                                value={formData.type}
+                                name="typeId"
+                                value={formData.typeId}
                                 onChange={handleChange}
                                 className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
@@ -478,8 +614,8 @@ const CreateProductPage = () => {
                             </label>
                             <select
                                 id="brand"
-                                name="brand"
-                                value={formData.brand}
+                                name="brandId"
+                                value={formData.brandId}
                                 onChange={handleChange}
                                 className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
@@ -496,8 +632,8 @@ const CreateProductPage = () => {
                             </label>
                             <select
                                 id="age"
-                                name="age"
-                                value={formData.age}
+                                name="ageId"
+                                value={formData.ageId}
                                 onChange={handleChange}
                                 className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
@@ -530,12 +666,13 @@ const CreateProductPage = () => {
                         type="submit"
                         className="rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-700"
                     >
-                        Thêm mới
+                        Cập nhật
                     </button>
                 </div>
             </form>
+            {showDeletePopup && <DeletePopup />}
         </div>
     );
 };
 
-export default CreateProductPage;
+export default UpdateProductPage;

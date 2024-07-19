@@ -6,6 +6,7 @@ import {
     FileTextOutlined,
     RetweetOutlined,
     LogoutOutlined,
+    DollarOutlined,
 } from '@ant-design/icons';
 
 const fakeOrderData = [
@@ -127,6 +128,13 @@ const OrderHistoryPage: React.FC = () => {
                                 {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
                                 <RetweetOutlined className="mr-2" />
                                 <span>Đổi mật khẩu</span>
+                            </a>
+                            <a
+                                href="/point-history-transaction"
+                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
+                            >
+                                <DollarOutlined className="mr-2" />
+                                <span>Lịch sử điểm thưởng</span>
                             </a>
                             <a
                                 href="#"

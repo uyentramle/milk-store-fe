@@ -23,6 +23,7 @@ import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
+import ProductDetailPage from '../pages/admin/ManageProduct/ProductDetailsPage';
 import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
 import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
@@ -40,8 +41,11 @@ import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
 import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
 import UserAddressPage from '../pages/client/User/UserAddressPage';
 import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
+import PointHistoryTransaction from '../pages/client/User/PointHistoryTransaction';
 
 import { DefaultLayoutProps } from '../types/layout.type';
+import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
+import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
 
 interface RouteProps {
     path: string;
@@ -57,7 +61,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/blog', component: BlogPage, layout: DefaultClientLayout },
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
-    { path: '/blog-detail', component: BlogPageDetail, layout: DefaultClientLayout },
+    { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
     { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
@@ -70,6 +74,9 @@ const publicRoutes: RouteProps[] = [
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
 
+
+    { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
+
 ];
 
 const privateRoutes: RouteProps[] = [];
@@ -79,15 +86,18 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/accounts', component: AccountManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/update/:productId', component: UpdateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
-    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:voucherId', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs/edit/:blogId', component: UpdateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },

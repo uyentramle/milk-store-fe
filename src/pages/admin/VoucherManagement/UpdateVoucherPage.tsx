@@ -1,104 +1,90 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Input, Button, Form, DatePicker, Select, message } from 'antd';
 import axios from 'axios';
+import moment from 'moment';
 
 const { Option } = Select;
 
-interface FormData {
+interface VoucherData {
     id: number;
     code: string;
     description: string;
-    discount_type: 'Percentage' | 'FixedAmount';
-    discount_value: number;
-    start_date?: Date;
-    end_date?: Date;
-    usage_limit?: number;
-    minimum_order_amount: number;
-    status: 'Active' | 'Disabled';
+    discountType: 'Percentage' | 'FixedAmount';
+    discountValue: number;
+    startDate?: string | null;
+    endDate?: string | null;
+    usageLimit: number;
+    usedCount?: number | null;
+    minimumOrderValue: number;
+    status: 'Active' | 'Expired' | 'Used' | 'Disabled';
 }
 
-const UpdateVoucherPage: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        id: 0,
-        code: '',
-        description: '',
-        discount_type: 'Percentage',
-        discount_value: 0,
-        start_date: undefined,
-        end_date: undefined,
-        usage_limit: undefined,
-        minimum_order_amount: 0,
-        status: 'Active',
-    });
+const getVoucherData = async (voucherId: string): Promise<VoucherData> => {
+    try {
+        const response = await axios.get(`https://localhost:7251/api/Voucher/GetVoucherById?id=${voucherId}`, {
+            headers: {
+                'accept': '*/*'
+            }
+        });
 
-    const { id } = useParams<{ id: string }>(); 
+        if (response.data && response.data.data) {
+            const { id, code, description, discountType, discountValue, startDate, endDate, usageLimit, usedCount, minimumOrderValue, status } = response.data;
+
+            return {
+                id,
+                code,
+                description,
+                discountType,
+                discountValue,
+                startDate,
+                endDate,
+                usageLimit,
+                usedCount,
+                minimumOrderValue,
+                status
+            };
+        } else {
+            throw new Error('Invalid response data');
+        }
+    } catch (error) {
+        console.error('Lỗi tìm nạp voucher:', error);
+        throw new Error('Không thể tìm nạp voucher.');
+    }
+};
+
+const UpdateVoucherPage: React.FC = () => {
+    const { voucherId } = useParams<{ voucherId: string }>();
+    const [voucherData, setVoucherData] = useState<VoucherData | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchVoucher = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get(`https://localhost:7251/api/Voucher/GetVoucherById?id=${id}`, {
-                    headers: {
-                        'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458', // Replace with actual token
-                    },
-                });
-                const voucherData = response.data;
-                setFormData({
-                    id: voucherData.id,
-                    code: voucherData.code,
-                    description: voucherData.description,
-                    discount_type: voucherData.discount_type,
-                    discount_value: voucherData.discount_value,
-                    start_date: new Date(voucherData.start_date),
-                    end_date: new Date(voucherData.end_date),
-                    usage_limit: voucherData.usage_limit,
-                    minimum_order_amount: voucherData.minimum_order_amount,
-                    status: voucherData.status,
-                });
+                if (voucherId) {
+                    const voucherData = await getVoucherData(voucherId);
+                    setVoucherData(voucherData);
+                }
+                setLoading(false);
             } catch (error) {
                 console.error('Lỗi tìm nạp voucher:', error);
-                message.error('Không thể tìm nạp voucher.');
+                setError('Không thể tìm nạp voucher.');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchVoucher();
-    }, [id]);
+    }, [voucherId]);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target as HTMLInputElement;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
-
-    const handleSelectChange = (value: string, name: string) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    };
-
-    const handleDateChange = (date: any, _dateString: string, name: string) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: date,
-        }));
-    };
-
-    const handleSubmit = async (values: FormData) => {
+    const handleSubmit = async (values: VoucherData) => {
         const requestBody = {
-            id: values.id,
-            code: values.code,
-            description: values.description,
-            discountType: values.discount_type,
-            discountValue: values.discount_value,
-            startDate: values.start_date ? values.start_date.toISOString() : undefined,
-            endDate: values.end_date ? values.end_date.toISOString() : undefined,
-            usageLimit: values.usage_limit,
-            miniumOrderValue: values.minimum_order_amount,
-            status: values.status,
+            ...values,
+            startDate: values.startDate ? moment(values.startDate).format('YYYY-MM-DDTHH:mm:ss') : null,
+            endDate: values.endDate ? moment(values.endDate).format('YYYY-MM-DDTHH:mm:ss') : null,
         };
 
         try {
@@ -120,11 +106,22 @@ const UpdateVoucherPage: React.FC = () => {
         }
     };
 
+    if (loading || !voucherData) {
+        return <div>Đang tải...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
+    const startDateMoment = voucherData.startDate ? moment(voucherData.startDate) : undefined;
+    const endDateMoment = voucherData.endDate ? voucherData.endDate : undefined;
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Cập nhật Voucher</h1>
+        <div className="container mx-auto px-4 pb-8">
+            <h1 className="mb-6 text-3xl font-bold">Cập nhật voucher</h1>
             <Form
-                initialValues={formData}
+                initialValues={voucherData}
                 onFinish={handleSubmit}
                 className="-mx-4 flex flex-wrap"
             >
@@ -135,12 +132,7 @@ const UpdateVoucherPage: React.FC = () => {
                             name="code"
                             rules={[{ required: true, message: 'Vui lòng nhập mã voucher' }]}
                         >
-                            <Input
-                                id="code"
-                                name="code"
-                                value={formData.code}
-                                onChange={handleChange}
-                            />
+                            <Input name="code" defaultValue={voucherData.code} disabled />
                         </Form.Item>
                     </div>
 
@@ -150,27 +142,19 @@ const UpdateVoucherPage: React.FC = () => {
                             name="description"
                             rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
                         >
-                            <Input.TextArea
-                                id="description"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                            />
+                            <Input.TextArea name="description" defaultValue={voucherData.description} />
                         </Form.Item>
                     </div>
 
                     <div className="mb-4">
                         <Form.Item
                             label="Loại giảm giá"
-                            name="discount_type"
+                            name="discountType"
+                            rules={[{ required: true, message: 'Vui lòng chọn loại giảm giá' }]}
                         >
-                            <Select
-                                id="discount_type"
-                                value={formData.discount_type}
-                                onChange={(value) => handleSelectChange(value, 'discount_type')}
-                            >
-                                <Option value="Percentage">Phần trăm</Option>
-                                <Option value="FixedAmount">Số tiền cố định</Option>
+                            <Select defaultValue={voucherData.discountType} disabled>
+                                <Option value="Percentage">Percentage</Option>
+                                <Option value="FixedAmount">Fixed Amount</Option>
                             </Select>
                         </Form.Item>
                     </div>
@@ -178,30 +162,23 @@ const UpdateVoucherPage: React.FC = () => {
                     <div className="mb-4">
                         <Form.Item
                             label="Giá trị giảm giá"
-                            name="discount_value"
+                            name="discountValue"
                             rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm giá' }]}
                         >
-                            <Input
-                                id="discount_value"
-                                name="discount_value"
-                                type="number"
-                                value={formData.discount_value}
-                                onChange={handleChange}
-                            />
+                            <Input type="number" name="discountValue" defaultValue={voucherData.discountValue.toString()} />
                         </Form.Item>
                     </div>
 
                     <div className="mb-4">
                         <Form.Item
                             label="Ngày bắt đầu"
-                            name="start_date"
+                            name="startDate"
                             rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
                         >
                             <DatePicker
-                                id="start_date"
-                                name="start_date"
-                                value={formData.start_date ? new Date(formData.start_date) : undefined}
-                                onChange={(date, dateString) => handleDateChange(date, dateString[0], 'start_date')}
+                                name="startDate"
+                                defaultValue={startDateMoment}
+                                format="YYYY-MM-DD HH:mm:ss"
                             />
                         </Form.Item>
                     </div>
@@ -209,14 +186,13 @@ const UpdateVoucherPage: React.FC = () => {
                     <div className="mb-4">
                         <Form.Item
                             label="Ngày kết thúc"
-                            name="end_date"
+                            name="endDate"
                             rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
                         >
                             <DatePicker
-                                id="end_date"
-                                name="end_date"
-                                value={formData.end_date ? new Date(formData.end_date) : undefined}
-                                onChange={(date, dateString) => handleDateChange(date, dateString[0], 'end_date')}
+                                name="endDate"
+                                defaultValue={endDateMoment}
+                                format="YYYY-MM-DD HH:mm:ss"
                             />
                         </Form.Item>
                     </div>
@@ -224,30 +200,18 @@ const UpdateVoucherPage: React.FC = () => {
                     <div className="mb-4">
                         <Form.Item
                             label="Giới hạn sử dụng"
-                            name="usage_limit"
+                            name="usageLimit"
                         >
-                            <Input
-                                id="usage_limit"
-                                name="usage_limit"
-                                type="number"
-                                value={formData.usage_limit}
-                                onChange={handleChange}
-                            />
+                            <Input type="number" name="usageLimit" defaultValue={voucherData.usageLimit.toString()} />
                         </Form.Item>
                     </div>
 
                     <div className="mb-4">
                         <Form.Item
                             label="Giá trị đơn hàng tối thiểu"
-                            name="minimum_order_amount"
+                            name="minimumOrderValue"
                         >
-                            <Input
-                                id="minimum_order_amount"
-                                name="minimum_order_amount"
-                                type="number"
-                                value={formData.minimum_order_amount}
-                                onChange={handleChange}
-                            />
+                            <Input type="number" name="minimumOrderValue" defaultValue={voucherData.minimumOrderValue.toString()} />
                         </Form.Item>
                     </div>
 
@@ -255,31 +219,22 @@ const UpdateVoucherPage: React.FC = () => {
                         <Form.Item
                             label="Trạng thái"
                             name="status"
-                            valuePropName="checked"
+                            rules={[{ required: true, message: 'Vui lòng chọn trạng thái' }]}
                         >
-                            <Select
-                                id="status"
-                                value={formData.status}
-                                onChange={(value) => handleSelectChange(value, 'status')}
-                            >
-                                <Option value="Active">Hoạt động</Option>
-                                <Option value="Disabled">Vô hiệu hóa</Option>
+                            <Select defaultValue={voucherData.status}>
+                                <Option value="Active">Active</Option>
+                                <Option value="Disabled">Disabled</Option>
                             </Select>
                         </Form.Item>
                     </div>
 
                     <div className="mt-6 flex space-x-4">
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                        >
-                            Cập nhật
+                        <Button type="primary" htmlType="submit">
+                            Update
                         </Button>
                         <Link to="/admin/vouchers">
-                            <Button
-                                type="default"
-                            >
-                                Trở về
+                            <Button type="default">
+                                Back
                             </Button>
                         </Link>
                     </div>
