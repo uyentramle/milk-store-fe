@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Input, Table, Select, } from 'antd';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const { Option } = Select;
 
@@ -18,33 +19,9 @@ const ProductTypeManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
 
     useEffect(() => {
-        const fetchedProductTypes: ProductType[] = [
-            {
-                id: 1,
-                name: 'Sữa bột cao cấp',
-                description: '',
-                active: true,
-            },
-            {
-                id: 2,
-                name: 'Sữa tươi các loại',
-                description: 'Sữa tươi từ các trang trại địa phương.',
-                active: true,
-            },
-            {
-                id: 3,
-                name: 'Sữa bột pha sẵn',
-                description: '',
-                active: true,
-            },
-            {
-                id: 4,
-                name: 'Sữa hạt dinh dưỡng',
-                description: '',
-                active: true,
-            },
-        ];
-        setProductTypes(fetchedProductTypes);
+        fetch ('https://localhost:7251/api/ProductType/GetAllProductType')
+        .then (response => response.json())
+        .then (data => setProductTypes(data.data))
     }, []);
 
     const filteredBlogs = productTypes.filter((p) => {
@@ -78,14 +55,14 @@ const ProductTypeManagementPage: React.FC = () => {
             title: 'Trạng thái',
             dataIndex: 'active',
             key: 'active',
-            render: (text: boolean) => (text ? 'Active' : 'Inactive'),
+            render: (text: boolean) => (text ? 'Hoạt động' : 'Không hoạt động'),
         },
         {
             title: 'Cập nhật',
             key: 'update',
             render: (_text: any, _record: ProductType) => (
                 <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
-                    Edit
+                    Cập nhật
                 </Button>
             ),
         },
@@ -94,7 +71,7 @@ const ProductTypeManagementPage: React.FC = () => {
             key: 'delete',
             render: (_text: any, _record: ProductType) => (
                 <Button type="primary" danger icon={<DeleteOutlined />} className="bg-red-500">
-                    Delete
+                    Xóa
                 </Button>
             ),
         },
