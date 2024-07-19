@@ -239,10 +239,13 @@ const ManageProductPage: React.FC = () => {
                                         {product.active ? 'Đang bán' : 'Ngừng bán'}
                                     </td>
                                     <td className="px-4 py-2">
-                                        <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
-                                            <FontAwesomeIcon icon={faPen} />
-                                        </button>
+                                        <Link to={`/admin/products/update/${product.id}`}>
+                                            <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
+                                                <FontAwesomeIcon icon={faPen} />
+                                            </button>
+                                        </Link>
                                     </td>
+                                    
                                     <td className="px-4 py-2">
                                         <button className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700">
                                             <FontAwesomeIcon icon={faTrash} />
