@@ -19,7 +19,7 @@ const ProductTypeManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
 
     useEffect(() => {
-        fetch ('https://localhost:7251/api/ProductType/GetAllProductType')
+        fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
         .then (response => response.json())
         .then (data => setProductTypes(data.data))
     }, []);
