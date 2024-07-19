@@ -95,7 +95,7 @@ const CreateBrandPage: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Thêm thương hiệu</h1>
             <Form
                 initialValues={formData}

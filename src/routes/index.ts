@@ -43,6 +43,7 @@ import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
 import PointHistoryTransaction from '../pages/client/User/PointHistoryTransaction';
 
 import { DefaultLayoutProps } from '../types/layout.type';
+import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
 import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
 
 interface RouteProps {
@@ -59,7 +60,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/blog', component: BlogPage, layout: DefaultClientLayout },
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
-    { path: '/blog-detail', component: BlogPageDetail, layout: DefaultClientLayout },
+    { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
     { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
@@ -71,7 +72,10 @@ const publicRoutes: RouteProps[] = [
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
+
+
     { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
+
 ];
 
 const privateRoutes: RouteProps[] = [];
@@ -92,6 +96,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/vouchers/update/:voucherId', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs/edit/:blogId', component: UpdateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },

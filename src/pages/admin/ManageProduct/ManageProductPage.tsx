@@ -132,8 +132,8 @@ const ManageProductPage: React.FC = () => {
     const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý sản phẩm</h1>
+        <div className="container mx-auto px-4 pb-8">
+            <h1 className="mb-6 text-3xl font-bold">Manage Milk Products</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
