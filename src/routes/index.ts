@@ -83,7 +83,7 @@ const privateRoutes: RouteProps[] = [];
 
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
-    { path: '/admin/accounts', component: AccountManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/manage-users', component: AccountManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },

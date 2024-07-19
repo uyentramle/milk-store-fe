@@ -1,9 +1,22 @@
+import { useState } from 'react';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, MenuProps, Modal, Spin } from 'antd';
 import { Header } from 'antd/es/layout/layout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function MyHeader() {
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    
+    const handleLogout = () => {
+        setLoading(true);
+        localStorage.removeItem('accessToken'); // Remove token from localStorage
+        setTimeout(() => {
+            setLoading(false);
+            navigate('/sign-in');
+        }, 1000); // Simulate an async operation, e.g., network request
+    };
+
     const items: MenuProps['items'] = [
         {
             key: '1',
@@ -13,7 +26,7 @@ export default function MyHeader() {
         {
             key: '2',
             icon: <LogoutOutlined></LogoutOutlined>,
-            label: <div onClick={() => { }}>Đăng xuất</div>,
+            label: <div onClick={handleLogout}>Đăng xuất</div>,
         },
     ];
 
@@ -27,8 +40,8 @@ export default function MyHeader() {
                     icon={<UserOutlined />}
                 />
             </Dropdown>
-            <Modal footer={null} closable={false}>
-                <div className="flex flex-col items-center justify-center">
+            <Modal footer={null} closable={false} visible={loading} centered>
+                <div className="flex flex-col items-center justify-center p-10">
                     <Spin size="large"></Spin>
                     <span>Đang đăng xuất...</span>
                 </div>

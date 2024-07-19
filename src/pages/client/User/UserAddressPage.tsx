@@ -153,7 +153,7 @@ const UserAddressPage: React.FC = () => {
 
         // fetchData(setUserAddresses);
 
-        const interval = setInterval(fetchData, 0); // Cập nhật mỗi 1 giây
+        const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
         return () => clearInterval(interval);
 
