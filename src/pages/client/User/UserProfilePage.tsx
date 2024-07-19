@@ -170,12 +170,6 @@ const UserProfilePage: React.FC = () => {
     };
     // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
     useEffect(() => {
-        const fetchData = async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                navigateToSignInPage(); return;
-            }
-=======
         // fetchData();
 
         // const intervalId = setTimeout(() => {
@@ -433,8 +427,6 @@ const UserProfilePage: React.FC = () => {
                                             <select
                                                 className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                 name="gender"
-                                                value={userData.gender}
-                                                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
                                                 // value={userData.gender}
                                                 // onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
                                                 value={tempUserData.gender ?? userData.gender ?? ''}
