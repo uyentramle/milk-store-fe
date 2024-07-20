@@ -224,7 +224,7 @@ const CreateProductPage = () => {
                     }
                 }
             } else {
-                message.error(response.data.message || 'Không thể tạo sản phẩm');
+                message.error('Không thể tạo sản phẩm');
             }
         } catch (error) {
             console.error('Error creating product:', error);

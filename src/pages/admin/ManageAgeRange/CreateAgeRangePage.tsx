@@ -12,7 +12,7 @@ interface FormData {
     active: boolean;
 }
 
-const CreateProductTypePage: React.FC = () => {
+const CreateAgeRangePage: React.FC = () => {
     const [form] = Form.useForm();
     const [formData, setFormData] = useState<FormData>({
         name: '',
@@ -58,7 +58,7 @@ const CreateProductTypePage: React.FC = () => {
         data.append('CreatedBy', CreatedBy);
 
         try {
-            const response = await axios.post('https://localhost:44329/api/ProductType/CreateProductType', data, {
+            const response = await axios.post('https://localhost:44329/api/AgeRange/CreateAgeRange', data, {
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
@@ -67,21 +67,21 @@ const CreateProductTypePage: React.FC = () => {
             });
 
             if (response.data.success) {
-                message.success('Thêm danh mục sản phẩm thành công!');
+                message.success('Thêm độ tuổi sử dụng thành công!');
                 form.resetFields();
-            } else if (response.data.message === 'Product type already exists.') {
-                message.error('Danh mục sản phẩm đã tồn tại');
+            } else if (response.data.message === 'AgeRange already exists.') {
+                message.error('Độ tuổi sử dụng đã tồn tại');
             } else {
-                message.error('Không thể thêm danh mục sản phẩm');
+                message.error('Không thể thêm độ tuổi sử dụng');
             }
         } catch (error) {
-            message.error('Có lỗi xảy ra khi thêm danh mục sản phẩm');
+            message.error('Có lỗi xảy ra khi thêm độ tuổi sử dụng');
         }
     };
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Thêm danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Thêm độ tuổi sử dụng</h1>
             <Form
                 form={form}
                 initialValues={formData}
@@ -91,9 +91,9 @@ const CreateProductTypePage: React.FC = () => {
                 <div className="w-full px-4">
                     <div className="mb-4 w-1/2">
                         <Form.Item
-                            label="Tên danh mục sản phẩm"
+                            label="Tên độ tuổi sử dụng"
                             name="name"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục sản phẩm' }]}
+                            rules={[{ required: true, message: 'Vui lòng nhập tên độ tuổi sử dụng' }]}
                         >
                             <Input
                                 id="name"
@@ -138,7 +138,7 @@ const CreateProductTypePage: React.FC = () => {
                         >
                             Thêm mới
                         </Button>
-                        <Link to="/admin/product-types">
+                        <Link to="/admin/age-ranges">
                             <Button
                                 type="default"
                             >
@@ -152,4 +152,4 @@ const CreateProductTypePage: React.FC = () => {
     );
 };
 
-export default CreateProductTypePage;
+export default CreateAgeRangePage;
