@@ -46,6 +46,8 @@ import PointHistoryTransaction from '../pages/client/User/PointHistoryTransactio
 import { DefaultLayoutProps } from '../types/layout.type';
 import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
 import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
+import UpdateProductTypePage from '../pages/admin/ProductTypeManagement/UpdateProductTypePage';
+import RestoreProductTypePage from '../pages/admin/ProductTypeManagement/RestoreProductTypePage';
 
 interface RouteProps {
     path: string;
@@ -103,6 +105,8 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/update/:id', component: UpdateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/restore', component: RestoreProductTypePage, layout: DefaultAdminLayout}
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
