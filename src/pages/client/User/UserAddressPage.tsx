@@ -153,7 +153,7 @@ const UserAddressPage: React.FC = () => {
 
         // fetchData(setUserAddresses);
 
-        const interval = setInterval(fetchData, 0); // Cập nhật mỗi 1 giây
+        const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
         return () => clearInterval(interval);
 
@@ -186,7 +186,7 @@ const UserAddressPage: React.FC = () => {
                 }
             });
             // setUserAddresses(userAddresses.filter((address: { id: number; }) => address.id !== addressId)); // Cập nhật state addresses sau khi xóa
-            await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
+            // await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
             message.success('Xóa địa chỉ thành công');
 
         } catch (error) {

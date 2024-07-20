@@ -27,7 +27,14 @@ import FacebookLogin from '@greatsumini/react-facebook-login';
 //     });
 // };
 
-const loginApi = async (username: string, password: string): Promise<{ success: boolean, message?: string, accessToken?: string, refreshToken?: string }> => {
+interface ApiResponse {
+    success: boolean;
+    message: string;
+    accessToken: string | null;
+    refreshToken: string | null;
+}
+
+const loginApi = async (username: string, password: string): Promise<ApiResponse> => {
     try {
         const response = await axios.post('https://localhost:44329/api/Auth/Login', {
             username,
@@ -42,9 +49,9 @@ const loginApi = async (username: string, password: string): Promise<{ success: 
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            return { success: false, message: error.response.data.message || 'Đã xảy ra lỗi, vui lòng thử lại sau.' };
+            return { success: false, message: error.response.data.message, accessToken: null, refreshToken: null || 'Đã xảy ra lỗi, vui lòng thử lại sau.' };
         }
-        return { success: false, message: 'Đã xảy ra lỗi, vui lòng thử lại sau.' };
+        return { success: false, message: 'Đã xảy ra lỗi, vui lòng thử lại sau.', accessToken: null, refreshToken: null };
     }
 };
 
@@ -66,10 +73,11 @@ const SignInPage: React.FC = () => {
             if (response.success) {
                 console.log('Login Success');
                 message.success('Đăng nhập thành công');
-                // Lưu trữ accessToken nếu cần thiết
-                if (response.accessToken) {
+                
+                // Lưu trữ accessToken vào localStorage
+                if (response.accessToken && response.refreshToken) {
                     localStorage.setItem('accessToken', response.accessToken);
-                    localStorage.setItem('refreshToken', response.refreshToken || '');
+                    localStorage.setItem('refreshToken', response.refreshToken);
                     navigate('/'); // Điều hướng đến trang chủ sau khi đăng nhập thành công
                 } else {
                     message.error('Không có accessToken trong phản hồi.');
@@ -248,10 +256,12 @@ export const CustomLoginButton = () => {
 
             const data = await response.json();
             console.log('Google Login API Response:', data);
+            console.log('Login Success');
+            message.success('Đăng nhập thành công');
 
-            // Xử lý dữ liệu trả về từ server (nếu cần)
             // Lưu trữ access token vào localStorage
             localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
 
             // Chuyển hướng đến trang chủ sau khi đăng nhập thành công bằng useNavigate
             navigate('/'); // Điều hướng đến trang chủ
@@ -307,11 +317,14 @@ export const CustomFacebookLoginButton = () => {
             }
 
             const data = await response.json();
+            
             console.log('Facebook Login API Response:', data);
+            console.log('Login Success');
+            message.success('Đăng nhập thành công');
 
-            // Xử lý dữ liệu trả về từ server (nếu cần)
             // Lưu trữ access token vào localStorage
             localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
 
             // Chuyển hướng đến trang chủ sau khi đăng nhập thành công bằng useNavigate
             navigate('/'); // Điều hướng đến trang chủ
