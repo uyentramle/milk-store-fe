@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, RestOutlined } from '@ant-design/icons';
+import { SearchOutlined, BackwardOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Input, Table, Select, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -27,7 +27,7 @@ const ProductTypeManagementPage: React.FC = () => {
     useEffect(() => {
         fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
         .then (response => response.json())
-        .then (data => setProductTypes(data.data.filter((productType : ProductType) => !productType.isDeleted)))
+        .then (data => setProductTypes(data.data.filter((productType : ProductType) => productType.isDeleted)))
     }, []);
 
     const filteredBlogs = productTypes.filter((p) => {
@@ -84,7 +84,7 @@ const ProductTypeManagementPage: React.FC = () => {
                     className="bg-red-500"
                     onClick={() => showDeleteConfirm(_record)}
                 >
-                    Xóa
+                    Khôi phục
                 </Button>
             ),
         }        
@@ -104,12 +104,12 @@ const ProductTypeManagementPage: React.FC = () => {
                 }
 
                 const decodedToken: any = jwtDecode(accessToken);
-                const DeletedBy = decodedToken.id;
+                const UpdatedBy = decodedToken.id;
 
                 const data = new FormData();
                 data.append('Id', currentProductType.id);
-                data.append('DeletedBy', DeletedBy);
-                const response = await axios.post('https://localhost:44329/api/ProductType/DeleteProductType', data, {
+                data.append('UpdatedBy', UpdatedBy);
+                const response = await axios.post('https://localhost:44329/api/ProductType/RestoreProductType', data, {
                     headers: {
                         'accept': '*/*',
                         'Content-Type': 'multipart/form-data',
@@ -118,14 +118,14 @@ const ProductTypeManagementPage: React.FC = () => {
                 });
 
                 if (response.data.success) {
-                    message.success('Xóa danh mục sản phẩm thành công!');
+                    message.success('Khôi phục danh mục sản phẩm thành công!');
                     setProductTypes(productTypes.filter((p) => p.id !== currentProductType.id));
                 }
                 else {
-                    message.error(response.data.message || 'Không thể xóa danh mục sản phẩm');
+                    message.error(response.data.message || 'Không thể khôi phục danh mục sản phẩm');
                 }
             } catch (error) {
-                console.error('Error deleting product type:', error);
+                console.error('Error restoring product type:', error);
             }
             setIsModalVisible(false);
         }
@@ -139,7 +139,7 @@ const ProductTypeManagementPage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý danh mục sản phẩm đã xóa</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
@@ -166,20 +166,13 @@ const ProductTypeManagementPage: React.FC = () => {
                         </Select>
                     </div>
                 </div>
-                <div className="flex space-x-4">
+                <div>
                     <Link
-                        to="/admin/product-types/create"
+                        to="/admin/product-types"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
-                        <PlusOutlined className="mr-2" />
-                        Thêm mới
-                    </Link>
-                    <Link
-                        to="/admin/product-types/restore"
-                        className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
-                    >
-                        <RestOutlined className="mr-2" />
-                        Khôi phục
+                        <BackwardOutlined className="mr-2" />
+                        Trở về
                     </Link>
                 </div>
             </div>
@@ -188,15 +181,15 @@ const ProductTypeManagementPage: React.FC = () => {
                 <Table columns={columns} dataSource={filteredBlogs} rowKey="id" />
             </div>
             <Modal
-                title="Xác nhận xóa"
+                title="Xác nhận khôi phục"
                 visible={isModalVisible}
                 onOk={handleDelete}
                 onCancel={handleCancel}
-                okText="Xóa"
+                okText="Khôi phục"
                 cancelText="Hủy"
                 centered
             >
-                <p>Bạn có chắc chắn muốn xóa mục này không?</p>
+                <p>Bạn có chắc chắn muốn khôi phục mục này không?</p>
             </Modal>
 
         </div>

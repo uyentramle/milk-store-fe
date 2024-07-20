@@ -1,5 +1,5 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Input, Button, Form, Switch } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -14,11 +14,37 @@ interface FormData {
 }
 
 const CreateProductTypePage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
     const [formData, setFormData] = useState<FormData>({
         name: '',
         description: '',
         active: false,
     });
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        setLoading(true);
+        fetch(`https://localhost:44329/api/ProductType/GetProductTypeById?id=${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    setFormData({
+                        name: data.data.name,
+                        description: data.data.description,
+                        active: data.data.active,
+                    });
+                    setLoading(false);
+                } else {
+                    setError(data.message || 'Failed to fetch product type data.');
+                    setLoading(false);
+                }
+            })
+            .catch((error) => {
+                setError('Error fetching product type data.');
+                setLoading(false);
+            });
+    }, [id]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
@@ -38,7 +64,7 @@ const CreateProductTypePage: React.FC = () => {
     const handleContentChange = (value: string) => {
         setFormData((prevState) => ({
             ...prevState,
-            content: value,
+            description: value,
         }));
     };
 
@@ -57,15 +83,16 @@ const CreateProductTypePage: React.FC = () => {
         }
 
         const decodedToken: any = jwtDecode(accessToken);
-        const CreatedBy = decodedToken.id;
+        const UpdatedBy = decodedToken.id;
 
         const data = new FormData();
+        data.append('Id', id);
         data.append('Name', values.name);
         data.append('Description', values.description);
         data.append('Active', values.active.toString());
-        data.append('CreatedBy', CreatedBy);
-
-        const response = await axios.post('https://localhost:44329/api/ProductType/CreateProductType', data, {
+        data.append('UpdatedBy', UpdatedBy);
+        console.log(id);
+        const response = await axios.post(`https://localhost:44329/api/ProductType/UpdateProductType`, data, {
             headers: {
                 'accept': '*/*',
                 'Content-Type': 'multipart/form-data',
@@ -74,15 +101,23 @@ const CreateProductTypePage: React.FC = () => {
         });
 
         if (response.data.success) {
-            message.success('Thêm danh mục sản phẩm thành công!');
-            handleReset();
+            message.success('Cập nhật danh mục sản phẩm thành công!');
         } else {
-            message.error(response.data.message || 'Không thể thêm danh mục sản phẩm');
+            message.error(response.data.message || 'Không thể cập nhật danh mục sản phẩm!');
         }
-    };    
+    };
+
+    if (loading) {
+        return <div className="container mx-auto px-4 pb-8">Đang tải dữ liệu...</div>;
+    }
+
+    if (error) {
+        return <div className="container mx-auto px-4 pb-8">{error}</div>;
+    }
+
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Thêm danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Chỉnh sửa danh mục sản phẩm</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
@@ -136,7 +171,7 @@ const CreateProductTypePage: React.FC = () => {
                             type="primary"
                             htmlType="submit"
                         >
-                            Thêm mới
+                            Chỉnh sửa
                         </Button>
                         <Link to="/admin/product-types">
                             <Button
