@@ -65,7 +65,7 @@ const UpdateProductPage = () => {
         ageId: 0,
     });
 
-    const { productId } = useParams<{ productId: string }>();
+    const { productId, page } = useParams<{ productId: string, page: string }>();
     const [productTypes, setProductTypes] = useState<Type[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
@@ -608,14 +608,26 @@ const UpdateProductPage = () => {
                     </div>
                 </div>
                 <div className="flex justify-end space-x-4">
-                    <Link to="/admin/products">
-                        <button
-                            type="button"
-                            className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
-                        >
-                            Trở về
-                        </button>
-                    </Link>
+                    {page === "manage" && (
+                        <Link to="/admin/products">
+                            <button
+                                type="button"
+                                className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
+                    {page === "restore" && (
+                        <Link to="/admin/products/restore">
+                            <button
+                                type="button"
+                                className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
                     <button
                         type="button"
                         onClick={handleReset}
