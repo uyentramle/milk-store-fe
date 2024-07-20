@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import { Form, Input, Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
@@ -153,6 +153,7 @@ const UserProfilePage: React.FC = () => {
         //     [name]: value
         // });
     };
+    
     const fetchData = async () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
@@ -353,7 +354,7 @@ const UserProfilePage: React.FC = () => {
                                     {avatar || userData.avatar ? (
                                         <img src={avatar ?? userData.avatar} alt="Avatar" className="h-40 w-40 rounded-full object-cover" />
                                     ) : (
-                                        <span className="text-xl text-gray-400">140x140</span>
+                                        <div className="text-xl text-gray-400 bg-gray-200 h-40 w-40 rounded-full flex justify-center items-center">140x140</div>
                                     )}
                                 </div>
                                 <div className="mt-4 flex flex-col items-center justify-center">

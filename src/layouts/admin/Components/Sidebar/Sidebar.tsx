@@ -66,7 +66,7 @@ export default function MySider() {
     const navUrl = new Map<string, string>();
     navUrl
         .set('1', '/admin/')
-        .set('2', '/admin/accounts')
+        .set('2', '/admin/manage-users')
         .set('3', '/admin/products')
         .set('4', '/admin/orders')
         .set('5', '/admin/brands')
