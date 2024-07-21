@@ -1,9 +1,10 @@
 import React, { useState, useEffect, } from 'react';
-import Banner from '../../../layouts/client/Components/Banner/Banner';
+// import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
 import { Input, Typography, Row, Col, Card, Rate, Badge, Button, } from 'antd';
-import { SearchOutlined, ShoppingCartOutlined, EyeTwoTone, } from '@ant-design/icons';
+import { SearchOutlined, ShoppingCartOutlined, } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 interface Product {
     id: string;
@@ -28,9 +29,30 @@ interface Product {
     isDeleted: boolean;
 }
 
+const getPromotionProducts = async (): Promise<Product[]> => {
+    try {
+        const response = await axios.get('https://localhost:44329/api/Product/GetAllProducts');
+        const fetchedProducts = response.data.data.filter((promotionProduct: Product) => promotionProduct.active && promotionProduct.discount > 0);
+
+        const promotionProductImagesPromises = fetchedProducts.map(async (promotionProduct: Product) => {
+            const imageResponse = await axios.get(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${promotionProduct.id}`);
+            if (imageResponse.data.success && imageResponse.data.data.length > 0) {
+                promotionProduct.image = imageResponse.data.data[0].image.thumbnailUrl;
+            }
+            return promotionProduct;
+        });
+
+        return Promise.all(promotionProductImagesPromises);
+    } catch (error) {
+        console.error('Lỗi tìm nạp sản phẩm:', error);
+        throw error;
+    }
+};
+
 const PromotionPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
-    const randomizedProducts = [...products].sort(() => 0.5 - Math.random());
+    const [promotionProduct, setPromotionProducts] = useState<Product[]>([]);
+    const [sortType, setSortType] = useState<string>('default');
 
     useEffect(() => {
         fetch('https://localhost:44329/api/Product/GetAllProducts')
@@ -61,65 +83,57 @@ const PromotionPage: React.FC = () => {
             });
     }, []);
 
+    useEffect(() => {
+        getPromotionProducts()
+            .then((promotionProducts) => {
+                setPromotionProducts(promotionProducts);
+            })
+            .catch((error) => {
+                console.error('Lỗi tìm nạp sản phẩm khuyến mãi:', error);
+            });
+    }, []);
+
+    useEffect(() => {
+        let sortedProducts = [...promotionProduct];
+        if (sortType === 'default') {
+            sortedProducts.sort((a, b) => b.discount - a.discount);
+        } else if (sortType === 'lowToHigh') {
+            sortedProducts.sort((a, b) => a.price - b.price);
+        } else if (sortType === 'highToLow') {
+            sortedProducts.sort((a, b) => b.price - a.price);
+        }
+        setPromotionProducts(sortedProducts);
+    }, [sortType]);
+
+    const handleSort = (type: string) => {
+        setSortType(type);
+    };
+
     return (
         <div className="min-h-screen flex flex-col">
-            <Banner />
+            {/* <Banner /> */}
             <div className="flex flex-1">
                 <Sidebar />
                 <main className="flex-1 p-4 m-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center my-5">
                         <Input
-                            className="rounded-full border-pink-500"
-                            placeholder="Ba mẹ muốn tìm mua gì hôm nay ?"
+                            className="rounded-full"
+                            style={{ height: '70px' }}
+                            placeholder="Ba mẹ muốn tìm mua gì hôm nay?"
                             prefix={<SearchOutlined />}
-                            style={{ height: '100%' }} 
                         />
                     </div>
+                    <div className="flex items-center justify-between my-4">
+                        <div className="flex space-x-2 ">
+                            <Button type={sortType === 'default' ? "primary" : "default"} onClick={() => handleSort('default')}>Khuyến mãi sâu</Button>
+                            <Button type={sortType === 'lowToHigh' ? "primary" : "default"} onClick={() => handleSort('lowToHigh')}>Giá Thấp - Cao</Button>
+                            <Button type={sortType === 'highToLow' ? "primary" : "default"} onClick={() => handleSort('highToLow')}>Giá Cao - Thấp</Button>
+                        </div>
+                    </div>
 
-                    <Typography.Title level={3} className="my-4">Sản phẩm khuyến mãi</Typography.Title>
-                    <section className="container mx-auto my-4">
-                        <Row gutter={[16, 16]}>
-                            {randomizedProducts.map((product) => (
-                                <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
-                                    <Link to={`/product-detail/`} className="block hover:opacity-75">
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <div className="flex justify-center items-center">
-                                                    <img alt={product.name} src={product.image} className="pt-2 px-2 object-cover object-center" style={{ maxHeight: '170px', width: 'auto', height: 'auto' }} />
-                                                </div>
-                                            }
-                                            actions={[
-                                                <Link to={`/addtocart/${product.id}`} className="block">
-                                                    <ShoppingCartOutlined style={{ fontSize: '25px' }} />
-                                                </Link>,
-                                            ]}
-                                        >
-                                            <Card.Meta
-                                                title=""
-                                                description={
-                                                    <div>
-                                                        <h3 className="text-gray-900 hover:text-pink-700 text-lg ">{product.name}</h3>
-                                                        <p className="text-sm text-pink-500 my-2">
-                                                            {new Intl.NumberFormat('vi-VN', {
-                                                                style: 'currency',
-                                                                currency: 'VND',
-                                                            }).format(product.price)}
-                                                        </p>
-                                                        <Rate disabled defaultValue={5} />
-                                                    </div>
-                                                }
-                                            />
-                                        </Card>
-                                    </Link>
-                                </Col>
-                            ))}
-                        </Row>
-                    </section>
-
-                    <Typography.Title level={3} className="my-4">Sản phẩm bán chạy</Typography.Title>
-                    <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-                        {products.map((p) => (
+                    <Typography.Title level={3} className="my-4 text-center">Sản phẩm khuyến mãi</Typography.Title>
+                    <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {promotionProduct.map((p) => (
                             <Link to={`/product-detail`} className="block hover:opacity-75">
                                 <Card className="w-full">
                                     <div className="flex justify-center">
@@ -137,6 +151,49 @@ const PromotionPage: React.FC = () => {
                                 </Card>
                             </Link>
                         ))}
+                    </div>
+
+                    <div className='mt-4 pt-4'>
+                        <Typography.Title level={3} className="my-4 text-center">Sản phẩm gần đây</Typography.Title>
+                        <section className="container mx-auto my-4">
+                            <Row gutter={[16, 16]}>
+                                {products.map((product) => (
+                                    <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
+                                        <Link to={`/product-detail/`} className="block hover:opacity-75">
+                                            <Card
+                                                hoverable
+                                                cover={
+                                                    <div className="flex justify-center items-center">
+                                                        <img alt={product.name} src={product.image} className="pt-2 px-2 object-cover object-center" style={{ maxHeight: '170px', width: 'auto', height: 'auto' }} />
+                                                    </div>
+                                                }
+                                                actions={[
+                                                    <Link to={`/addtocart/${product.id}`} className="block">
+                                                        <ShoppingCartOutlined style={{ fontSize: '25px' }} />
+                                                    </Link>,
+                                                ]}
+                                            >
+                                                <Card.Meta
+                                                    title=""
+                                                    description={
+                                                        <div>
+                                                            <h3 className="text-gray-900 hover:text-pink-700 text-lg ">{product.name}</h3>
+                                                            <p className="text-sm text-pink-500 my-2">
+                                                                {new Intl.NumberFormat('vi-VN', {
+                                                                    style: 'currency',
+                                                                    currency: 'VND',
+                                                                }).format(product.price)}
+                                                            </p>
+                                                            <Rate disabled defaultValue={5} />
+                                                        </div>
+                                                    }
+                                                />
+                                            </Card>
+                                        </Link>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </section>
                     </div>
                 </main>
             </div >
