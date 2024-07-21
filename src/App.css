@@ -87,6 +87,22 @@
     box-shadow: 0 0 0 2px rgba(231, 60, 126, 0.2) !important;
 }
 
+.ant-input-affix-wrapper,
+.ant-input-outlined {
+    border-color: #e83c7e47 !important;
+    box-shadow: none !important;
+}
+
+.ant-input-affix-wrapper:hover,
+.ant-input-outlined:hover {
+    border-color: #e83c7e !important;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-outlined:focus {
+    border-color: #e83c7e !important;
+}
+
 /* Link */
 .ant-btn-link {
     color: #e83c7e !important;
