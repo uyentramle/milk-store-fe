@@ -5,37 +5,6 @@ import { Input, Typography, Row, Col, Card, Rate, Badge, Button, } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, EyeTwoTone, } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
-interface Brand {
-    id: number;
-    name: string;
-    brandOrigin: string;
-    description: string;
-    active: boolean;
-    imageUrl: string | null;
-    totalFollow: number;
-    createdAt: string;
-    createdBy: string;
-    updatedAt: string | null;
-    updatedBy: string | null;
-    deletedAt: string | null;
-    deletedBy: string | null;
-    isDeleted: boolean;
-}
-
-interface Type {
-    id: number;
-    name: string;
-    description: string;
-    active: boolean;
-}
-
-interface AgeRange {
-    id: number;
-    name: string;
-    description: string;
-    active: boolean;
-}
-
 interface Product {
     id: string;
     name: string;
@@ -57,12 +26,9 @@ interface Product {
     deletedAt: string | null;
     deletedBy: string | null;
     isDeleted: boolean;
-    brand: Brand;
-    type: Type;
-    ageRange: AgeRange;
 }
 
-const HomePage: React.FC = () => {
+const PromotionPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const randomizedProducts = [...products].sort(() => 0.5 - Math.random());
 
@@ -95,33 +61,6 @@ const HomePage: React.FC = () => {
             });
     }, []);
 
-    const recentBlog = [
-        {
-            id: 1,
-            image: "https://cdn1.concung.com/img/news/2021/1053-1633086650-cover.webp",
-            title: "5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-        {
-            id: 2,
-            image: "https://cdn1.concung.com/img/news/2023/2430-1692244686-cover.webp",
-            title: "Back to school: Bé đi học mẫu giáo, ba mẹ cần chuẩn bị đồ dùng gì?",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-        {
-            id: 3,
-            image: "https://cdn1.concung.com/img/news/2023/2437-1692950600-cover.webp",
-            title: "Sữa tươi và sữa bột pha sẵn: Nên chọn loại nào cho bé?",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-    ];
-
     return (
         <div className="min-h-screen flex flex-col">
             <Banner />
@@ -130,14 +69,14 @@ const HomePage: React.FC = () => {
                 <main className="flex-1 p-4 m-4">
                     <div className="flex items-center">
                         <Input
-                            className="rounded-full"
-                            style={{ height: '70px' }} 
+                            className="rounded-full border-pink-500"
                             placeholder="Ba mẹ muốn tìm mua gì hôm nay ?"
                             prefix={<SearchOutlined />}
+                            style={{ height: '100%' }} 
                         />
                     </div>
 
-                    <Typography.Title level={3} className="my-4">Sản phẩm nổi bật</Typography.Title>
+                    <Typography.Title level={3} className="my-4">Sản phẩm khuyến mãi</Typography.Title>
                     <section className="container mx-auto my-4">
                         <Row gutter={[16, 16]}>
                             {randomizedProducts.map((product) => (
@@ -178,29 +117,6 @@ const HomePage: React.FC = () => {
                         </Row>
                     </section>
 
-                    <Typography.Title level={3} className="my-4">Bài viết gần đây</Typography.Title>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-                        {recentBlog.map((blog) => (
-                            <div key={blog.id}>
-                                <Link to={`/blog-detail`} className="block hover:opacity-75">
-                                    <Card
-                                        hoverable
-                                        cover={<img alt={blog.title} src={blog.image} />}
-                                    >
-                                        <div className="">
-                                            <h3 className="text-lg hover:text-pink-500">{blog.title}</h3>
-                                            <p className="text-xs text-gray-500 mt-2">{blog.date}</p>
-                                            <div className="flex items-center justify-between mt-2">
-                                                <p className="text-xs text-gray-500"><EyeTwoTone twoToneColor="#9b9b9b" /> {blog.view}</p>
-                                                <Rate disabled defaultValue={blog.rating} />
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-
                     <Typography.Title level={3} className="my-4">Sản phẩm bán chạy</Typography.Title>
                     <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
                         {products.map((p) => (
@@ -228,4 +144,4 @@ const HomePage: React.FC = () => {
     );
 };
 
-export default HomePage;
+export default PromotionPage;
