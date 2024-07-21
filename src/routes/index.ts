@@ -71,7 +71,7 @@ const publicRoutes: RouteProps[] = [
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
     { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
-    { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
+    { path: '/product-detail/:productId', component: ProductDetail, layout: DefaultClientLayout }, // Updated route
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
