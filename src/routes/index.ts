@@ -15,6 +15,7 @@ import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
 import ContactPage from '../pages/client/Contact/ContactPage';
 import PromotionPage from '../pages/client/Promotion/PromotionPage';
+import ProductListPage from '../pages/client/Product/ProductListPage';
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 // import ManageAccountPage from '../pages/admin/AccountManagement/AccountManagementPage';
@@ -71,6 +72,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
     { path: '/promotion', component: PromotionPage, layout: DefaultClientLayout },
+    { path: '/product-list/type/:typeId', component: ProductListPage, layout: DefaultClientLayout },
 
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
     { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },

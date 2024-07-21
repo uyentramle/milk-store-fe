@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Pagination, Card, Badge, Rate, Spin, } from 'antd';
+import { Button, Pagination, Card, Badge, Rate, Spin, Empty, } from 'antd';
 import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 // import { jwtDecode } from 'jwt-decode';
@@ -93,7 +93,7 @@ const BrandDetailPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(10);
     const [sortType, setSortType] = useState<string>('default');
-    
+
     // const accountId = "4e03d7e3-c366-4266-858c-625c3da51bb3"; // thay the khi co authen
     // const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
@@ -174,7 +174,12 @@ const BrandDetailPage: React.FC = () => {
     }
 
     if (!brandData) {
-        return <div className="text-center" style={{ margin: '70px' }}>Không có thông tin thương hiệu này.</div>;
+        return (
+            <div className="text-center" style={{ margin: '70px' }}>
+                <Empty />
+                Không có thông tin thương hiệu này.
+            </div>
+        );
     }
 
     const startIndex = (currentPage - 1) * pageSize;

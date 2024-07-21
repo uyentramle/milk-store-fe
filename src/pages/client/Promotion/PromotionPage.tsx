@@ -1,5 +1,5 @@
 import React, { useState, useEffect, } from 'react';
-import Banner from '../../../layouts/client/Components/Banner/Banner';
+// import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
 import { Input, Typography, Row, Col, Card, Rate, Badge, Button, } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, } from '@ant-design/icons';
@@ -111,11 +111,11 @@ const PromotionPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Banner />
+            {/* <Banner /> */}
             <div className="flex flex-1">
                 <Sidebar />
                 <main className="flex-1 p-4 m-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center my-5">
                         <Input
                             className="rounded-full"
                             style={{ height: '70px' }}
@@ -131,7 +131,7 @@ const PromotionPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <Typography.Title level={3} className="my-4">Sản phẩm khuyến mãi</Typography.Title>
+                    <Typography.Title level={3} className="my-4 text-center">Sản phẩm khuyến mãi</Typography.Title>
                     <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {promotionProduct.map((p) => (
                             <Link to={`/product-detail`} className="block hover:opacity-75">
@@ -154,7 +154,7 @@ const PromotionPage: React.FC = () => {
                     </div>
 
                     <div className='mt-4 pt-4'>
-                        <Typography.Title level={3} className="my-4">Sản phẩm gần đây</Typography.Title>
+                        <Typography.Title level={3} className="my-4 text-center">Sản phẩm gần đây</Typography.Title>
                         <section className="container mx-auto my-4">
                             <Row gutter={[16, 16]}>
                                 {products.map((product) => (
