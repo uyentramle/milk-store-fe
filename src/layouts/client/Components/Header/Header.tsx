@@ -50,7 +50,7 @@ const Header: React.FC = () => {
                     </a>
                 </Dropdown>
 
-                <a href="#" className={menuStyle}>Khuyến mãi</a>
+                <a href="/promotion" className={menuStyle}>Khuyến mãi</a>
                 <a href="/blog" className={menuStyle}>Blog</a>
                 {/* <a href="#" className={menuStyle}>Liên hệ</a>*/}
                 <a href="/contact" className={menuStyle}>CSKH</a>
