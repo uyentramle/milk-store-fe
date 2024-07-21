@@ -142,7 +142,7 @@ const HomePage: React.FC = () => {
                         <Row gutter={[16, 16]}>
                             {randomizedProducts.map((product) => (
                                 <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
-                                    <Link to={`/product-detail/`} className="block hover:opacity-75">
+                                    <Link to={`/product-detail/${product.id}`} className="block hover:opacity-75">
                                         <Card
                                             hoverable
                                             cover={
