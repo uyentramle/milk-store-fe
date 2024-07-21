@@ -1,101 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Button, Pagination, Card, Badge, Rate, Spin, } from 'antd';
+import { Button, Pagination, Card, Badge, Rate, Spin, Empty, } from 'antd';
 import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 // import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
-const products = [
-    {
-        id: 1,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/2022/01/54559-79245-large_mobile/sua-vinamilk-colosgold-so-3-800g-2-6-tuoi.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 2,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/combo/2023/08/600x600-468-2023-03-56616-trans.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 3,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/combo/2023/08/600x600-468-2023-03-56616-trans.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 4,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/combo/2023/08/600x600-468-2023-03-56616-trans.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 5,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/combo/2023/08/600x600-468-2023-03-56616-trans.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 6,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/2022/01/54559-79245-large_mobile/sua-vinamilk-colosgold-so-3-800g-2-6-tuoi.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 7,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/2022/01/54559-79245-large_mobile/sua-vinamilk-colosgold-so-3-800g-2-6-tuoi.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 8,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/2022/01/54559-79245-large_mobile/sua-vinamilk-colosgold-so-3-800g-2-6-tuoi.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-    {
-        id: 9,
-        title: "Combo 2 Sữa Vinamilk ColosGold số 3 800g (2-6 tuổi)",
-        image: "https://cdn1.concung.com/combo/2023/08/600x600-468-2023-03-56616-trans.png",
-        price: 678300,
-        discount: 15,
-        rating: 5,
-        sold: "20K+"
-    },
-];
+interface Product {
+    id: string;
+    name: string;
+    image: string;
+    sku: string;
+    description: string;
+    price: number;
+    weight: number;
+    discount: number;
+    quantity: number;
+    typeId: number;
+    ageId: number;
+    brandId: number;
+    active: boolean;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
 
 const getBrandDetail = async (brandId: string): Promise<any> => {
-    // const accessToken = localStorage.getItem('accessToken');
-
-    // if (!accessToken) {
-    //     throw new Error('Access token not found.');
-    // }
-
     try {
         const response = await axios.get(`https://localhost:7251/api/Brand/ViewBrandDetail/${brandId}`, {
             headers: {
@@ -103,8 +36,6 @@ const getBrandDetail = async (brandId: string): Promise<any> => {
             }
         });
 
-        // const { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted } = response.data.data;
-        // return { id, name, brandOrigin, description, active, imageUrl, totalFollow, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, isDeleted };
         return response.data.data;
     } catch (error) {
         console.error('Lỗi tìm nạp từ port 7251:', error);
@@ -123,11 +54,49 @@ const getBrandDetail = async (brandId: string): Promise<any> => {
     }
 };
 
+const getProductsByBrand = async (brandId: string): Promise<Product[]> => {
+    try {
+        const response = await axios.get('https://localhost:44329/api/Product/GetAllProducts');
+        const fetchedProducts = response.data.data.filter((product: Product) => !product.isDeleted && product.brandId === parseInt(brandId));
+
+        const productImagesPromises = fetchedProducts.map(async (product: Product) => {
+            const imageResponse = await axios.get(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`);
+            if (imageResponse.data.success && imageResponse.data.data.length > 0) {
+                product.image = imageResponse.data.data[0].image.thumbnailUrl;
+            }
+            return product;
+        });
+
+        return Promise.all(productImagesPromises);
+    } catch (error) {
+        console.error('Lỗi tìm nạp sản phẩm:', error);
+        throw error;
+    }
+};
+
+// const checkUserFollowStatus = async (accountId: string, brandId: string): Promise<boolean> => {
+//     try {
+//         const response = await axios.get(`https://localhost:44329/api/FollowBrand/CheckUserFollowsBrand?accountId=${accountId}&brandId=${brandId}`);
+//         return response.data.data.isFollowing;
+//     } catch (error) {
+//         console.error('Lỗi kiểm tra trạng thái theo dõi:', error);
+//         throw error;
+//     }
+// };
+
 const BrandDetailPage: React.FC = () => {
     const { brandId } = useParams<{ brandId: string }>();
     const [brandData, setBrandData] = useState<any>(null);
+    const [productData, setProductData] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize] = useState<number>(10);
+    const [sortType, setSortType] = useState<string>('default');
+
+    // const accountId = "4e03d7e3-c366-4266-858c-625c3da51bb3"; // thay the khi co authen
+    // const [isFollowing, setIsFollowing] = useState<boolean>(false);
+
     const defaultImageUrl = 'https://via.placeholder.com/64';
 
     useEffect(() => {
@@ -136,11 +105,17 @@ const BrandDetailPage: React.FC = () => {
                 if (brandId) {
                     const brandDetailData = await getBrandDetail(brandId);
                     setBrandData(brandDetailData);
+
+                    const products = await getProductsByBrand(brandId);
+                    setProductData(products);
+
+                    // const followStatus = await checkUserFollowStatus(accountId, brandId);
+                    // setIsFollowing(followStatus);
                 }
                 setLoading(false);
             } catch (error) {
-                console.error('Lỗi tìm nạp thông tin thương hiệu:', error);
-                setError('Không thể tìm nạp thông tin thương hiệu.');
+                console.error('Lỗi tìm nạp thông tin thương hiệu hoặc sản phẩm:', error);
+                setError('Không thể tìm nạp thông tin thương hiệu hoặc sản phẩm.');
                 setLoading(false);
             }
         };
@@ -148,23 +123,71 @@ const BrandDetailPage: React.FC = () => {
         fetchData();
     }, [brandId]);
 
+    useEffect(() => {
+        let sortedProducts = [...productData];
+        if (sortType === 'lowToHigh') {
+            sortedProducts.sort((a, b) => a.price - b.price);
+        } else if (sortType === 'highToLow') {
+            sortedProducts.sort((a, b) => b.price - a.price);
+        }
+        setProductData(sortedProducts);
+    }, [sortType]);
+
+    const handleSort = (type: string) => {
+        setSortType(type);
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    // const handleFollowToggle = async () => {
+    //     try {
+    //         if (isFollowing) {
+    //             // Gọi API để bỏ theo dõi
+    //             await axios.put('https://localhost:44329/api/FollowBrand/UserUnfollowsBrand', {
+    //                 followedAt: new Date().toISOString(),
+    //                 accountId: accountId,
+    //                 brandId: brandId
+    //             });
+    //         } else {
+    //             // Gọi API để theo dõi
+    //             await axios.post('https://localhost:44329/api/FollowBrand/UserFollowsBrand', {
+    //                 followedAt: new Date().toISOString(),
+    //                 accountId: accountId,
+    //                 brandId: brandId
+    //             });
+    //         }
+    //         setIsFollowing(!isFollowing);
+    //     } catch (error) {
+    //         console.error('Lỗi khi thay đổi trạng thái theo dõi:', error);
+    //         setError('Không thể thay đổi trạng thái theo dõi.');
+    //     }
+    // };
+
     if (loading) {
         return <div className="flex justify-center items-center min-h-screen"><Spin size="large" /></div>;
     }
 
     if (error) {
-        return <div className="text-center text-red-500">{error}</div>;
+        return <div className="text-center text-red-500" style={{ margin: '70px' }}>{error}</div>;
     }
 
     if (!brandData) {
-        return <div className="text-center">No brand data found.</div>;
+        return (
+            <div className="text-center" style={{ margin: '70px' }}>
+                <Empty />
+                Không có thông tin thương hiệu này.
+            </div>
+        );
     }
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedProducts = productData.slice(startIndex, endIndex);
 
     return (
         <div className="min-h-screen flex flex-wrap w-full">
-            {/* <div className="bg-white">
-                <img src="https://cdn1.concung.com/img/adds/2024/06/1719288912-CATE-Vinamilk.png" alt="Vinamilk" className="w-full object-cover rounded-lg" />
-            </div> */}
             <div className="p-4">
                 <div className="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
                     <img
@@ -178,6 +201,12 @@ const BrandDetailPage: React.FC = () => {
                             <img src="https://cdn1.concung.com/themes/desktop4.1/image/v40/icon/trustbrand.png" alt="Trust Brand" className="h-3 inline-block mx-2" />
                         </h2>
                         <button className="bg-pink-500 text-white px-4 py-2 rounded mr-2">Theo Dõi</button>
+                        {/* <Button
+                            className="bg-pink-500 text-white px-4 py-2 rounded mr-2"
+                            onClick={handleFollowToggle}
+                        >
+                            {isFollowing ? "Bỏ Theo Dõi" : "Theo Dõi"}
+                        </Button> */}
                         {/* <button className="bg-gray-200 text-black px-4 py-2 rounded">Trao Đổi</button> */}
                     </div>
                     <div className="flex-1 flex justify-left text-lg">
@@ -227,37 +256,43 @@ const BrandDetailPage: React.FC = () => {
                     </div>
                 </div>
 
-
                 <div className="p-6">
                     <h2 className="text-lg font-bold text-pink-500 mb-2">Sản Phẩm</h2>
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex space-x-2 ">
-                            <Button type="primary">Phù Hợp</Button>
-                            <Button>Bán Chạy</Button>
-                            <Button>Hàng Mới</Button>
-                            <Button>Giá Thấp - Cao</Button>
-                            <Button>Giá Cao - Thấp</Button>
+                            <Button type={sortType === 'default' ? "primary" : "default"} onClick={() => handleSort('default')}>Phù Hợp</Button>
+                            <Button type={sortType === 'lowToHigh' ? "primary" : "default"} onClick={() => handleSort('lowToHigh')}>Giá Thấp - Cao</Button>
+                            <Button type={sortType === 'highToLow' ? "primary" : "default"} onClick={() => handleSort('highToLow')}>Giá Cao - Thấp</Button>
                         </div>
-                        <Pagination defaultCurrent={1} total={50} />
+                        <Pagination
+                            current={currentPage}
+                            total={productData.length}
+                            pageSize={pageSize}
+                            onChange={handlePageChange}
+                        />
                     </div>
 
                     <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-                        {products.map((product) => (
-                            <Card className="w-full">
-                                <div className="flex justify-center">
-                                    <img src={product.image} alt={product.title} className="h-40 object-cover rounded-md mb-4" />
-                                </div>
-                                <h3 className="text-lg font-medium">{product.title}</h3>
-                                <Rate disabled defaultValue={product.rating} />
-                                <div className="flex items-center justify-between my-2">
-                                    <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
-                                    <Badge.Ribbon text={`-${product.discount}%`} color="red">
-                                    </Badge.Ribbon>
-                                </div>
-                                <p className="text-gray-500">Đã bán {product.sold}</p>
-                                <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
-                            </Card>
-                        ))}
+                        {productData.length > 0 ? (
+                            productData.map((product) => (
+                                <Card className="w-full">
+                                    <div className="flex justify-center">
+                                        <img src={product.image} alt={product.name} className="h-40 object-cover rounded-md mb-4" />
+                                    </div>
+                                    <h3 className="text-lg font-medium">{product.name}</h3>
+                                    <Rate disabled defaultValue={5} />
+                                    <div className="flex items-center justify-between my-2">
+                                        <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
+                                        <Badge.Ribbon text={`-${product.discount}%`} color="red">
+                                        </Badge.Ribbon>
+                                    </div>
+                                    <p className="text-gray-500">Đã bán 99</p>
+                                    <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                </Card>
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center text-gray-500">Chúng tôi hiện không có sản phẩm nào cho thương hiệu này.</div>
+                        )}
                     </div>
 
                 </div>

@@ -1,58 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect, } from 'react';
 import { Menu } from 'antd';
 import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
+  // AppstoreOutlined,
+  // MailOutlined,
+  // SettingOutlined,
+  StarOutlined,
 } from '@ant-design/icons';
+import { Link, useParams } from 'react-router-dom';
 
-const { SubMenu } = Menu;
-const linkClass = "text-pink-500";
+// const { SubMenu } = Menu;
+const linkClass = "hover:text-pink-500 font-medium text-lg";
+
+interface ProductType {
+  id: number;
+  name: string;
+  description: string;
+  active: boolean;
+  isDeleted: boolean;
+}
 
 const Sidebar: React.FC = () => {
+  const { typeId } = useParams<{ typeId: string }>();
+  const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+  const [selectedKey, setSelectedKey] = useState<string>('1');
+
+  useEffect(() => {
+    fetch('https://localhost:44329/api/ProductType/GetAllProductType')
+      .then(response => response.json())
+      .then(data => setProductTypes(data.data.filter((productType: ProductType) => productType.active)))
+      .catch(error => console.error('Error fetching product types:', error));
+  }, []);
+
+  useEffect(() => {
+    if (typeId) {
+      setSelectedKey(typeId);
+    }
+  }, [typeId]);
+
   return (
-    // <aside className="bg-white shadow-md p-4 space-y-4">
-    //   <a href="#" className="block">Sữa bột cao cấp</a>
-    //   <a href="#" className="block">Sữa tươi các loại</a>
-    //   <a href="#" className="block">Chăm sóc gia đình</a>
-    //   <a href="#" className="block">Đồ dùng mẹ & bé</a>
-    //   <a href="#" className="block">Thời trang & Phụ kiện</a>
-    //   <a href="#" className="block">Đồ chơi, học tập</a>
-    //   <a href="#" className="block">Ứng dụng Mẹ & Bé</a>
-    // </aside>
     <div className="h-screen bg-white sticky top-0 left-0 fixed-sidebar">
       <Menu
+        selectedKeys={[selectedKey]}
         mode="vertical"
-        defaultSelectedKeys={['1']}
-        // defaultOpenKeys={['sub1']}
         style={{ width: 256 }}
       >
-        <SubMenu
-          key="sub1"
-          icon={<MailOutlined />}
-          title="Sữa bột cao cấp"
-        >
-          <Menu.Item className={linkClass} key="1">Sữa Mỹ</Menu.Item>
-          <Menu.Item className={linkClass} key="2">Sữa Nhật</Menu.Item>
-          <Menu.Item className={linkClass} key="3">Sữa Úc</Menu.Item>
-          <Menu.Item className={linkClass} key="4">Châu Âu</Menu.Item>
-          <Menu.Item className={linkClass} key="5">Sữa Khác</Menu.Item>
-        </SubMenu>
-        <Menu.Item className={linkClass} key="sub3" icon={<SettingOutlined />}>
-          Sữa tươi các loại
-        </Menu.Item>
-        <Menu.Item className={linkClass} key="sub4" icon={<SettingOutlined />}>
-          Sữa bột pha sẵn
-        </Menu.Item>
-        <Menu.Item className={linkClass} key="sub5" icon={<SettingOutlined />}>
-          Sữa hạt dinh dưỡng
-        </Menu.Item>
-        <Menu.Item className={linkClass} key="sub6" icon={<SettingOutlined />}>
-          Thức uống dinh dưỡng
-        </Menu.Item>
-        <Menu.Item className={linkClass} key="sub10" icon={<AppstoreOutlined />}>
-          Ứng dụng Mẹ & Bé
-        </Menu.Item>
+        {productTypes.map(productType => (
+          <Menu.Item
+            key={productType.id}
+            icon={
+              <StarOutlined style={{ color: '#111827' }} />
+            }
+          >
+            {/* <span className={linkClass}>{productType.name}</span> */}
+            <Link to={`/product-list/type/${productType.id}`} className={linkClass}>
+              {productType.name}
+            </Link>
+          </Menu.Item>
+        ))}
       </Menu>
     </div>
   );
