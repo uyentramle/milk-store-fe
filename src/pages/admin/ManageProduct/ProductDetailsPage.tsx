@@ -68,7 +68,7 @@ interface Product {
 }
 
 const ProductDetailPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id, page } = useParams<{ id: string, page: string }>();
     const [product, setProduct] = useState<Product>();
     const [images, setImages] = useState<Image[]>([]);
     const [mainImage, setMainImage] = useState<string>('');
@@ -132,26 +132,41 @@ const ProductDetailPage: React.FC = () => {
                 </div>
                 <div className="w-1/2 pl-4">
                     <h2 className="mb-4 text-2xl font-bold">{product.name}</h2>
-                    <p><strong>SKU:</strong> {product.sku}</p>
-                    <p><strong>Mô tả:</strong> {product.description}</p>
-                    <p><strong>Giá góc:</strong> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</p>
-                    <p><strong>Giá giảm:</strong> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.discount)}</p>
-                    <p><strong>Cân nặng:</strong> {product.weight} Kg</p>
-                    <p><strong>Số lượng:</strong> {product.quantity}</p>
-                    <p><strong>Phân loại:</strong> {product.type.name}</p>
-                    <p><strong>Thương hiệu:</strong> {product.brand.name}</p>
-                    <p><strong>Độ tuổi:</strong> {product.ageRange.name}</p>
-                    <p>
+                    <p className='mt-8'><strong>SKU:</strong> {product.sku}</p>
+                    <p className='mt-2'><strong>Mô tả:</strong> {product.description}</p>
+                    <p className='mt-2'><strong>Giá gốc:</strong> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</p>
+                    <p className='mt-2'><strong>Giá giảm:</strong> {product.discount ? `${product.discount}%` : 'Không có'}</p>
+                    <p className='mt-2'><strong>Cân nặng:</strong> {product.weight} Kg</p>
+                    <p className='mt-2'><strong>Số lượng:</strong> {product.quantity}</p>
+                    <p className='mt-2'><strong>Phân loại:</strong> {product.type.name}</p>
+                    <p className='mt-2'><strong>Thương hiệu:</strong> {product.brand.name}</p>
+                    <p className='mt-2'><strong>Độ tuổi:</strong> {product.ageRange.name}</p>
+                    <p className='mt-2'>
                         <strong>Trạng thái: </strong>
                         <span className={`${product.active ? 'text-green-500' : 'text-red-500'} font-bold`}>
                             {product.active ? 'Đang bán' : 'Ngừng bán'}
                         </span>
                     </p>
-                    <Link to="/admin/products">
-                        <button className="mt-4 rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-700">
-                            Trở về
-                        </button>
-                    </Link>
+                    {page === "manage" && (
+                        <Link to="/admin/products">
+                            <button
+                                type="button"
+                                className="rounded bg-pink-500 px-4 py-2 mt-4 font-bold text-white hover:bg-pink-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
+                    {page === "restore" && (
+                        <Link to="/admin/products/restore">
+                            <button
+                                type="button"
+                                className="rounded bg-pink-500 px-4 py-2 mt-4 font-bold text-white hover:bg-pink-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

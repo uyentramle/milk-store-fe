@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPen, faTrash, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { EditOutlined, DeleteOutlined, BackwardOutlined } from '@ant-design/icons';
+import { EditOutlined, RestOutlined, BackwardOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import Pagination from 'antd/es/pagination';
@@ -130,9 +130,9 @@ const ManageProductPage: React.FC = () => {
 
             const deleteData = new FormData();
             deleteData.append('Id', selectedProductId);
-            deleteData.append('DeletedBy', DeletedBy);
+            deleteData.append('UpdatedBy', DeletedBy);
 
-            const response = await axios.post(`https://localhost:44329/api/Product/DeleteProduct`, deleteData,{
+            const response = await axios.post(`https://localhost:44329/api/Product/RestoreProduct`, deleteData,{
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
@@ -140,13 +140,13 @@ const ManageProductPage: React.FC = () => {
                 },
             })
             if (response.data.success) {
-                message.success('Xóa sản phẩm thành công');
+                message.success('Khôi phục sản phẩm thành công');
                 // Sau khi xóa, đóng popup và xóa sản phẩm khỏi state
                 setProducts(products.filter(product => product.id !== selectedProductId));
                 setIsModalVisible(false);
                 setSelectedProductId(null);
             } else {
-                message.error('Xóa sản phẩm thất bại');
+                message.error('Khôi phục sản phẩm thất bại');
             }
             
         }
@@ -272,9 +272,9 @@ const handleCancelStatusChange = () => {
                         <tr className="bg-gray-200">
                             <th className="px-4 py-2">STT.</th>
                             <th className="px-4 py-2">Tên sản phẩm</th>
-                            <th className="px-4 py-2">Hình ảnh</th>
+                            <th className="px-4 py-2">Ảnh bìa</th>
                             <th className="px-4 py-2">SKU</th>
-                            <th className="px-4 py-2">Giá góc</th>
+                            <th className="px-4 py-2">Giá gốc</th>
                             <th className="px-4 py-2">Giá giảm</th>
                             <th className="px-4 py-2">Số lượng</th>
                             <th className="px-4 py-2">Phân loại</th>
@@ -282,7 +282,7 @@ const handleCancelStatusChange = () => {
                             <th className="px-4 py-2">Độ tuổi</th>
                             <th className="px-4 py-2">Trạng thái</th>
                             <th className="px-4 py-2">Cập nhật</th>
-                            <th className="px-4 py-2">Xóa</th>
+                            <th className="px-4 py-2">Khôi phục</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -291,7 +291,7 @@ const handleCancelStatusChange = () => {
                             return (
                                 <tr key={product.id} className="border-b bg-white">
                                     <td className="px-4 py-2 font-bold">{rowNumber}</td>
-                                    <Link to={`/admin/products/details/${product.id}`}>
+                                    <Link to={`/admin/products/details/${product.id}/restore`}>
                                         <td className="mx-auto px-4 py-2 font-bold">
                                             {product.name}
                                         </td>
@@ -331,7 +331,7 @@ const handleCancelStatusChange = () => {
                                     <td className="px-4 py-2">
                                         <Button 
                                             type="primary" 
-                                            icon={<DeleteOutlined />} 
+                                            icon={<RestOutlined />} 
                                             danger 
                                             onClick={() => handleDeleteClick(product.id)} 
                                         />
@@ -349,15 +349,15 @@ const handleCancelStatusChange = () => {
                 onChange={handlePageChange}
             />
             <Modal
-                title="Xác nhận xóa"
+                title="Xác nhận khôi phục"
                 visible={isModalVisible}
                 onOk={handleConfirmDelete}
                 onCancel={handleCancelDelete}
-                okText="Xóa"
+                okText="Khôi phục"
                 cancelText="Hủy"
                 centered
             >
-                <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+                <p>Bạn có chắc chắn muốn khôi phục sản phẩm này không?</p>
             </Modal>
             <Modal
                 title="Xác nhận thay đổi trạng thái"

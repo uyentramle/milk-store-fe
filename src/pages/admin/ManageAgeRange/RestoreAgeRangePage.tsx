@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchOutlined, BackwardOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, BackwardOutlined, EditOutlined, RestOutlined } from '@ant-design/icons';
 import { Button, Input, Table, Select, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -79,13 +79,13 @@ const AgeRangeManagementPage: React.FC = () => {
                 </Link>
             ),
         },{
-            title: 'Xóa',
+            title: 'Khôi phục',
             key: 'delete',
             render: (_text: any, _record: AgeRange) => (
                 <Button
                     type="primary"
                     danger
-                    icon={<DeleteOutlined />}
+                    icon={<RestOutlined />}
                     className="bg-red-500"
                     onClick={() => showDeleteConfirm(_record)}
                 >
