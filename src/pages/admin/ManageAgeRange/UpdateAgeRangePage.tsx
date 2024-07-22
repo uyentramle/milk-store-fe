@@ -13,7 +13,7 @@ interface FormData {
     active: boolean;
 }
 
-const CreateProductTypePage: React.FC = () => {
+const CreateAgeRangePage: React.FC = () => {
     const { id, page } = useParams<{ id: string, page: string }>();
     const [formData, setFormData] = useState<FormData>({
         name: '',
@@ -25,7 +25,7 @@ const CreateProductTypePage: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`https://localhost:44329/api/ProductType/GetProductTypeById?id=${id}`)
+        fetch(`https://localhost:44329/api/AgeRange/GetAgeRangeById?id=${id}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
@@ -36,12 +36,12 @@ const CreateProductTypePage: React.FC = () => {
                     });
                     setLoading(false);
                 } else {
-                    setError(data.message || 'Failed to fetch product type data.');
+                    setError(data.message || 'Failed to fetch age range data.');
                     setLoading(false);
                 }
             })
             .catch((error) => {
-                setError('Error fetching product type data.');
+                setError('Error fetching age range data.');
                 setLoading(false);
             });
     }, [id]);
@@ -92,7 +92,7 @@ const CreateProductTypePage: React.FC = () => {
         data.append('Active', values.active.toString());
         data.append('UpdatedBy', UpdatedBy);
         console.log(values.active);
-        const response = await axios.post(`https://localhost:44329/api/ProductType/UpdateProductType`, data, {
+        const response = await axios.post(`https://localhost:44329/api/AgeRange/UpdateAgeRange`, data, {
             headers: {
                 'accept': '*/*',
                 'Content-Type': 'multipart/form-data',
@@ -101,14 +101,14 @@ const CreateProductTypePage: React.FC = () => {
         });
 
         if (response.data.success) {
-            message.success('Cập nhật danh mục sản phẩm thành công!');
-        } else if (response.data.message === "Product type already exists.") {
-            message.error('Danh mục sản phẩm đã tồn tại!');
-        } else if (response.data.message === "Product type is not active.") {
-            message.error('Danh mục sản phẩm đã bị xóa nê không thể cập nhật trạng thái danh mục sản phẩm!');
+            message.success('Cập nhật độ tuổi sử dụng thành công!');
+        } else if (response.data.message === "AgeRange already exists.") {
+            message.error('Độ tuổi sử dụng đã tồn tại!');
+        } else if (response.data.message === "AgeRange is not active.") {
+            message.error('Độ tuổi sử dụng đã bị xóa nên không thể cập nhật trạng thái độ tuổi sử dụng!');
         }
          else {
-            message.error('Không thể cập nhật danh mục sản phẩm!');
+            message.error('Không thể cập nhật độ tuổi sử dụng!');
         }
     };
 
@@ -122,7 +122,7 @@ const CreateProductTypePage: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Chỉnh sửa danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Chỉnh sửa độ tuổi sử dụng</h1>
             <Form
                 initialValues={formData}
                 onFinish={handleSubmit}
@@ -131,9 +131,9 @@ const CreateProductTypePage: React.FC = () => {
                 <div className="w-full px-4">
                     <div className="mb-4 w-1/2">
                         <Form.Item
-                            label="Tên danh mục sản phẩm"
+                            label="Tên độ tuổi sử dụng"
                             name="name"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục sản phẩm' }]}
+                            rules={[{ required: true, message: 'Vui lòng nhập tên độ tuổi sử dụng' }]}
                         >
                             <Input
                                 id="name"
@@ -176,12 +176,12 @@ const CreateProductTypePage: React.FC = () => {
                             Chỉnh sửa
                         </Button>
                         {page === 'manage' && (
-                            <Link to="/admin/product-types">
+                            <Link to="/admin/age-ranges">
                                 <Button type="default">Trở về</Button>
                             </Link>
                         )}
                         {page === 'restore' && (
-                            <Link to="/admin/product-types/restore">
+                            <Link to="/admin/age-ranges/restore">
                                 <Button type="default">Trở về</Button>
                             </Link>
                         )}
@@ -192,4 +192,4 @@ const CreateProductTypePage: React.FC = () => {
     );
 };
 
-export default CreateProductTypePage;
+export default CreateAgeRangePage;

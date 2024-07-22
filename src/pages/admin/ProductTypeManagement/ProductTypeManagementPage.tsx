@@ -27,7 +27,9 @@ const ProductTypeManagementPage: React.FC = () => {
     useEffect(() => {
         fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
         .then (response => response.json())
-        .then (data => setProductTypes(data.data.filter((productType : ProductType) => !productType.isDeleted)))
+        .then (data => setProductTypes(data.data
+            .filter((productType : ProductType) => !productType.isDeleted)
+            .sort((a, b) => b.id - a.id)));
     }, []);
 
     const filteredBlogs = productTypes.filter((p) => {
@@ -41,7 +43,7 @@ const ProductTypeManagementPage: React.FC = () => {
 
     const columns = [
         {
-            title: 'No.',
+            title: 'STT.',
             dataIndex: 'id',
             key: 'id',
             render: (_text: any, _record: any, index: number) => index + 1,
@@ -67,7 +69,7 @@ const ProductTypeManagementPage: React.FC = () => {
             title: 'Cập nhật',
             key: 'update',
             render: (_text: any, _record: ProductType) => (
-                <Link to={`/admin/product-types/update/${_record.id}`}>
+                <Link to={`/admin/product-types/update/${_record.id}/manage`}>
                     <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
                         Cập nhật
                     </Button>
@@ -120,9 +122,11 @@ const ProductTypeManagementPage: React.FC = () => {
                 if (response.data.success) {
                     message.success('Xóa danh mục sản phẩm thành công!');
                     setProductTypes(productTypes.filter((p) => p.id !== currentProductType.id));
+                } else if (response.data.message === "Product type is in use.") {
+                    message.error("Danh mục đang được sử dụng. Không thể xóa!");
                 }
                 else {
-                    message.error(response.data.message || 'Không thể xóa danh mục sản phẩm');
+                    message.error('Không thể xóa danh mục sản phẩm');
                 }
             } catch (error) {
                 console.error('Error deleting product type:', error);
