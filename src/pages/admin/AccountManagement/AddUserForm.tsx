@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select, Button, message } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -76,8 +75,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({
             } finally {
                 setLoading(false);
             }
-
-
         });
     };
 

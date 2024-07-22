@@ -9,6 +9,7 @@ import {
 import { Button, Input, Table, Image, Select, Spin, Modal, notification, } from 'antd';
 import { Link, useNavigate, } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -66,7 +67,30 @@ const BrandManagementPage: React.FC = () => {
 
     const defaultImageUrl = 'https://via.placeholder.com/64';
 
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
         const fetchBrands = async () => {
             setLoading(true);
             setError(null);
@@ -135,6 +159,14 @@ const BrandManagementPage: React.FC = () => {
             filterStatus === 'All' || (filterStatus === 'Active' && brand.active) || (filterStatus === 'Inactive' && !brand.active);
         return matchesSearch && matchesStatus;
     });
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     const columns = [
         {

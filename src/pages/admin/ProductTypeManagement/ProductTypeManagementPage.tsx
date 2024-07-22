@@ -23,13 +23,35 @@ const ProductTypeManagementPage: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentProductType, setCurrentProductType] = useState<ProductType | null>(null);
 
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
     useEffect(() => {
-        fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
-        .then (response => response.json())
-        .then (data => setProductTypes(data.data
-            .filter((productType : ProductType) => !productType.isDeleted)
-            .sort((a, b) => b.id - a.id)));
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
+        fetch('https://localhost:44329/api/ProductType/GetAllProductType')
+            .then(response => response.json())
+            .then(data => setProductTypes(data.data
+                .filter((productType: ProductType) => !productType.isDeleted)
+                .sort((a, b) => b.id - a.id)));
     }, []);
 
     const filteredBlogs = productTypes.filter((p) => {
@@ -40,6 +62,14 @@ const ProductTypeManagementPage: React.FC = () => {
             filterStatus === 'All' || (filterStatus === 'Active' && p.active) || (filterStatus === 'Inactive' && !p.active);
         return matchesSearch && matchesStatus;
     });
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     const columns = [
         {
@@ -75,7 +105,7 @@ const ProductTypeManagementPage: React.FC = () => {
                     </Button>
                 </Link>
             ),
-        },{
+        }, {
             title: 'Xóa',
             key: 'delete',
             render: (_text: any, _record: ProductType) => (
@@ -89,14 +119,14 @@ const ProductTypeManagementPage: React.FC = () => {
                     Xóa
                 </Button>
             ),
-        }        
+        }
     ];
 
     const showDeleteConfirm = (record: ProductType) => {
         setCurrentProductType(record);
         setIsModalVisible(true);
     };
-    
+
     const handleDelete = async () => {
         if (currentProductType) {
             try {
@@ -134,12 +164,11 @@ const ProductTypeManagementPage: React.FC = () => {
             setIsModalVisible(false);
         }
     };
-    
+
     const handleCancel = () => {
         setIsModalVisible(false);
         setCurrentProductType(null);
     };
-    
 
     return (
         <div className="container mx-auto px-4 pb-8">
