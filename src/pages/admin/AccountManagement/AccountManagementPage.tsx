@@ -187,10 +187,10 @@ const AccountManagementPage: React.FC = () => {
         console.error('Error fetching accounts:', error);
       }
     };
-    fetchData();
-    // const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 0 giây
+    // fetchData();
+    const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
-    //   return () => clearInterval(interval);
+      return () => clearInterval(interval);
   }, [searchTerm, filterStatus, pageIndex, pageSize]);
 
   // useWebSocket('ws://localhost:5096/ws', (event) => {
