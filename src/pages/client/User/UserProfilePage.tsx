@@ -55,7 +55,7 @@ const getUserProfile = async (): Promise<any> => {
         const decodedToken: any = jwtDecode(accessToken);
         const userId = decodedToken.userId; // Assuming 'userId' is the key in your accessToken payload
 
-        const response = await axios.get(`https://localhost:44329/api/Account/GetUserProfile?userId=${userId}`, {
+        const response = await axios.get(`https://localhost:7251/api/Account/GetUserProfile?userId=${userId}`, {
             headers: {
                 'accept': '*/*', // xem trong api yêu cầu gì thì copy vào
                 'authorization': `Bearer ${accessToken}` // xem trong api yêu cầu gì thì copy vào

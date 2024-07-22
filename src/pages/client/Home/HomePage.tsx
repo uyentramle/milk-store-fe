@@ -1,7 +1,7 @@
 import React, { useState, useEffect, } from 'react';
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
-import { Input, Typography, Row, Col, Card, Rate, Badge, Button, } from 'antd';
+import { Input, Typography, Row, Col, Card, Rate, Badge, Button, message, } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, EyeTwoTone, } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -84,13 +84,13 @@ const HomePage: React.FC = () => {
     const [recentBlog, setBlogs] = useState<Blog[]>([]);
 
     useEffect(() => {
-        fetch('https://localhost:44329/api/Product/GetAllProducts')
+        fetch('https://localhost:7251/api/Product/GetAllProducts')
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
                     const fetchedProducts = data.data.filter((product: Product) => !product.isDeleted);
                     const productImagesPromises = fetchedProducts.map((product: Product) =>
-                        fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
+                        fetch(`https://localhost:7251/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
                             .then((response) => response.json())
                             .then((imageData) => {
                                 if (imageData.success && imageData.data.length > 0) {
@@ -115,7 +115,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axios.get('https://localhost:44329/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
+                const response = await axios.get('https://localhost:7251/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
                 if (response.data.success) {
                     const filteredBlogs = response.data.data.items.filter((blog: Blog) => blog.status);
                     setBlogs(filteredBlogs);
@@ -129,6 +129,37 @@ const HomePage: React.FC = () => {
 
         fetchBlogs();
     }, []);
+    const addToCart = async (productId: string) => {
+        const token = localStorage.getItem('accessToken'); // Get the token from localStorage
+        if (!token) {
+            message.error('You need to be logged in to add items to cart');
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                'https://localhost:7251/api/Cart/AddProductToCart/add-to-cart',
+                {
+                    productId: productId,
+                    quanity: 1 // You can modify this if you want to allow adding multiple quantities
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                message.success('Product added to cart successfully');
+            } else {
+                message.error('Failed to add product to cart');
+            }
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            message.error('An error occurred while adding the product to cart');
+        }
+    };
 
     // const recentBlog = [
     //     {
@@ -186,9 +217,13 @@ const HomePage: React.FC = () => {
                                                 </div>
                                             }
                                             actions={[
-                                                <Link to={`/addtocart/${product.id}`} className="block">
-                                                    <ShoppingCartOutlined style={{ fontSize: '25px' }} />
-                                                </Link>,
+                                                <ShoppingCartOutlined 
+                                                    style={{ fontSize: '25px' }} 
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); // Prevent navigation
+                                                        addToCart(product.id);
+                                                    }}
+                                                />,
                                             ]}
                                         >
                                             <Card.Meta

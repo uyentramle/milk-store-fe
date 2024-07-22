@@ -36,7 +36,7 @@ interface ApiResponse {
 
 const loginApi = async (username: string, password: string): Promise<ApiResponse> => {
     try {
-        const response = await axios.post('https://localhost:44329/api/Auth/Login', {
+        const response = await axios.post('https://localhost:7251/api/Auth/Login', {
             username,
             password,
         }, {

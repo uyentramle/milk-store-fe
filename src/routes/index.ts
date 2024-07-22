@@ -50,6 +50,7 @@ import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
 import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
 import UpdateProductTypePage from '../pages/admin/ProductTypeManagement/UpdateProductTypePage';
 import RestoreProductTypePage from '../pages/admin/ProductTypeManagement/RestoreProductTypePage';
+import ConfirmTransaction from '../pages/client/Cart/ConfirmOrder';
 
 interface RouteProps {
     path: string;
@@ -79,6 +80,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
+    { path: '/confirm-transaction/:orderCode', component: ConfirmTransaction, layout: DefaultClientLayout },
 
 
     { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
