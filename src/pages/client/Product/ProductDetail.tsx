@@ -181,6 +181,10 @@ const ProductDetail = () => {
       currency: 'VND',
     }).format(amount);
   }
+  const calculateFinalPrice = (price: number, discount: number) => {
+    return price - (price * (discount / 100));
+  }
+
 
   return (
     <div>
@@ -216,11 +220,14 @@ const ProductDetail = () => {
                   <Paragraph>SKU: {product?.sku}</Paragraph>
                   <Paragraph>{product?.description}</Paragraph>
                   <Card>
-                    <Paragraph className="object-cover line-through" style={{ fontSize: '20px' }}>
+                  <Paragraph className="object-cover line-through" style={{ fontSize: '20px' }}>
                       Giá: {product ? formatCurrency(product.price) : 'N/A'}
                     </Paragraph>
                     <Paragraph className="object-cover text-rose-600 font-semibold" style={{ fontSize: '20px' }}>
-                      Giảm giá: {product ? formatCurrency(product.discount) : 'N/A'}
+                      Giảm giá: {product ? `${product.discount}%` : 'N/A'}
+                    </Paragraph>
+                    <Paragraph className="object-cover font-semibold text-green-500" style={{ fontSize: '20px' }}>
+                      Giá sau giảm: {product ? formatCurrency(calculateFinalPrice(product.price, product.discount)) : 'N/A'}
                     </Paragraph>
                   </Card>
                   <div className="mt-4">

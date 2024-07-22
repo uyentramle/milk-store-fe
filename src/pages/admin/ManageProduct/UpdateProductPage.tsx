@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { message } from 'antd';
+import { message, Image } from 'antd';
 
 interface Brand {
     id: number;
@@ -73,9 +73,6 @@ const UpdateProductPage = () => {
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [images, setImages] = useState<Image[]>([]);
     const [checkThumbnailChanged, setThumbnailChanged] = useState(false);
-    const [checkImagesChanged, setImagesChanged] = useState(false);
-
-
 
     useEffect(() => {
         fetch(`https://localhost:44329/api/Product/GetProductById?id=${productId}`)
@@ -155,66 +152,62 @@ const UpdateProductPage = () => {
             weight: 0,
             discount: 0,
             quantity: 0,
-            typeId: '',
-            brandId: '',
-            ageId: '',
+            typeId: 0,
+            brandId: 0,
+            ageId: 0,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Validation logic
         if (!formData.thumbnail) {
             message.error("Ảnh bìa không được bỏ trống");
             return;
         }
-
+    
         if (formData.images.length === 0) {
             message.error("Ảnh sản phẩm không được bỏ trống");
             return;
         }
-
+    
         if (formData.price < 0) {
             message.error("Giá gốc không được là số âm");
             return;
         }
 
-        if (formData.discount < 0) {
-            message.error("Giá giảm không được là số âm");
+    
+        if (formData.discount < 0 || formData.discount > 100) {
+            message.error("Giảm giá phải từ 0 đến 100%");
             return;
         }
-
-        if (formData.discount > formData.price) {
-            message.error("Giá giảm không được lớn hơn giá gốc");
-            return;
-        }
-
+    
         if (formData.weight < 0 || formData.weight > 10) {
             message.error("Cân nặng không hợp lệ (phải từ 0 đến 10Kg)");
             return;
         }
-
+    
         if (formData.quantity < 0 || formData.quantity > 100000) {
             message.error("Số lượng không hợp lệ (phải từ 0 đến 100000)");
             return;
         }
-
+    
         if (!formData.typeId) {
             message.error("Vui lòng chọn loại sản phẩm");
             return;
         }
-
+    
         if (!formData.brandId) {
             message.error("Vui lòng chọn thương hiệu");
             return;
         }
-
+    
         if (!formData.ageId) {
             message.error("Vui lòng chọn độ tuổi");
             return;
         }
-
+    
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
             throw new Error('Access token not found.');
@@ -222,7 +215,7 @@ const UpdateProductPage = () => {
 
         const decodedToken: any = jwtDecode(accessToken);
         const UpdatedBy = decodedToken.id;
-
+    
         const updateProductData = new FormData();
         updateProductData.append('Id', productId);
         updateProductData.append('Name', formData.name);
@@ -236,70 +229,53 @@ const UpdateProductPage = () => {
         updateProductData.append('BrandId', formData.brandId.toString());
         updateProductData.append('AgeId', formData.ageId.toString());
         updateProductData.append('UpdatedBy', UpdatedBy);
-        
-            try
-        {
-            const updateProduct = await axios.post(`https://localhost:44329/api/Product/UpdateProduct`, updateProductData,{
+    
+        try {
+            const updateProduct = await axios.post(`https://localhost:44329/api/Product/UpdateProduct`, updateProductData, {
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${accessToken}`,
                 },
             });
+    
             if (updateProduct.data.success) {
-                message.success('Cập nhật sản phẩm thành công!');
+                message.success('Cập nhật sản phẩm thành công!');
                 const productImage = new FormData();
                 productImage.append('ProductId', productId);
                 productImage.append('UpdatedBy', UpdatedBy);
-
-                if (!checkThumbnailChanged && !checkImagesChanged){
-                    return;
-                } else if (checkThumbnailChanged && !checkImagesChanged) {
-                    productImage.append('thumbnailFile', formData.thumbnail);
-                    productImage.append('imageFiles', '');
-                    productImage.append('imageIds', '');
-                } else if (!checkThumbnailChanged && checkImagesChanged) {
-                    productImage.append('thumbnailFile', '');
-                    for (let i = 0; i < images.length; i++) 
-                        {
-                            productImage.append('imageFiles', images[i]);
-                        }
-                    for (let i = 0; i < formData.images.length; i++){
-                        productImage.append('imageIds', formData.images[i].id);
-                    }
-                } else {
-                    productImage.append('thumbnailFile', formData.thumbnail);
-                    for (let i = 0; i < images.length; i++)
-                        {
-                            productImage.append('imageFiles', images[i]);
-                        }
-                    for (let i = 0; i < formData.images.length; i++){
-                        productImage.append('imageIds', formData.images[i].id);
-                    }
+                for (let i = 0; i < formData.images.length; i++) {
+                    productImage.append('imageIds', formData.images[i].id);
                 }
-                const updateProductImage = await axios.post(`https://localhost:44329/api/ProductImage/UpdateProductImage`, productImage,{
+
+                if (checkThumbnailChanged) {
+                    productImage.append('thumbnailFile', formData.thumbnail);
+                }
+    
+                for (let i = 0; i < images.length; i++) {
+                    productImage.append('imageFiles', images[i]);
+                }
+    
+                const updateProductImage = await axios.post(`https://localhost:44329/api/ProductImage/UpdateProductImage`, productImage, {
                     headers: {
                         'accept': '*/*',
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${accessToken}`,
                     },
                 });
-
+    
                 if (updateProductImage.data.success) {
-                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
+                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
+                } else {
+                    message.error('Cập nhật hình ảnh sản phẩm thất bại!');
                 }
-                
-            }
-            else {
+            } else {
                 message.error('Cập nhật sản phẩm thất bại!');
             }
-
+        } catch (error) {
+            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
         }
-        catch (error) {
-            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
-        }
-        
-    };
+    };    
 
     const handleThumbnailClick = () => {
         setItemToDelete('thumbnail');
@@ -319,7 +295,6 @@ const UpdateProductPage = () => {
                 ...prevState,
                 images: prevState.images.filter((img) => img.id !== imageId),
             }));
-            setImagesChanged(true)
         }
         setShowDeletePopup(false);
         setItemToDelete(null);
@@ -355,7 +330,7 @@ const UpdateProductPage = () => {
                 <div className="flex space-x-6">
                     <div className="flex-1 flex flex-col space-y-4">
                         <label className="font-bold">Ảnh bìa <span className="text-red-500">*</span></label>
-                        <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 relative">
+                        <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 min-w-64 mx-auto w-auto">
                             {checkThumbnailChanged ? (
                                 formData.thumbnail ? (
                                     <img
@@ -373,7 +348,7 @@ const UpdateProductPage = () => {
                                             onChange={handleChange}
                                             className="hidden"
                                         />
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-28 opacity-50" />
                                     </label>
                                 )
                             ) : (
@@ -512,7 +487,7 @@ const UpdateProductPage = () => {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="discount" className="block font-bold">
-                                Giá giảm
+                                Giảm giá
                             </label>
                             <input
                                 type="number"
