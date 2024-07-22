@@ -86,14 +86,24 @@ const OrderDetailModal: React.FC<OrderDetailsProps> = ({ visible, onCancel, orde
             dataIndex: 'unitPrice',
             key: 'unitPrice',
             align: 'center',
-            render: (text: string) => <span style={{ fontSize: '13px' }}>{text}</span>,
+            // render: (text: string) => <span style={{ fontSize: '13px' }}>{text}</span>,
+            render: (text: number) => (
+                <span style={{ fontSize: '13px' }}>
+                    {text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                </span>
+            ),
         },
         {
             title: 'Tổng tiền',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
             align: 'center',
-            render: (text: string) => <span style={{ fontSize: '13px' }}>{text}</span>,
+            // render: (text: string) => <span style={{ fontSize: '13px' }}>{text}</span>,
+            render: (text: number) => (
+                <span style={{ fontSize: '13px' }}>
+                    {text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                </span>
+            ),
         },
     ];
 
@@ -107,9 +117,19 @@ const OrderDetailModal: React.FC<OrderDetailsProps> = ({ visible, onCancel, orde
                             <p className="font-bold">
                                 Đơn hàng: <span className="font-normal">{order.orderId}</span>
                             </p>
-                            <p className="font-bold">
+                            {/* <p className="font-bold">
                                 Ngày đặt hàng: <span className="font-normal">{order.orderDate}</span>
-                            </p>
+                            </p> */}
+                            <p className="font-bold">
+    Ngày đặt hàng: <span className="font-normal">
+        {new Date(order.orderDate).toLocaleDateString('vi-VN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        })}
+    </span>
+</p>
+
                         </div>
                         <p className="font-bold">
                             Trạng thái: <Tag color={getStatusColor(order.status)}>{getStatusVietnamese(order.status)}</Tag>
@@ -169,10 +189,12 @@ const OrderDetailModal: React.FC<OrderDetailsProps> = ({ visible, onCancel, orde
                     <div className="mb-4 rounded bg-gray-100 p-4">
                         <h6 className="mb-4 font-semibold text-primary">THANH TOÁN</h6>
                         <p className="mb-2 flex justify-between">
-                            Tạm tính: <span className="font-semibold">{order.payment.subtotal}  ₫</span>
+                            {/* Tạm tính: <span className="font-semibold">{order.payment.subtotal}  ₫</span> */}
+                            Tạm tính: <span className="font-semibold">{order.payment.subtotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                         </p>
                         <p className="mb-2 flex justify-between">
-                            Khuyến mãi: <span className="font-semibold">{order.payment.discount} ₫</span>
+                            {/* Khuyến mãi: <span className="font-semibold">{order.payment.discount} ₫</span> */}
+                            Khuyến mãi: <span className="font-semibold">{order.payment.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                         </p>
                         <p className="mb-2 flex justify-between">
                             Phí vận chuyển: <span className="font-semibold">{order.payment.shippingFee}</span>
@@ -184,7 +206,8 @@ const OrderDetailModal: React.FC<OrderDetailsProps> = ({ visible, onCancel, orde
                             Dùng điểm: <span className="font-semibold">{order.payment.points}</span>
                         </p>
                         <p className="mb-2 flex justify-between">
-                            Cần thanh toán: <span className="font-semibold text-red-500">{order.payment.total} ₫</span>
+                            {/* Cần thanh toán: <span className="font-semibold text-red-500">{order.payment.total} ₫</span> */}
+                            Cần thanh toán: <span className="font-semibold text-red-500">{order.payment.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                         </p>
                     </div>
                     <div className="modal-footer flex justify-end">

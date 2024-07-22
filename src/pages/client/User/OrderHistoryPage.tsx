@@ -189,7 +189,7 @@ const OrderHistoryPage: React.FC = () => {
         // fetchData();
         const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 0 giây
 
-      return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, [pageIndex, pageSize]);
 
     const openModal = (orderId: string) => {
@@ -295,13 +295,20 @@ const OrderHistoryPage: React.FC = () => {
                                                     <td className="py-2 text-center">{order.orderId}</td>
                                                     {/* <td className="py-2 text-center">{order.orderDate}</td> */}
                                                     <td className="py-2 text-center">
-    {new Date(order.orderDate).toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })}
-</td>
-                                                    <td className="py-2 text-center">{order.totalAmount.toLocaleString()} ₫</td>
+                                                        {new Date(order.orderDate).toLocaleDateString('vi-VN', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </td>
+                                                    {/* <td className="py-2 text-center">{order.totalAmount.toLocaleString()} ₫</td> */}
+                                                    <td className="py-2 text-center">
+                                                        {new Intl.NumberFormat('vi-VN', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        }).format(order.totalAmount)}
+                                                    </td>
+
                                                     <td className="py-2 text-center">
                                                         <span className={`rounded-full px-3 py-1 text-xs ${getStatusColor(order.status)}`}>
                                                             {getStatusVietnamese(order.status)}
@@ -326,7 +333,7 @@ const OrderHistoryPage: React.FC = () => {
                 </div>
             </div>
             {/* Đặt OrderModal tại đây */}
-            <OrderDetailModal isOpen={isModalOpen} onClose={closeModal} orderId={selectedOrderId}/>
+            <OrderDetailModal isOpen={isModalOpen} onClose={closeModal} orderId={selectedOrderId} />
         </div>
     );
 };
@@ -354,7 +361,7 @@ const getStatusColor = (status: string) => {
         default:
             return 'bg-gray-300 text-gray-800'; // Default color
     }
-  };
+};
 
 const getStatusVietnamese = (status: string) => {
     switch (status) {
@@ -379,7 +386,7 @@ const getStatusVietnamese = (status: string) => {
         default:
             return status;
     }
-  };
+};
 
 // Helper function to determine status color
 // const getStatusColor = (status: string | undefined) => {
@@ -423,19 +430,19 @@ interface OrderDetail {
         vnpayQR: string;
         momo: string;
         paypal: string;
-        subtotal: string;
-        discount: string;
+        subtotal: number;
+        discount: number;
         shippingFee: string;
         coupon: string;
         points: string;
-        total: string;
+        total: number;
     };
     products: Array<{
         id: string;
         name: string;
         quantity: number;
-        unitPrice: string;
-        totalPrice: string;
+        unitPrice: number;
+        totalPrice: number;
         image: string;
     }>;
 }
@@ -647,9 +654,8 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ${
-                isOpen ? '' : 'hidden'
-            }`}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ${isOpen ? '' : 'hidden'
+                }`}
         >
             {/* max-w-[60rem] */}
             <div className={`w-full max-w-screen-lg rounded bg-white p-4 shadow-lg ${modalClass}`}>
@@ -669,9 +675,17 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                         <span className="font-normal">{orderDetail?.orderId}</span>
                                     </p>
                                     <p className="font-bold">
-                                        Ngày đặt hàng:{' '}
-                                        <span className="font-normal">{orderDetail?.orderDate}</span>
+                                        Ngày đặt hàng: <span className="font-normal">
+                                            {orderDetail?.orderDate
+                                                ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })
+                                                : 'Ngày không xác định'}
+                                        </span>
                                     </p>
+
                                 </div>
                                 <p className="font-bold">
                                     Trạng thái:{' '}
@@ -749,7 +763,7 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                             </thead>
 
                                             <tbody className="text-gray-700">
-                                            {orderDetail?.products?.map((product) => (
+                                                {orderDetail?.products?.map((product) => (
                                                     <tr key={product.id}>
                                                         <td className="px-4 py-2">
                                                             <img
@@ -760,12 +774,25 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                                         </td>
                                                         <td className="px-4 py-2 text-center">{product.name}</td>
                                                         <td className="px-4 py-2 text-center">{product.quantity}</td>
-                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                        {/* <td className="whitespace-nowrap px-4 py-2 text-center">
                                                             {product.unitPrice}
                                                         </td>
                                                         <td className="whitespace-nowrap px-4 py-2 text-center">
                                                             {product.totalPrice}
+                                                        </td> */}
+                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            }).format(product.unitPrice)}
                                                         </td>
+                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            }).format(product.totalPrice)}
+                                                        </td>
+
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -798,15 +825,17 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                 <h6 className="mb-4 font-semibold text-primary">THANH TOÁN</h6>
                                 <p className="mb-2 flex justify-between">
                                     Tạm tính:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.subtotal} ₫</span>
+                                    {/* <span className="font-semibold">{orderDetail?.payment?.subtotal}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.subtotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Khuyến mãi:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.discount} ₫</span>
+                                    {/* <span className="font-semibold">{orderDetail?.payment?.discount}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Phí vận chuyển:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.shippingFee} ₫</span>
+                                    <span className="font-semibold">{orderDetail?.payment?.shippingFee}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Mã giảm giá:{' '}
@@ -818,36 +847,37 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Cần thanh toán:{' '}
-                                    <span className="font-semibold text-red-500">{orderDetail?.payment?.total} ₫</span>
+                                    {/* <span className="font-semibold text-red-500">{orderDetail?.payment?.total}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                             </div>
                             <div className="modal-footer flex justify-end gap-2">
-                            {orderDetail?.status === 'DeliverySuccessful' && (
-        <button
-            type="button"
-            className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-            onClick={handleMarkAsReceived}
-        >
-            Đã nhận được hàng
-        </button>
-    )}
-    {orderDetail?.status === 'Received' && (
-        <button
-            type="button"
-            className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-            onClick={handleMarkAsCompleted}
-        >
-            Hoàn thành
-        </button>
-    )}
+                                {orderDetail?.status === 'DeliverySuccessful' && (
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                        onClick={handleMarkAsReceived}
+                                    >
+                                        Đã nhận được hàng
+                                    </button>
+                                )}
+                                {orderDetail?.status === 'Received' && (
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                        onClick={handleMarkAsCompleted}
+                                    >
+                                        Hoàn thành
+                                    </button>
+                                )}
                                 {canReturnOrder() && (
-                            <button
-                                type="button"
-                                className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-                            >
-                                Hoàn trả
-                            </button>
-                        )}
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                    >
+                                        Hoàn trả
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     className="rounded bg-pink-500 px-2 py-1 text-sm text-white transition-colors duration-300 hover:bg-pink-600"

@@ -29,12 +29,12 @@ interface Order {
         vnpayQR: string,
         momo: string,
         paypal: string,
-        subtotal: string,
-        discount: string,
+        subtotal: number,
+        discount: number,
         shippingFee: string,
         coupon: string,
         points: string,
-        total: string,
+        total: number,
     },
     products: Product[]
 }
@@ -43,8 +43,8 @@ interface Product {
     id: string;
     name: string;
     quantity: number;
-    unitPrice: string;
-    totalPrice: string;
+    unitPrice: number;
+    totalPrice: number;
     image: string;
     // image: string[];
   }
@@ -429,7 +429,8 @@ const OrderManagementPage: React.FC = () => {
             title: 'Tổng tiền',
             dataIndex: 'totalAmount',
             key: 'totalAmount',
-            render: (amount: number) => `${amount.toLocaleString()} ₫`,
+            // render: (amount: number) => `${amount.toLocaleString()} ₫`,
+            render: (amount: number) => `${amount.toLocaleString('vi-VN')} ₫`,
         },
         {
             title: 'Trạng thái',
