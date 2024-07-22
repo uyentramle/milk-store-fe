@@ -8,7 +8,7 @@ import { message } from 'antd';
 
 const { Option } = Select;
 
-interface ProductType {
+interface AgeRange {
     id: number;
     name: string;
     description: string;
@@ -16,23 +16,23 @@ interface ProductType {
     isDeleted: boolean;
 }
 
-const ProductTypeManagementPage: React.FC = () => {
-    const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+const AgeRangeManagementPage: React.FC = () => {
+    const [AgeRanges, setAgeRanges] = useState<AgeRange[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [currentProductType, setCurrentProductType] = useState<ProductType | null>(null);
+    const [currentAgeRange, setCurrentAgeRange] = useState<AgeRange | null>(null);
 
 
     useEffect(() => {
-        fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
+        fetch ('https://localhost:44329/api/AgeRange/GetAllAgeRange')
         .then (response => response.json())
-        .then (data => setProductTypes(data.data
-            .filter((productType : ProductType) => !productType.isDeleted)
+        .then (data => setAgeRanges(data.data
+            .filter((AgeRange : AgeRange) => !AgeRange.isDeleted)
             .sort((a, b) => b.id - a.id)));
     }, []);
 
-    const filteredBlogs = productTypes.filter((p) => {
+    const filteredBlogs = AgeRanges.filter((p) => {
         const matchesSearch = `${p.name}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
@@ -68,8 +68,8 @@ const ProductTypeManagementPage: React.FC = () => {
         {
             title: 'Cập nhật',
             key: 'update',
-            render: (_text: any, _record: ProductType) => (
-                <Link to={`/admin/product-types/update/${_record.id}/manage`}>
+            render: (_text: any, _record: AgeRange) => (
+                <Link to={`/admin/age-ranges/update/${_record.id}/manage`}>
                     <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
                         Cập nhật
                     </Button>
@@ -78,7 +78,7 @@ const ProductTypeManagementPage: React.FC = () => {
         },{
             title: 'Xóa',
             key: 'delete',
-            render: (_text: any, _record: ProductType) => (
+            render: (_text: any, _record: AgeRange) => (
                 <Button
                     type="primary"
                     danger
@@ -92,13 +92,13 @@ const ProductTypeManagementPage: React.FC = () => {
         }        
     ];
 
-    const showDeleteConfirm = (record: ProductType) => {
-        setCurrentProductType(record);
+    const showDeleteConfirm = (record: AgeRange) => {
+        setCurrentAgeRange(record);
         setIsModalVisible(true);
     };
     
     const handleDelete = async () => {
-        if (currentProductType) {
+        if (currentAgeRange) {
             try {
                 const accessToken = localStorage.getItem('accessToken');
                 if (!accessToken) {
@@ -109,9 +109,9 @@ const ProductTypeManagementPage: React.FC = () => {
                 const DeletedBy = decodedToken.id;
 
                 const data = new FormData();
-                data.append('Id', currentProductType.id);
+                data.append('Id', currentAgeRange.id);
                 data.append('DeletedBy', DeletedBy);
-                const response = await axios.post('https://localhost:44329/api/ProductType/DeleteProductType', data, {
+                const response = await axios.post('https://localhost:44329/api/AgeRange/DeleteAgeRange', data, {
                     headers: {
                         'accept': '*/*',
                         'Content-Type': 'multipart/form-data',
@@ -120,16 +120,16 @@ const ProductTypeManagementPage: React.FC = () => {
                 });
 
                 if (response.data.success) {
-                    message.success('Xóa danh mục sản phẩm thành công!');
-                    setProductTypes(productTypes.filter((p) => p.id !== currentProductType.id));
-                } else if (response.data.message === "Product type is in use.") {
-                    message.error("Danh mục đang được sử dụng. Không thể xóa!");
+                    message.success('Xóa độ tuổi sử dụng thành công!');
+                    setAgeRanges(AgeRanges.filter((p) => p.id !== currentAgeRange.id));
+                } else if (response.data.message === "AgeRange is used in product.") {
+                    message.error("Độ tuổi đang được sử dụng. Không thể xóa!");
                 }
                 else {
-                    message.error('Không thể xóa danh mục sản phẩm');
+                    message.error('Không thể xóa độ tuổi sử dụng');
                 }
             } catch (error) {
-                console.error('Error deleting product type:', error);
+                console.error('Error deleting age range', error);
             }
             setIsModalVisible(false);
         }
@@ -137,13 +137,13 @@ const ProductTypeManagementPage: React.FC = () => {
     
     const handleCancel = () => {
         setIsModalVisible(false);
-        setCurrentProductType(null);
+        setCurrentAgeRange(null);
     };
     
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý độ tuổi sử dụng</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
@@ -172,14 +172,14 @@ const ProductTypeManagementPage: React.FC = () => {
                 </div>
                 <div className="flex space-x-4">
                     <Link
-                        to="/admin/product-types/create"
+                        to="/admin/age-ranges/create"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <PlusOutlined className="mr-2" />
                         Thêm mới
                     </Link>
                     <Link
-                        to="/admin/product-types/restore"
+                        to="/admin/age-ranges/restore"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <RestOutlined className="mr-2" />
@@ -207,4 +207,4 @@ const ProductTypeManagementPage: React.FC = () => {
     );
 };
 
-export default ProductTypeManagementPage;
+export default AgeRangeManagementPage;

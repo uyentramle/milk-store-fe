@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { message, Checkbox } from 'antd';
+import { message } from 'antd';
 
 interface Brand {
     id: number;
@@ -65,7 +65,7 @@ const UpdateProductPage = () => {
         ageId: 0,
     });
 
-    const { productId } = useParams<{ productId: string }>();
+    const { productId, page } = useParams<{ productId: string, page: string }>();
     const [productTypes, setProductTypes] = useState<Type[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
@@ -78,11 +78,11 @@ const UpdateProductPage = () => {
 
 
     useEffect(() => {
-        fetch(`https://localhost:7251/api/Product/GetProductById?id=${productId}`)
+        fetch(`https://localhost:44329/api/Product/GetProductById?id=${productId}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    fetch(`https://localhost:7251/api/ProductImage/GetProductImagesById?productImageId=${productId}`)
+                    fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${productId}`)
                     .then((response) => response.json())
                     .then((productImageData) => {
                         setFormData({
@@ -104,17 +104,17 @@ const UpdateProductPage = () => {
             })
             .catch((error) => console.error('Error fetching product:', error));
 
-        fetch('https://localhost:7251/api/ProductType/GetAllProductType')
+        fetch('https://localhost:44329/api/ProductType/GetAllProductType')
             .then((response) => response.json())
             .then((data) => setProductTypes(data.data))
             .catch((error) => console.error('Error fetching product types:', error));
 
-        fetch('https://localhost:7251/api/AgeRange/GetAllAgeRange')
+        fetch('https://localhost:44329/api/AgeRange/GetAllAgeRange')
             .then((response) => response.json())
             .then((data) => setAgeRanges(data.data))
             .catch((error) => console.error('Error fetching age ranges:', error));
 
-        fetch('https://localhost:7251/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
+        fetch('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
             .then((response) => response.json())
             .then((data) => setBrands(data.data.items))
             .catch((error) => console.error('Error fetching brands:', error));
@@ -236,69 +236,7 @@ const UpdateProductPage = () => {
         updateProductData.append('BrandId', formData.brandId.toString());
         updateProductData.append('AgeId', formData.ageId.toString());
         updateProductData.append('UpdatedBy', UpdatedBy);
-        try{
-        try
-        {
-            const updateProduct = await axios.post(`https://localhost:7251/api/Product/UpdateProduct`, updateProductData,{
-                headers: {
-                    'accept': '*/*',
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-            if (updateProduct.data.success) {
-                message.success('Cập nhật sản phẩm thành công!');
-                const productImage = new FormData();
-                productImage.append('ProductId', productId);
-                productImage.append('UpdatedBy', UpdatedBy);
-
-                if (!checkThumbnailChanged && !checkImagesChanged){
-                    return;
-                } else if (checkThumbnailChanged && !checkImagesChanged) {
-                    productImage.append('thumbnailFile', formData.thumbnail);
-                    productImage.append('imageFiles', '');
-                    productImage.append('imageIds', '');
-                } else if (!checkThumbnailChanged && checkImagesChanged) {
-                    productImage.append('thumbnailFile', '');
-                    for (let i = 0; i < images.length; i++) 
-                        {
-                            productImage.append('imageFiles', images[i]);
-                        }
-                    for (let i = 0; i < formData.images.length; i++){
-                        productImage.append('imageIds', formData.images[i].id);
-                    }
-                } else {
-                    productImage.append('thumbnailFile', formData.thumbnail);
-                    for (let i = 0; i < images.length; i++)
-                        {
-                            productImage.append('imageFiles', images[i]);
-                        }
-                    for (let i = 0; i < formData.images.length; i++){
-                        productImage.append('imageIds', formData.images[i].id);
-                    }
-                }
-                const updateProductImage = await axios.post(`https://localhost:7251/api/ProductImage/UpdateProductImage`, productImage,{
-                    headers: {
-                        'accept': '*/*',
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${accessToken}`,
-                    },
-                });
-
-                if (updateProductImage.data.success) {
-                    message.success('Cập nhật hình ảnh sản phẩm thành công!');
-                }
-                
-            }
-            else {
-                message.error('Cập nhật sản phẩm thất bại!');
-            }
-
-        }
-        catch (error) {
-            message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
-        }}
-        catch (error) {
+        
             try
         {
             const updateProduct = await axios.post(`https://localhost:44329/api/Product/UpdateProduct`, updateProductData,{
@@ -360,7 +298,7 @@ const UpdateProductPage = () => {
         catch (error) {
             message.error('Không thể cập nhật sản phẩm. Vui lòng thử lại sau!');
         }
-        }
+        
     };
 
     const handleThumbnailClick = () => {
@@ -418,26 +356,49 @@ const UpdateProductPage = () => {
                     <div className="flex-1 flex flex-col space-y-4">
                         <label className="font-bold">Ảnh bìa <span className="text-red-500">*</span></label>
                         <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 relative">
-                            {formData.thumbnail ? (
-                                <img
-                                    src={formData.thumbnail ? formData.thumbnail :  URL.createObjectURL(formData.thumbnail)}
-                                    alt="Thumbnail"
-                                    className="object-cover h-full w-full"
-                                    onClick={handleThumbnailClick}
-                                />
-                            ) : (
-                                <label className="w-full h-full flex justify-center items-center cursor-pointer">
-                                    <input
-                                        type="file"
-                                        name="thumbnail"
-                                        accept="image/*"
-                                        onChange={handleChange}
-                                        className="hidden"
+                            {checkThumbnailChanged ? (
+                                formData.thumbnail ? (
+                                    <img
+                                        src={URL.createObjectURL(formData.thumbnail)}
+                                        alt="Thumbnail"
+                                        className="object-cover h-full w-full"
+                                        onClick={handleThumbnailClick}
                                     />
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
-                                </label>
+                                ) : (
+                                    <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                        <input
+                                            type="file"
+                                            name="thumbnail"
+                                            accept="image/*"
+                                            onChange={handleChange}
+                                            className="hidden"
+                                        />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
+                                    </label>
+                                )
+                            ) : (
+                                formData.thumbnail ? (
+                                    <img
+                                        src={formData.thumbnail}
+                                        alt="Thumbnail"
+                                        className="object-cover h-full w-full"
+                                        onClick={handleThumbnailClick}
+                                    />
+                                ) : (
+                                    <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                        <input
+                                            type="file"
+                                            name="thumbnail"
+                                            accept="image/*"
+                                            onChange={handleChange}
+                                            className="hidden"
+                                        />
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
+                                    </label>
+                                )
                             )}
                         </div>
+
                         <label className="font-bold">Ảnh sản phẩm <span className="text-red-500">*</span></label>
                         <div className="relative w-full h-12">
                             <input
@@ -647,14 +608,26 @@ const UpdateProductPage = () => {
                     </div>
                 </div>
                 <div className="flex justify-end space-x-4">
-                    <Link to="/admin/products">
-                        <button
-                            type="button"
-                            className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
-                        >
-                            Trở về
-                        </button>
-                    </Link>
+                    {page === "manage" && (
+                        <Link to="/admin/products">
+                            <button
+                                type="button"
+                                className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
+                    {page === "restore" && (
+                        <Link to="/admin/products/restore">
+                            <button
+                                type="button"
+                                className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                            >
+                                Trở về
+                            </button>
+                        </Link>
+                    )}
                     <button
                         type="button"
                         onClick={handleReset}

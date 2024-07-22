@@ -14,7 +14,8 @@ import ShoppingCart from '../pages/client/Cart/Cart';
 import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
 import ContactPage from '../pages/client/Contact/ContactPage';
-
+import PromotionPage from '../pages/client/Promotion/PromotionPage';
+import ProductListPage from '../pages/client/Product/ProductListPage';
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
 import AccountManagementPage from '../pages/admin/AccountManagement/AccountManagementPage';
@@ -47,6 +48,13 @@ import PointHistoryTransaction from '../pages/client/User/PointHistoryTransactio
 import { DefaultLayoutProps } from '../types/layout.type';
 import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
 import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
+import UpdateProductTypePage from '../pages/admin/ProductTypeManagement/UpdateProductTypePage';
+import RestoreProductTypePage from '../pages/admin/ProductTypeManagement/RestoreProductTypePage';
+import AgeRangeManagementPage from '../pages/admin/ManageAgeRange/ManageAgeRangePage';
+import CreateAgeRangePage from '../pages/admin/ManageAgeRange/CreateAgeRangePage';
+import UpdateAgeRangePage from '../pages/admin/ManageAgeRange/UpdateAgeRangePage';
+import RestoreAgeRangePage from '../pages/admin/ManageAgeRange/RestoreAgeRangePage';
+import RestoreProductPage from '../pages/admin/ManageProduct/RestoreProductPage';
 
 interface RouteProps {
     path: string;
@@ -63,11 +71,13 @@ const publicRoutes: RouteProps[] = [
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
     { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
-    { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
+    { path: '/product-detail/:productId', component: ProductDetail, layout: DefaultClientLayout }, // Updated route
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
+    { path: '/promotion', component: PromotionPage, layout: DefaultClientLayout },
+    { path: '/product-list/type/:typeId', component: ProductListPage, layout: DefaultClientLayout },
 
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
     { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
@@ -90,7 +100,8 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
-    { path: '/admin/products/update/:productId', component: UpdateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/update/:productId/:page', component: UpdateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/restore', component: RestoreProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
@@ -105,6 +116,12 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/update/:id/:page', component: UpdateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/restore', component: RestoreProductTypePage, layout: DefaultAdminLayout},
+    { path: '/admin/age-ranges', component: AgeRangeManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/create', component: CreateAgeRangePage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/update/:id/:page', component: UpdateAgeRangePage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/restore', component: RestoreAgeRangePage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };

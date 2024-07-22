@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPen, faTrash, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { EditOutlined, DeleteOutlined, RestOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, BackwardOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import Pagination from 'antd/es/pagination';
@@ -85,7 +85,7 @@ const ManageProductPage: React.FC = () => {
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    const fetchedProducts = data.data.filter((product: Product) => !product.isDeleted);
+                    const fetchedProducts = data.data.filter((product: Product) => product.isDeleted);
                     const productImagesPromises = fetchedProducts.map((product: Product) =>
                         fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
                             .then((response) => response.json())
@@ -255,20 +255,13 @@ const handleCancelStatusChange = () => {
                     </div>
                 </div>
 
-                <div className="flex space-x-4">
+                <div>
                     <Link
-                        to="/admin/products/create"
+                        to="/admin/products"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                        Thêm mới
-                    </Link>
-                    <Link
-                        to="/admin/products/restore"
-                        className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
-                    >
-                        <RestOutlined className="mr-2" />
-                        Khôi phục
+                        <BackwardOutlined className="mr-2" />
+                        Trở về
                     </Link>
                 </div>
             </div>
@@ -330,7 +323,7 @@ const handleCancelStatusChange = () => {
                                         {product.active ? 'Đang bán' : 'Ngừng bán'}
                                     </td>
                                     <td className="px-4 py-2">
-                                        <Link to={`/admin/products/update/${product.id}/manage`}>
+                                        <Link to={`/admin/products/update/${product.id}/restore`}>
                                             <Button type="primary" icon={<EditOutlined />}>
                                             </Button>
                                         </Link>

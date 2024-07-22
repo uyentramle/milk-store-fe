@@ -56,17 +56,17 @@ const CreateProductPage = () => {
     const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
 
     useEffect(() => {
-        fetch('https://localhost:7251/api/ProductType/GetAllProductType')
+        fetch('https://localhost:44329/api/ProductType/GetAllProductType')
             .then((response) => response.json())
             .then((data) => setProductTypes(data.data))
             .catch((error) => console.error('Error fetching product types:', error));
 
-        fetch('https://localhost:7251/api/AgeRange/GetAllAgeRange')
+        fetch('https://localhost:44329/api/AgeRange/GetAllAgeRange')
             .then((response) => response.json())
             .then((data) => setAgeRanges(data.data))
             .catch((error) => console.error('Error fetching age ranges:', error));
 
-        fetch('https://localhost:7251/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
+        fetch('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
             .then((response) => response.json())
             .then((data) => setBrands(data.data.items))
             .catch((error) => console.error('Error fetching brands:', error));
@@ -184,55 +184,6 @@ const CreateProductPage = () => {
         createData.append('BrandId', formData.brand.toString());
         createData.append('AgeId', formData.age.toString());
         createData.append('CreatedBy', createdBy);
-
-        try{
-        try {
-            const response = await axios.post('https://localhost:7251/api/Product/CreateProduct', createData, {
-                headers: {
-                    'accept': '*/*',
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            });
-
-            if (response.data.success) {
-                message.success('Tạo sản phẩm thành công');
-                console.log("Created product successfully");
-                const responeData = await axios.get(`https://localhost:7251/api/Product/GetProductBySku?sku=${formData.sku}`);
-                const productId = responeData.data.data.id;
-                if (responeData.data.success && productId != null) {
-                    console.log("Get Product by sku successfully");
-                    if (formData.images.length > 0 && formData.thumbnail !== null) {
-                        const formData1 = new FormData();
-                        formData1.append('ProductId', productId.toString());
-                        formData1.append('CreatedBy', createdBy);
-                        formData1.append('thumbnailFile', formData.thumbnail);
-                        formData.images.forEach((image) => {
-                            formData1.append('imageFiles', image);
-                        });
-                        const response1 = await axios.post('https://localhost:7251/api/ProductImage/CreateProductImage', formData1, {
-                            headers: {
-                                'accept': '*/*',
-                                'Content-Type': 'multipart/form-data',
-                                'Authorization': `Bearer ${accessToken}`,
-                            },
-                        });
-
-                        if (response1.data.success) {
-                            console.log("Created product image successfully");
-                            message.success('Thêm hình ảnh sản phẩm thành công');
-                            handleReset();
-                        }
-                    }
-                }
-            } else {
-                message.error(response.data.message || 'Không thể tạo sản phẩm');
-            }
-        } catch (error) {
-            console.error('Error creating product:', error);
-            message.error('Tạo sản phẩm thất bại');
-        }
-    } catch (error) {
         try {
             const response = await axios.post('https://localhost:44329/api/Product/CreateProduct', createData, {
                 headers: {
@@ -273,13 +224,12 @@ const CreateProductPage = () => {
                     }
                 }
             } else {
-                message.error(response.data.message || 'Không thể tạo sản phẩm');
+                message.error('Không thể tạo sản phẩm');
             }
         } catch (error) {
             console.error('Error creating product:', error);
             message.error('Tạo sản phẩm thất bại');
         }
-    }
     };
 
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, RestOutlined } from '@ant-design/icons';
+import { SearchOutlined, BackwardOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, Input, Table, Select, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import { message } from 'antd';
 
 const { Option } = Select;
 
-interface ProductType {
+interface AgeRange {
     id: number;
     name: string;
     description: string;
@@ -16,23 +16,26 @@ interface ProductType {
     isDeleted: boolean;
 }
 
-const ProductTypeManagementPage: React.FC = () => {
-    const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+const AgeRangeManagementPage: React.FC = () => {
+    const [AgeRanges, setAgeRanges] = useState<AgeRange[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [currentProductType, setCurrentProductType] = useState<ProductType | null>(null);
+    const [currentAgeRange, setCurrentAgeRange] = useState<AgeRange | null>(null);
 
 
     useEffect(() => {
-        fetch ('https://localhost:44329/api/ProductType/GetAllProductType')
-        .then (response => response.json())
-        .then (data => setProductTypes(data.data
-            .filter((productType : ProductType) => !productType.isDeleted)
-            .sort((a, b) => b.id - a.id)));
+        fetch('https://localhost:44329/api/AgeRange/GetAllAgeRange')
+            .then(response => response.json())
+            .then(data => setAgeRanges(
+                data.data
+                    .filter((AgeRange: AgeRange) => AgeRange.isDeleted)
+                    .sort((a, b) => new Date(b.deletedAt).getTime() - new Date(a.deletedAt).getTime())
+            ));
     }, []);
+    
 
-    const filteredBlogs = productTypes.filter((p) => {
+    const filteredBlogs = AgeRanges.filter((p) => {
         const matchesSearch = `${p.name}`
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
@@ -68,8 +71,8 @@ const ProductTypeManagementPage: React.FC = () => {
         {
             title: 'Cập nhật',
             key: 'update',
-            render: (_text: any, _record: ProductType) => (
-                <Link to={`/admin/product-types/update/${_record.id}/manage`}>
+            render: (_text: any, _record: AgeRange) => (
+                <Link to={`/admin/age-ranges/update/${_record.id}/restore`}>
                     <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
                         Cập nhật
                     </Button>
@@ -78,7 +81,7 @@ const ProductTypeManagementPage: React.FC = () => {
         },{
             title: 'Xóa',
             key: 'delete',
-            render: (_text: any, _record: ProductType) => (
+            render: (_text: any, _record: AgeRange) => (
                 <Button
                     type="primary"
                     danger
@@ -86,19 +89,19 @@ const ProductTypeManagementPage: React.FC = () => {
                     className="bg-red-500"
                     onClick={() => showDeleteConfirm(_record)}
                 >
-                    Xóa
+                    Khôi phục
                 </Button>
             ),
         }        
     ];
 
-    const showDeleteConfirm = (record: ProductType) => {
-        setCurrentProductType(record);
+    const showDeleteConfirm = (record: AgeRange) => {
+        setCurrentAgeRange(record);
         setIsModalVisible(true);
     };
     
     const handleDelete = async () => {
-        if (currentProductType) {
+        if (currentAgeRange) {
             try {
                 const accessToken = localStorage.getItem('accessToken');
                 if (!accessToken) {
@@ -106,12 +109,12 @@ const ProductTypeManagementPage: React.FC = () => {
                 }
 
                 const decodedToken: any = jwtDecode(accessToken);
-                const DeletedBy = decodedToken.id;
+                const UpdatedBy = decodedToken.id;
 
                 const data = new FormData();
-                data.append('Id', currentProductType.id);
-                data.append('DeletedBy', DeletedBy);
-                const response = await axios.post('https://localhost:44329/api/ProductType/DeleteProductType', data, {
+                data.append('Id', currentAgeRange.id);
+                data.append('UpdatedBy', UpdatedBy);
+                const response = await axios.post('https://localhost:44329/api/AgeRange/RestoreAgeRange', data, {
                     headers: {
                         'accept': '*/*',
                         'Content-Type': 'multipart/form-data',
@@ -120,16 +123,14 @@ const ProductTypeManagementPage: React.FC = () => {
                 });
 
                 if (response.data.success) {
-                    message.success('Xóa danh mục sản phẩm thành công!');
-                    setProductTypes(productTypes.filter((p) => p.id !== currentProductType.id));
-                } else if (response.data.message === "Product type is in use.") {
-                    message.error("Danh mục đang được sử dụng. Không thể xóa!");
+                    message.success('Khôi phục độ tuổi sử dụng thành công!');
+                    setAgeRanges(AgeRanges.filter((p) => p.id !== currentAgeRange.id));
                 }
                 else {
-                    message.error('Không thể xóa danh mục sản phẩm');
+                    message.error('Không thể khôi phục độ tuổi sử dụng');
                 }
             } catch (error) {
-                console.error('Error deleting product type:', error);
+                console.error('Error restoring product type:', error);
             }
             setIsModalVisible(false);
         }
@@ -137,13 +138,13 @@ const ProductTypeManagementPage: React.FC = () => {
     
     const handleCancel = () => {
         setIsModalVisible(false);
-        setCurrentProductType(null);
+        setCurrentAgeRange(null);
     };
     
 
     return (
         <div className="container mx-auto px-4 pb-8">
-            <h1 className="mb-6 text-3xl font-bold">Quản lý danh mục sản phẩm</h1>
+            <h1 className="mb-6 text-3xl font-bold">Quản lý độ tuổi sử dụng đã xóa</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
@@ -170,20 +171,13 @@ const ProductTypeManagementPage: React.FC = () => {
                         </Select>
                     </div>
                 </div>
-                <div className="flex space-x-4">
+                <div>
                     <Link
-                        to="/admin/product-types/create"
+                        to="/admin/age-ranges"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
-                        <PlusOutlined className="mr-2" />
-                        Thêm mới
-                    </Link>
-                    <Link
-                        to="/admin/product-types/restore"
-                        className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
-                    >
-                        <RestOutlined className="mr-2" />
-                        Khôi phục
+                        <BackwardOutlined className="mr-2" />
+                        Trở về
                     </Link>
                 </div>
             </div>
@@ -192,19 +186,19 @@ const ProductTypeManagementPage: React.FC = () => {
                 <Table columns={columns} dataSource={filteredBlogs} rowKey="id" />
             </div>
             <Modal
-                title="Xác nhận xóa"
+                title="Xác nhận khôi phục"
                 visible={isModalVisible}
                 onOk={handleDelete}
                 onCancel={handleCancel}
-                okText="Xóa"
+                okText="Khôi phục"
                 cancelText="Hủy"
                 centered
             >
-                <p>Bạn có chắc chắn muốn xóa mục này không?</p>
+                <p>Bạn có chắc chắn muốn khôi phục mục này không?</p>
             </Modal>
 
         </div>
     );
 };
 
-export default ProductTypeManagementPage;
+export default AgeRangeManagementPage;
