@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { Dropdown, Menu } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-
-import {
-    UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
-    DollarOutlined,
-} from '@ant-design/icons';
+import SidebarMenu from './SidebarMenu';
+import { useNavigate } from 'react-router-dom';
+import { Spin } from 'antd';
 
 // const fakeOrderData = [
 //     {
@@ -93,7 +84,6 @@ const fetchOrders = async (pageIndex: number, pageSize: number): Promise<ApiResp
     }
 
     try {
-
         const decodedToken: any = jwtDecode(accessToken);
         const userId = decodedToken.userId;
 
@@ -141,7 +131,20 @@ const OrderHistoryPage: React.FC = () => {
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [totalItemsCount, setTotalItemsCount] = useState(0);
+    const [loading, setLoading] = useState(true); // Added loading state
 
+    const navigate = useNavigate();
+
+    const navigateToSignInPage = () => {
+        navigate('/sign-in');
+    };
+
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('accessToken');
+        // Redirect to sign-in page
+        navigateToSignInPage();
+    };
     // const accessToken = localStorage.getItem('accessToken');
 
     // if (!accessToken) {
@@ -184,6 +187,7 @@ const OrderHistoryPage: React.FC = () => {
             if (response?.success) {
                 setOrders(response.data.items);
                 setTotalItemsCount(response.data.totalItemsCount);
+                setLoading(false); // Set loading to false after data fetching
             }
         };
         // fetchData();
@@ -202,72 +206,20 @@ const OrderHistoryPage: React.FC = () => {
         setSelectedOrderId('');
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <b>Lịch sử đơn hàng</b>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                <DollarOutlined className="mr-2" />
-                                <span>Lịch sử điểm thưởng</span>
-                            </a>
-                            <a
-                                href="#"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4">

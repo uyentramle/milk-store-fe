@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import { jwtDecode } from 'jwt-decode';
-import { Modal, Form, Input, Checkbox, Button, message } from 'antd';
+import SidebarMenu from './SidebarMenu';
+import { Modal, Form, Input, Checkbox, Button, message, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
-    UserOutlined,
-    SettingOutlined,
     EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     EditOutlined,
     DeleteOutlined,
-    DollarOutlined,
 } from '@ant-design/icons';
 import AddressForm from '../../../layouts/client/Components/User/Address/AddressForm';
 import cities from '../../../layouts/client/Components/User/Address/data/provinces.json';
@@ -111,6 +106,7 @@ const UserAddressPage: React.FC = () => {
     //const [addresses, setAddresses] = useState(fakeAddresses); // Use state for addresses
     const [userAddresses, setUserAddresses] = useState<any>(null);
     const [selectedAddress, setSelectedAddress] = useState<any>(null); // Use state for selected address
+    const [loading, setLoading] = useState(true); // Added loading state
 
     const navigate = useNavigate();
     const navigateToSignInPage = () => {
@@ -123,7 +119,6 @@ const UserAddressPage: React.FC = () => {
         // Redirect to sign-in page
         navigateToSignInPage();
     };
-
 
     // const fetchData = async () => {
     //     try {
@@ -148,6 +143,8 @@ const UserAddressPage: React.FC = () => {
             } catch (error) {
                 console.error('Error fetching user address:', error);
                 // Xử lý lỗi khi cần thiết
+            } finally {
+                setLoading(false); // Set loading to false after data fetching
             }
         };
 
@@ -195,83 +192,38 @@ const UserAddressPage: React.FC = () => {
         }
     };
 
-    if (!userAddresses) {
-        // navigateToSignInPage();        
+    if (loading) {
         return (
-            <div className="container mx-auto w-4/5 p-4 pt-10">
-                <div className="flex flex-col gap-10 lg:flex-row">
-                    <div>Loading...</div>
-                </div>
-            </div>); // Placeholder for loading state
+            // <div className="container mx-auto w-4/5 p-4 pt-10">
+            //     <div className="flex items-center justify-center h-screen">
+            //         <Spin size="large" />
+            //         <span className="ml-4">Đang tải dữ liệu...</span>
+            //     </div>
+            // </div>
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
+    if (!userAddresses) {
+        navigateToSignInPage();
+        return null;
+        // return (
+        //     <div className="container mx-auto w-4/5 p-4 pt-10">
+        //         <div className="flex flex-col gap-10 lg:flex-row">
+        //             <div>Loading...</div>
+        //         </div>
+        //     </div>); // Placeholder for loading state
+
     }
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <b>Quản lí địa chỉ</b>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                <DollarOutlined className="mr-2" />
-                                <span>Lịch sử điểm thưởng</span>
-                            </a>
-                            <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={handleLogout}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4 flex items-center justify-between">
@@ -338,9 +290,9 @@ const UserAddressPage: React.FC = () => {
             { }
             {/* <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} /> */}
             {/* <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} /> */}
-            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress}/>
+            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
 
-            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal}/>
+            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} />
             {/* {selectedAddress && (
                 <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
             )} */}
@@ -739,8 +691,4 @@ const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose, ad
         </Modal>
     );
 };
-
-function fetchData(setUserAddresses: React.Dispatch<any>) {
-    throw new Error('Function not implemented.');
-}
 

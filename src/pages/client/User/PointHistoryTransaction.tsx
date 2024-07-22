@@ -3,14 +3,8 @@ import axios from 'axios'; // Import Axios
 import { jwtDecode } from 'jwt-decode';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import SidebarMenu from './SidebarMenu';
 import {
-    UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
-    DollarOutlined,
     DollarTwoTone,
 } from '@ant-design/icons';
 
@@ -23,75 +17,23 @@ interface PointByUser {
 }
 
 const PointHistoryTransaction: React.FC = () => {
+    const navigate = useNavigate();
+    const navigateToSignInPage = () => {
+        navigate('/sign-in');
+    };
+
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('accessToken');
+        // Redirect to sign-in page
+        navigateToSignInPage();
+    };
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <DollarOutlined className="mr-2" />
-                                <b>Lịch sử điểm thưởng</b>
-                            </a>
-                            <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <nav className="mb-4 flex">
