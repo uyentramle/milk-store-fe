@@ -54,6 +54,8 @@ const CreateProductPage = () => {
     const [productTypes, setProductTypes] = useState<Type[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [ageRanges, setAgeRanges] = useState<AgeRange[]>([]);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         fetch('https://localhost:44329/api/ProductType/GetAllProductType')
@@ -130,13 +132,8 @@ const CreateProductPage = () => {
             return;
         }
 
-        if (formData.discount < 0) {
-            message.error("Giá giảm không được là số âm");
-            return;
-        }
-
-        if (formData.discount > formData.price) {
-            message.error("Giá giảm không được lớn hơn giá gốc");
+        if (formData.discount < 0 || formData.discount > 100) {
+            message.error("Giảm giá phải từ 0 đến 100%");
             return;
         }
 
@@ -232,6 +229,44 @@ const CreateProductPage = () => {
         }
     };
 
+    const handleConfirmDelete = () => {
+        if (itemToDelete === 'thumbnail') {
+            setFormData((prevState) => ({
+                ...prevState,
+                thumbnail: null,
+            }));
+        } else if (itemToDelete && itemToDelete.startsWith('image-')) {
+            const imageIndex = parseInt(itemToDelete.split('-')[1], 10);
+            setFormData((prevState) => ({
+                ...prevState,
+                images: prevState.images.filter((_, index) => index !== imageIndex),
+            }));
+        }
+        setShowDeletePopup(false);
+        setItemToDelete(null);
+    };    
+
+    const DeletePopup = () => (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-md shadow-md">
+                <p className="mb-4">Bạn có chắc chắn muốn xóa ảnh này?</p>
+                <div className="flex justify-end space-x-4">
+                    <button
+                        className="rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
+                        onClick={() => setShowDeletePopup(false)}
+                    >
+                        Hủy
+                    </button>
+                    <button
+                        className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
+                        onClick={handleConfirmDelete}
+                    >
+                        Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    );    
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -240,25 +275,29 @@ const CreateProductPage = () => {
                 <div className="flex space-x-6">
                     <div className="flex-1 flex flex-col space-y-4">
                         <label className="font-bold">Ảnh bìa <span className="text-red-500">*</span></label>
-                        <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 relative">
-                            {formData.thumbnail ? (
-                                <img
-                                    src={URL.createObjectURL(formData.thumbnail)}
-                                    alt="Thumbnail"
-                                    className="object-cover h-full w-full"
+                        <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 min-w-64 w-auto mx-auto">
+                        {formData.thumbnail ? (
+                            <img
+                                src={URL.createObjectURL(formData.thumbnail)}
+                                alt="Thumbnail"
+                                className="object-cover h-full w-full"
+                                onClick={() => {
+                                    setItemToDelete('thumbnail');
+                                    setShowDeletePopup(true);
+                                }}
+                            />
+                        ) : (
+                            <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                <input
+                                    type="file"
+                                    name="thumbnail"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    className="hidden"
                                 />
-                            ) : (
-                                <label className="w-full h-full flex justify-center items-center cursor-pointer">
-                                    <input
-                                        type="file"
-                                        name="thumbnail"
-                                        accept="image/*"
-                                        onChange={handleChange}
-                                        className="hidden"
-                                    />
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-40 opacity-50" />
-                                </label>
-                            )}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-28 opacity-50" />
+                            </label>
+                        )}
                         </div>
                         <label className="font-bold">Ảnh sản phẩm <span className="text-red-500">*</span></label>
                         <div className="relative w-full h-12">
@@ -282,6 +321,10 @@ const CreateProductPage = () => {
                                         src={URL.createObjectURL(image)}
                                         alt={`Product ${index}`}
                                         className="w-40 h-40 object-cover"
+                                        onClick={() => {
+                                            setItemToDelete(`image-${index}`);
+                                            setShowDeletePopup(true);
+                                        }}
                                     />
                                 ))}
                             {formData.images.length > 6 &&
@@ -291,6 +334,10 @@ const CreateProductPage = () => {
                                         src={URL.createObjectURL(image)}
                                         alt={`Product ${index}`}
                                         className="w-20 h-20 object-cover"
+                                        onClick={() => {
+                                            setItemToDelete(`image-${index}`);
+                                            setShowDeletePopup(true);
+                                        }}
                                     />
                                 ))}
                             {formData.images.length === 0 &&
@@ -365,7 +412,7 @@ const CreateProductPage = () => {
                         </div>
                         <div className="mb-4">
                             <label htmlFor="discount" className="block font-bold">
-                                Giá giảm
+                                Giảm giá
                             </label>
                             <input
                                 type="number"
@@ -484,6 +531,7 @@ const CreateProductPage = () => {
                     </button>
                 </div>
             </form>
+            {showDeletePopup && <DeletePopup />}
         </div>
     );
 };

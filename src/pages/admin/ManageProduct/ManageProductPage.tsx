@@ -279,10 +279,10 @@ const handleCancelStatusChange = () => {
                         <tr className="bg-gray-200">
                             <th className="px-4 py-2">STT.</th>
                             <th className="px-4 py-2">Tên sản phẩm</th>
-                            <th className="px-4 py-2">Hình ảnh</th>
+                            <th className="px-4 py-2">Ảnh bìa</th>
                             <th className="px-4 py-2">SKU</th>
-                            <th className="px-4 py-2">Giá góc</th>
-                            <th className="px-4 py-2">Giá giảm</th>
+                            <th className="px-4 py-2">Giá gốc</th>
+                            <th className="px-4 py-2">Giảm giá</th>
                             <th className="px-4 py-2">Số lượng</th>
                             <th className="px-4 py-2">Phân loại</th>
                             <th className="px-4 py-2">Thương hiệu</th>
@@ -298,7 +298,7 @@ const handleCancelStatusChange = () => {
                             return (
                                 <tr key={product.id} className="border-b bg-white">
                                     <td className="px-4 py-2 font-bold">{rowNumber}</td>
-                                    <Link to={`/admin/products/details/${product.id}`}>
+                                    <Link to={`/admin/products/details/${product.id}/manage`}>
                                         <td className="mx-auto px-4 py-2 font-bold">
                                             {product.name}
                                         </td>
@@ -317,10 +317,7 @@ const handleCancelStatusChange = () => {
                                             currency: 'VND',
                                         }).format(product.price)}
                                     </td>
-                                    <td>{new Intl.NumberFormat('vi-VN', {
-                                            style: 'currency',
-                                            currency: 'VND',
-                                        }).format(product.discount)}
+                                    <td>{product.discount ? `${product.discount}%` : 'Không có'}
                                     </td>
                                     <td>{product.quantity}</td>
                                     <td>{product.type.name}</td>

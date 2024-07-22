@@ -97,7 +97,7 @@ const adminRoutes: RouteProps[] = [
     { path: '/admin/manage-users', component: AccountManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
-    { path: '/admin/products/details/:id', component: ProductDetailPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/details/:id/:page', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/update/:productId/:page', component: UpdateProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/restore', component: RestoreProductPage, layout: DefaultAdminLayout },
