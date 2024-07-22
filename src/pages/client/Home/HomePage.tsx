@@ -4,6 +4,7 @@ import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
 import { Input, Typography, Row, Col, Card, Rate, Badge, Button, } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined, EyeTwoTone, } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 interface Brand {
     id: number;
@@ -62,9 +63,25 @@ interface Product {
     ageRange: AgeRange;
 }
 
+interface Blog {
+    id: number;
+    title: string;
+    description: string;
+    blogImg: string;
+    status: boolean;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
+
 const HomePage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const randomizedProducts = [...products].sort(() => 0.5 - Math.random());
+    const [recentBlog, setBlogs] = useState<Blog[]>([]);
 
     useEffect(() => {
         fetch('https://localhost:44329/api/Product/GetAllProducts')
@@ -95,32 +112,50 @@ const HomePage: React.FC = () => {
             });
     }, []);
 
-    const recentBlog = [
-        {
-            id: 1,
-            image: "https://cdn1.concung.com/img/news/2021/1053-1633086650-cover.webp",
-            title: "5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-        {
-            id: 2,
-            image: "https://cdn1.concung.com/img/news/2023/2430-1692244686-cover.webp",
-            title: "Back to school: Bé đi học mẫu giáo, ba mẹ cần chuẩn bị đồ dùng gì?",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-        {
-            id: 3,
-            image: "https://cdn1.concung.com/img/news/2023/2437-1692950600-cover.webp",
-            title: "Sữa tươi và sữa bột pha sẵn: Nên chọn loại nào cho bé?",
-            date: "11/6/2024",
-            rating: 5,
-            view: "4.4k",
-        },
-    ];
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await axios.get('https://localhost:44329/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
+                if (response.data.success) {
+                    const filteredBlogs = response.data.data.items.filter((blog: Blog) => blog.status);
+                    setBlogs(filteredBlogs);
+                } else {
+                    console.error('Failed to fetch blogs:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+        };
+
+        fetchBlogs();
+    }, []);
+
+    // const recentBlog = [
+    //     {
+    //         id: 1,
+    //         image: "https://cdn1.concung.com/img/news/2021/1053-1633086650-cover.webp",
+    //         title: "5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu",
+    //         date: "11/6/2024",
+    //         rating: 5,
+    //         view: "4.4k",
+    //     },
+    //     {
+    //         id: 2,
+    //         image: "https://cdn1.concung.com/img/news/2023/2430-1692244686-cover.webp",
+    //         title: "Back to school: Bé đi học mẫu giáo, ba mẹ cần chuẩn bị đồ dùng gì?",
+    //         date: "11/6/2024",
+    //         rating: 5,
+    //         view: "4.4k",
+    //     },
+    //     {
+    //         id: 3,
+    //         image: "https://cdn1.concung.com/img/news/2023/2437-1692950600-cover.webp",
+    //         title: "Sữa tươi và sữa bột pha sẵn: Nên chọn loại nào cho bé?",
+    //         date: "11/6/2024",
+    //         rating: 5,
+    //         view: "4.4k",
+    //     },
+    // ];
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -131,7 +166,7 @@ const HomePage: React.FC = () => {
                     <div className="flex items-center">
                         <Input
                             className="rounded-full"
-                            style={{ height: '70px' }} 
+                            style={{ height: '70px' }}
                             placeholder="Ba mẹ muốn tìm mua gì hôm nay ?"
                             prefix={<SearchOutlined />}
                         />
@@ -182,17 +217,17 @@ const HomePage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                         {recentBlog.map((blog) => (
                             <div key={blog.id}>
-                                <Link to={`/blog-detail`} className="block hover:opacity-75">
+                                <Link to={`/blog-detail/`} className="block hover:opacity-75">
                                     <Card
                                         hoverable
-                                        cover={<img alt={blog.title} src={blog.image} />}
+                                        cover={<img alt={blog.title} src={blog.blogImg} />}
                                     >
                                         <div className="">
                                             <h3 className="text-lg hover:text-pink-500">{blog.title}</h3>
-                                            <p className="text-xs text-gray-500 mt-2">{blog.date}</p>
+                                            <p className="text-xs text-gray-500 mt-2">{blog.createdAt}</p>
                                             <div className="flex items-center justify-between mt-2">
-                                                <p className="text-xs text-gray-500"><EyeTwoTone twoToneColor="#9b9b9b" /> {blog.view}</p>
-                                                <Rate disabled defaultValue={blog.rating} />
+                                                <p className="text-xs text-gray-500"><EyeTwoTone twoToneColor="#9b9b9b" /> 20k</p>
+                                                <Rate disabled defaultValue={5} />
                                             </div>
                                         </div>
                                     </Card>
