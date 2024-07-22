@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SearchOutlined, EyeOutlined, EllipsisOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Input, Select, Button, Table, Tag, Space, Dropdown, Menu, Pagination } from 'antd';
+import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Input, Select, Button, Table, Tag, Space, Pagination } from 'antd';
 import axios from 'axios';
 import OrderDetailModal from './OrderDetailModal';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
 
@@ -47,7 +48,7 @@ interface Product {
     totalPrice: number;
     image: string;
     // image: string[];
-  }
+}
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -109,12 +110,12 @@ const nextStatuses = (currentStatus: string) => {
             return ['DeliverySuccessful', 'DeliveryFailed'];
         case 'DeliveryFailed':
             return 'ShippedAgain';
-            case 'ShippedAgain':
-                return 'Shipping';
+        case 'ShippedAgain':
+            return 'Shipping';
         // case 'DeliverySuccessful':
         //     return 'Received';
-            case 'DeliverySuccessful':
-                return null;
+        case 'DeliverySuccessful':
+            return null;
         // case 'Received':
         //     return null;
         default:
@@ -139,10 +140,10 @@ interface ApiResponse {
 const fetchOrders = async (keyword: string, status: string, pageIndex: number, pageSize: number): Promise<ApiResponse | undefined> => {
     const accessToken = localStorage.getItem('accessToken');
 
-  if (!accessToken) {
-    throw new Error('Access token not found.');
-  }
-    
+    if (!accessToken) {
+        throw new Error('Access token not found.');
+    }
+
     try {
         const response = await axios.get<ApiResponse>('https://localhost:44329/api/Account/GetAllOrderHistory', {
             params: {
@@ -155,7 +156,7 @@ const fetchOrders = async (keyword: string, status: string, pageIndex: number, p
                 'accept': '*/*',
                 'Content-Type': 'application/json',
                 'authorization': `Bearer ${accessToken}`
-              }
+            }
         });
         return response.data;
     } catch (error) {
@@ -343,8 +344,6 @@ const updateOrderStatus = async (orderId: string, status: string): Promise<void>
     }
 };
 
-
-
 const OrderManagementPage: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -354,19 +353,32 @@ const OrderManagementPage: React.FC = () => {
     const [totalItemsCount, setTotalItemsCount] = useState(0);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [detailVisible, setDetailVisible] = useState(false);
-    
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const data = await fetchOrders(pageIndex, pageSize, searchTerm, filterStatus);
-    //         setOrders(data);
-    //         setTotalItemsCount(mockOrders.length);
-    //     };
-    //     fetchData();
-    // }, [searchTerm, filterStatus, pageIndex, pageSize]);
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
         const fetchData = async () => {
-            const response = await fetchOrders(searchTerm, filterStatus, pageIndex, pageSize, );
+            const response = await fetchOrders(searchTerm, filterStatus, pageIndex, pageSize,);
             if (response.success) {
                 setOrders(response.data.items);
                 setTotalItemsCount(response.data.totalItemsCount);
@@ -375,8 +387,8 @@ const OrderManagementPage: React.FC = () => {
         // fetchData();
         const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 0 giây
 
-      return () => clearInterval(interval);
-    }, [searchTerm, filterStatus, pageIndex, pageSize]);
+        return () => clearInterval(interval);
+    }, [isAuthorized, searchTerm, filterStatus, pageIndex, pageSize]);
 
     const handlePageChange = (page: number, pageSize?: number) => {
         setPageIndex(page - 1); // Adjust for 0-based index
@@ -393,6 +405,14 @@ const OrderManagementPage: React.FC = () => {
     const handleCancel = () => {
         setDetailVisible(false);
     };
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     const columns = [
         {
@@ -417,7 +437,7 @@ const OrderManagementPage: React.FC = () => {
                     return 'Invalid date'; // Or any other fallback text you prefer
                 }
             }
-            
+
         },
         {
             title: 'Khách hàng',
@@ -529,8 +549,8 @@ const OrderManagementPage: React.FC = () => {
                 );
             },
         },
-        
-        
+
+
     ];
 
     return (
@@ -577,13 +597,12 @@ const OrderManagementPage: React.FC = () => {
                 showSizeChanger
             />
             <OrderDetailModal
-        visible={detailVisible}
-        onCancel={handleCancel}
-        order={selectedOrder}
-      />
+                visible={detailVisible}
+                onCancel={handleCancel}
+                order={selectedOrder}
+            />
         </div>
     );
 };
-
 
 export default OrderManagementPage;

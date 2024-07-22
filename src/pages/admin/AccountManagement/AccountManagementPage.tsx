@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SearchOutlined, PlusOutlined, EditOutlined, EllipsisOutlined, BlockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Input, Select, Button, Table, Tag, Space, Avatar, Dropdown, Menu, Pagination } from 'antd';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 // import { Form, Input, Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import UserDetailsForm from './UserDetailsForm'; // Đường dẫn đến component UserDetailsForm
@@ -155,7 +155,6 @@ const searchUsers = async (keyword: string, status: string, pageIndex: number, p
   }
 };
 
-
 const AccountManagementPage: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -169,10 +168,31 @@ const AccountManagementPage: React.FC = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const [totalPagesCount, setTotalPagesCount] = useState(1);
 
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      return;
+    }
+
+    try {
+      const decodedToken: any = jwtDecode(accessToken);
+      const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+        setIsAuthorized(true);
+      }
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  }, []);
+
   useEffect(() => {
     // mockFetchAccounts().then(data => setAccounts(data));
+    if (!isAuthorized) return;
     const fetchData = async () => {
-
       // mockFetchAccounts(pageIndex, pageSize).then(data => {
       //   setAccounts(data.data.items as Account[]);
       //   setTotalItemsCount(data.data.totalItemsCount);
@@ -190,8 +210,9 @@ const AccountManagementPage: React.FC = () => {
     // fetchData();
     const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
-      return () => clearInterval(interval);
-  }, [searchTerm, filterStatus, pageIndex, pageSize]);
+    return () => clearInterval(interval);
+
+  }, [isAuthorized, searchTerm, filterStatus, pageIndex, pageSize]);
 
   // useWebSocket('ws://localhost:5096/ws', (event) => {
   //   console.log('Received WebSocket message:', event.data);
@@ -290,6 +311,14 @@ const AccountManagementPage: React.FC = () => {
     console.log('Added user:', updatedUser);
     setAddVisible(false); // Đóng modal sau khi cập nhật thành công
   };
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+        Bạn không có quyền để truy cập nội dung này.
+      </div>
+    );
+  }
 
   const columns = [
     {
