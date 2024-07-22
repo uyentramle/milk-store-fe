@@ -68,7 +68,7 @@ export default function MySider() {
         .set('1', '/admin/')
         .set('2', '/admin/manage-users')
         .set('3', '/admin/products')
-        .set('4', '/admin/orders')
+        .set('4', '/admin/manage-orders')
         .set('5', '/admin/brands')
         .set('6', '/admin/vouchers')
         .set('7', '/admin/blogs')
