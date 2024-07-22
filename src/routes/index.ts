@@ -18,8 +18,8 @@ import PromotionPage from '../pages/client/Promotion/PromotionPage';
 import ProductListPage from '../pages/client/Product/ProductListPage';
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
-// import ManageAccountPage from '../pages/admin/AccountManagement/AccountManagementPage';
 import AccountManagementPage from '../pages/admin/AccountManagement/AccountManagementPage';
+import OrderManagementPage from '../pages/admin/OrderManagement/OrderManagementPage';
 import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
@@ -71,7 +71,7 @@ const publicRoutes: RouteProps[] = [
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
     { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
-    { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
+    { path: '/product-detail/:productId', component: ProductDetail, layout: DefaultClientLayout }, // Updated route
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
@@ -95,6 +95,7 @@ const privateRoutes: RouteProps[] = [];
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
     { path: '/admin/manage-users', component: AccountManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/manage-orders', component: OrderManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
     { path: '/admin/products/details/:id/:page', component: ProductDetailPage, layout: DefaultAdminLayout },

@@ -1,17 +1,26 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { Input, Button, Upload, Form } from 'antd';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Input, Button, Upload, Form, Select, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
 
+const { Option } = Select;
+
 interface FormData {
     title: string;
     content: string;
     thumbnail: RcFile | null;
     status: boolean;
+}
+
+interface Category {
+    id: number;
+    name: string;
+    active: boolean;
+    isDeleted: boolean;
 }
 
 const CreateBlogPage: React.FC = () => {
@@ -21,6 +30,29 @@ const CreateBlogPage: React.FC = () => {
         thumbnail: null,
         status: false,
     });
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('https://localhost:44329/api/Category/GetAllCategory?pageIndex=0&pageSize=10');
+                const fetchedCategories: Category[] = response.data.data.items;
+                
+                // Filter categories to include only active and not deleted
+                const filteredCategories = fetchedCategories.filter(
+                    (category) => category.active && !category.isDeleted
+                );
+
+                setCategories(filteredCategories);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
@@ -45,11 +77,15 @@ const CreateBlogPage: React.FC = () => {
         }));
     };
 
+    const handleCategoryChange = (value: number[]) => {
+        setSelectedCategories(value);
+    };
+
     const handleSubmit = async (values: FormData) => {
         try {
             // Upload thumbnail image
             const imageUrl = await uploadImage(formData.thumbnail);
-            
+
             // Create blog API call
             const postData = {
                 title: values.title,
@@ -59,13 +95,24 @@ const CreateBlogPage: React.FC = () => {
 
             // Replace with your API endpoint
             const response = await axios.post('https://localhost:44329/api/Blog/CreateBlog', postData);
-            console.log('Blog created:', response.data);
+            const blogId = response.data.data.id;
             message.success('Blog created successfully');
-            history('/admin/blogs');
 
-            // Redirect or show success message as needed
+            // Create BlogCategory relationships
+            if (selectedCategories.length > 0) {
+                const blogCategoryData = selectedCategories.map(categoryId => ({
+                    postId: blogId,
+                    categoryId: categoryId,
+                }));
+                await Promise.all(blogCategoryData.map(data => axios.post('https://localhost:44329/api/BlogCategory/CreateBlogCategory', data)));
+                message.success('Blog category relationships created successfully');
+            }
+
+            navigate('/admin/blogs');
+
         } catch (error) {
             console.error('Error creating blog:', error);
+            message.error('Failed to create blog');
         }
     };
 
@@ -118,6 +165,22 @@ const CreateBlogPage: React.FC = () => {
                             <Upload name="thumbnail" listType="picture" beforeUpload={() => false} onChange={handleFileChange}>
                                 <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
                             </Upload>
+                        </Form.Item>
+                    </div>
+
+                    <div className="mb-4">
+                        <Form.Item label="Danh mục" name="category">
+                            <Select
+                                mode="multiple"
+                                placeholder="Chọn danh mục"
+                                onChange={handleCategoryChange}
+                            >
+                                {categories.map((category) => (
+                                    <Option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                     </div>
 
