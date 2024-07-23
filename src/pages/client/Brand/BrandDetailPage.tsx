@@ -216,9 +216,9 @@ const BrandDetailPage: React.FC = () => {
         );
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedProducts = productData.slice(startIndex, endIndex);
+    // const startIndex = (currentPage - 1) * pageSize;
+    // const endIndex = startIndex + pageSize;
+    // const paginatedProducts = productData.slice(startIndex, endIndex);
 
     return (
         <div className="min-h-screen flex flex-wrap w-full">
@@ -273,7 +273,7 @@ const BrandDetailPage: React.FC = () => {
                             key={blog.id}
                             className="w-1/4 bg-white shadow rounded-lg p-4"
                         >
-                            <Link to={`/blog-detail/`} className="block hover:opacity-75">
+                            <Link to={`/blog-detail/${blog.id}`} className="block hover:opacity-75">
                                 <img
                                     src={blog.blogImg}
                                     alt={blog.title} className="h-45 w-full object-cover rounded-lg"
@@ -319,19 +319,21 @@ const BrandDetailPage: React.FC = () => {
                     <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
                         {productData.length > 0 ? (
                             productData.map((product) => (
-                                <Card className="w-full">
-                                    <div className="flex justify-center">
-                                        <img src={product.image} alt={product.name} className="h-40 object-cover rounded-md mb-4" />
-                                    </div>
-                                    <h3 className="text-lg font-medium">{product.name}</h3>
-                                    <Rate disabled defaultValue={5} />
-                                    <div className="flex items-center justify-between my-2">
-                                        <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
-                                        <Badge.Ribbon text={`-${product.discount}%`} color="red">
-                                        </Badge.Ribbon>
-                                    </div>
-                                    <p className="text-gray-500">Đã bán 99</p>
-                                    <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                <Card className="w-full" key={product.id}>
+                                    <Link to={`/product-detail/${product.id}`} className="block hover:opacity-75">
+                                        <div className="flex justify-center">
+                                            <img src={product.image} alt={product.name} className="h-40 object-cover rounded-md mb-4" />
+                                        </div>
+                                        <h3 className="text-lg font-medium">{product.name}</h3>
+                                        <Rate disabled defaultValue={5} />
+                                        <div className="flex items-center justify-between my-2">
+                                            <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
+                                            <Badge.Ribbon text={`-${product.discount}%`} color="red">
+                                            </Badge.Ribbon>
+                                        </div>
+                                        <p className="text-gray-500">Đã bán 99</p>
+                                        <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                    </Link>
                                 </Card>
                             ))
                         ) : (

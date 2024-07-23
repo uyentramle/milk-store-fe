@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                         {recentBlog.map((blog) => (
                             <div key={blog.id}>
-                                <Link to={`/blog-detail/`} className="block hover:opacity-75">
+                                <Link to={`/blog-detail/${blog.id}`} className="block hover:opacity-75">
                                     <Card
                                         hoverable
                                         cover={<img alt={blog.title} src={blog.blogImg} />}
