@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Typography, Row, Col, Card, Button, Rate } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import './ProductDetail.css';
 import Banner from '../../../layouts/client/Components/Banner/Banner';
@@ -187,8 +187,8 @@ const ProductDetail = () => {
 
 
   return (
-    <div>
-      <Banner />
+    <div style={{ marginTop: '40px' }}>
+      {/* <Banner /> */}
       <Row gutter={16}>
         <Col span={6}>
           <Sidebar />
@@ -282,31 +282,33 @@ const ProductDetail = () => {
                       <Slider {...settings}>
                         {relatedProducts.map((relatedProduct) => (
                           <div key={relatedProduct.id} className="product-slide">
-                            <Card
-                              hoverable
-                              cover={
-                                <img
-                                  alt={relatedProduct.name}
-                                  src={relatedProduct.image}
-                                  style={{
-                                    width: '150px',
-                                    height: '150px',
-                                    objectFit: 'cover', // Ensure the image covers the container while maintaining aspect ratio
-                                    margin: '0 auto',
-                                    display: 'block',
-                                  }}
+                            <Link to={`/product-detail/${relatedProduct.id}`} className="block hover:opacity-75">
+                              <Card
+                                hoverable
+                                cover={
+                                  <img
+                                    alt={relatedProduct.name}
+                                    src={relatedProduct.image}
+                                    style={{
+                                      width: '150px',
+                                      height: '150px',
+                                      objectFit: 'cover', // Ensure the image covers the container while maintaining aspect ratio
+                                      margin: '0 auto',
+                                      display: 'block',
+                                    }}
+                                  />
+                                } actions={[
+                                  <a href="#" onClick={() => handleProductClick(relatedProduct.id)}>
+                                    <ShoppingCartOutlined className="hover:text-pink-500" style={{ fontSize: '25px' }} />
+                                  </a>,
+                                ]}
+                              >
+                                <Card.Meta
+                                  title={<a href="#" className="hover:text-pink-500" onClick={() => handleProductClick(relatedProduct.id)}>{relatedProduct.name}</a>}
+                                  description={<span className="text-sm text-pink-500">{relatedProduct.price} VND</span>}
                                 />
-                              } actions={[
-                                <a href="#" onClick={() => handleProductClick(relatedProduct.id)}>
-                                  <ShoppingCartOutlined className="hover:text-pink-500" style={{ fontSize: '25px' }} />
-                                </a>,
-                              ]}
-                            >
-                              <Card.Meta
-                                title={<a href="#" className="hover:text-pink-500" onClick={() => handleProductClick(relatedProduct.id)}>{relatedProduct.name}</a>}
-                                description={<span className="text-sm text-pink-500">{relatedProduct.price} VND</span>}
-                              />
-                            </Card>
+                              </Card>
+                            </Link>
                           </div>
                         ))}
                       </Slider>

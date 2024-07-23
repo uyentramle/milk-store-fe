@@ -134,7 +134,7 @@ const PromotionPage: React.FC = () => {
                     <Typography.Title level={3} className="my-4 text-center">Sản phẩm khuyến mãi</Typography.Title>
                     <div className="grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {promotionProduct.map((p) => (
-                            <Link to={`/product-detail`} className="block hover:opacity-75">
+                            <Link to={`/product-detail/${p.id}`} className="block hover:opacity-75">
                                 <Card className="w-full">
                                     <div className="flex justify-center">
                                         <img src={p.image} alt={p.name} className="h-40 object-cover rounded-md mb-4" />
@@ -159,7 +159,7 @@ const PromotionPage: React.FC = () => {
                             <Row gutter={[16, 16]}>
                                 {products.map((product) => (
                                     <Col key={product.id} xs={24} sm={12} md={8} lg={6}>
-                                        <Link to={`/product-detail/`} className="block hover:opacity-75">
+                                        <Link to={`/product-detail/${product.id}`} className="block hover:opacity-75">
                                             <Card
                                                 hoverable
                                                 cover={
