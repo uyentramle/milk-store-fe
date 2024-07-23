@@ -17,7 +17,7 @@ const ConfirmTransaction: React.FC = () => {
     const checkTransactionStatus = async () => {
       try {
         const encodedOrderCode = encodeURIComponent(orderCode || '');
-        const response = await axios.get(`https://localhost:7251/api/orders/payment/status/${encodedOrderCode}`);
+        const response = await axios.get(`https://localhost:44329/api/orders/payment/status/${encodedOrderCode}`);
         setStatus(response.data);
       } catch (error) {
         console.error('Error fetching transaction status:', error);
