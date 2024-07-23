@@ -177,7 +177,7 @@ const OrderDetailModal: React.FC<OrderDetailsProps> = ({ visible, onCancel, orde
                             Tiền mặt: <span className="font-semibold">{order.payment.cash}</span>
                         </p>
                         <p className="mb-2 flex justify-between">
-                            VnpayQR: <span className="font-semibold">{order.payment.vnpayQR}</span>
+                            VnpayQR: <span className="font-semibold">{order.payment.vnpayQR.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                         </p>
                         <p className="mb-2 flex justify-between">
                             MoMo: <span className="font-semibold">{order.payment.momo}</span>
