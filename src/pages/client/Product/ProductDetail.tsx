@@ -271,13 +271,18 @@ const ProductDetail = () => {
                       style={{ width: '100px' }}
                     />
                     <div style={{ display: 'flex' }}>
-                      <Button style={{ marginTop: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
-                        Thêm vào giỏ hàng
-                      </Button>
-                      <Button style={{ marginTop: '10px', marginLeft: '10px' }} type="primary" icon={<ShoppingCartOutlined onClick={(e) => {
-                                                        e.preventDefault(); // Prevent navigation
-                                                        addToCart(productId);
-                                                    }}/>}>
+                      <Button 
+  style={{ marginTop: '10px' }} 
+  type="primary" 
+  icon={<ShoppingCartOutlined />}
+  onClick={(e) => {
+    e.preventDefault(); // Prevent navigation
+    addToCart(product.id); // Assuming product.id is available
+  }}
+>
+  Thêm vào giỏ hàng
+</Button>
+                      <Button style={{ marginTop: '10px', marginLeft: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
                         Mua ngay
                       </Button>
                     </div>
