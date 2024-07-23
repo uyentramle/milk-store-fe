@@ -27,7 +27,7 @@ interface Order {
     },
     payment: {
         cash: string,
-        vnpayQR: string,
+        vnpayQR: number,
         momo: string,
         paypal: string,
         subtotal: number,

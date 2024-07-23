@@ -379,7 +379,7 @@ interface OrderDetail {
     };
     payment: {
         cash: string;
-        vnpayQR: string;
+        vnpayQR: number;
         momo: string;
         paypal: string;
         subtotal: number;
@@ -764,7 +764,7 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                     Tiền mặt: <span className="font-semibold">{orderDetail?.payment?.cash}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
-                                    VnpayQR: <span className="font-semibold">{orderDetail?.payment?.vnpayQR}</span>
+                                    VnpayQR: <span className="font-semibold">{orderDetail?.payment?.vnpayQR.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     MoMo: <span className="font-semibold">{orderDetail?.payment?.momo}</span>
