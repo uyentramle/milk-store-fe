@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Typography, Row, Col, Card, Button, Rate } from 'antd';
+import { Input, Typography, Row, Col, Card, Button, Rate, message } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import './ProductDetail.css';
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
+import axios from 'axios';
 
 const { Title, Paragraph } = Typography;
 
@@ -170,6 +171,37 @@ const ProductDetail = () => {
         console.error('Error fetching related products:', error);
       });
   }, [productId]);
+  const addToCart = async (productId: string) => {
+    const token = localStorage.getItem('accessToken'); // Get the token from localStorage
+    if (!token) {
+        message.error('You need to be logged in to add items to cart');
+        return;
+    }
+
+    try {
+        const response = await axios.post(
+            'https://localhost:44329/api/Cart/AddProductToCart/add-to-cart',
+            {
+                productId: productId,
+                quanity: 1 // You can modify this if you want to allow adding multiple quantities
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+
+        if (response.data.success) {
+            message.success('Product added to cart successfully');
+        } else {
+            message.error('Failed to add product to cart');
+        }
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        message.error('An error occurred while adding the product to cart');
+    }
+};
   const handleProductClick = (id: string) => {
     navigate(`/product-detail/${id}`); // Navigate to the ProductDetail page with the clicked product ID
   };
@@ -242,7 +274,10 @@ const ProductDetail = () => {
                       <Button style={{ marginTop: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
                         Thêm vào giỏ hàng
                       </Button>
-                      <Button style={{ marginTop: '10px', marginLeft: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
+                      <Button style={{ marginTop: '10px', marginLeft: '10px' }} type="primary" icon={<ShoppingCartOutlined onClick={(e) => {
+                                                        e.preventDefault(); // Prevent navigation
+                                                        addToCart(productId);
+                                                    }}/>}>
                         Mua ngay
                       </Button>
                     </div>
