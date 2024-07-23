@@ -80,7 +80,30 @@ const ManageProductPage: React.FC = () => {
     const [isStatusModalVisible, setIsStatusModalVisible] = useState(false);
     const [statusProduct, setStatusProduct] = useState<Product | null>(null);
 
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
         fetch('https://localhost:44329/api/Product/GetAllProducts')
             .then((response) => response.json())
             .then((data) => {
@@ -120,7 +143,7 @@ const ManageProductPage: React.FC = () => {
 
     const handleConfirmDelete = async () => {
         if (selectedProductId) {
-            
+
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) {
                 throw new Error('Access token not found.');
@@ -132,7 +155,7 @@ const ManageProductPage: React.FC = () => {
             deleteData.append('Id', selectedProductId);
             deleteData.append('DeletedBy', DeletedBy);
 
-            const response = await axios.post(`https://localhost:44329/api/Product/DeleteProduct`, deleteData,{
+            const response = await axios.post(`https://localhost:44329/api/Product/DeleteProduct`, deleteData, {
                 headers: {
                     'accept': '*/*',
                     'Content-Type': 'multipart/form-data',
@@ -148,7 +171,7 @@ const ManageProductPage: React.FC = () => {
             } else {
                 message.error('Xóa sản phẩm thất bại');
             }
-            
+
         }
     };
 
@@ -171,49 +194,57 @@ const ManageProductPage: React.FC = () => {
     const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
     const handleStatusClick = (product: Product) => {
-    setStatusProduct(product);
-    setIsStatusModalVisible(true);
-};
+        setStatusProduct(product);
+        setIsStatusModalVisible(true);
+    };
 
-const handleConfirmStatusChange = async () => {
-    if (statusProduct) {
-        const updatedStatus = !statusProduct.active;
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-            throw new Error('Access token not found.');
+    const handleConfirmStatusChange = async () => {
+        if (statusProduct) {
+            const updatedStatus = !statusProduct.active;
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                throw new Error('Access token not found.');
+            }
+            const decodedToken: any = jwtDecode(accessToken);
+            const UpdatedBy = decodedToken.id;
+
+            const updateData = new FormData();
+            updateData.append('Id', statusProduct.id);
+            updateData.append('UpdatedBy', UpdatedBy);
+
+            const response = await axios.post(`https://localhost:44329/api/Product/UpdateStatusProduct`, updateData, {
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.data.success) {
+                message.success('Cập nhật trạng thái thành công');
+                setProducts(products.map(product =>
+                    product.id === statusProduct.id ? { ...product, active: updatedStatus } : product
+                ));
+                setIsStatusModalVisible(false);
+                setStatusProduct(null);
+            } else {
+                message.error('Cập nhật trạng thái thất bại');
+            }
         }
-        const decodedToken: any = jwtDecode(accessToken);
-        const UpdatedBy = decodedToken.id;
+    };
 
-        const updateData = new FormData();
-        updateData.append('Id', statusProduct.id);
-        updateData.append('UpdatedBy', UpdatedBy);
+    const handleCancelStatusChange = () => {
+        setIsStatusModalVisible(false);
+        setStatusProduct(null);
+    };
 
-        const response = await axios.post(`https://localhost:44329/api/Product/UpdateStatusProduct`, updateData, {
-            headers: {
-                'accept': '*/*',
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        if (response.data.success) {
-            message.success('Cập nhật trạng thái thành công');
-            setProducts(products.map(product => 
-                product.id === statusProduct.id ? { ...product, active: updatedStatus } : product
-            ));
-            setIsStatusModalVisible(false);
-            setStatusProduct(null);
-        } else {
-            message.error('Cập nhật trạng thái thất bại');
-        }
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
     }
-};
-
-const handleCancelStatusChange = () => {
-    setIsStatusModalVisible(false);
-    setStatusProduct(null);
-};
 
     return (
         <div className="container mx-auto px-4 pb-8">
@@ -279,10 +310,10 @@ const handleCancelStatusChange = () => {
                         <tr className="bg-gray-200">
                             <th className="px-4 py-2">STT.</th>
                             <th className="px-4 py-2">Tên sản phẩm</th>
-                            <th className="px-4 py-2">Hình ảnh</th>
+                            <th className="px-4 py-2">Ảnh bìa</th>
                             <th className="px-4 py-2">SKU</th>
-                            <th className="px-4 py-2">Giá góc</th>
-                            <th className="px-4 py-2">Giá giảm</th>
+                            <th className="px-4 py-2">Giá gốc</th>
+                            <th className="px-4 py-2">Giảm giá</th>
                             <th className="px-4 py-2">Số lượng</th>
                             <th className="px-4 py-2">Phân loại</th>
                             <th className="px-4 py-2">Thương hiệu</th>
@@ -298,7 +329,7 @@ const handleCancelStatusChange = () => {
                             return (
                                 <tr key={product.id} className="border-b bg-white">
                                     <td className="px-4 py-2 font-bold">{rowNumber}</td>
-                                    <Link to={`/admin/products/details/${product.id}`}>
+                                    <Link to={`/admin/products/details/${product.id}/manage`}>
                                         <td className="mx-auto px-4 py-2 font-bold">
                                             {product.name}
                                         </td>
@@ -317,10 +348,7 @@ const handleCancelStatusChange = () => {
                                             currency: 'VND',
                                         }).format(product.price)}
                                     </td>
-                                    <td>{new Intl.NumberFormat('vi-VN', {
-                                            style: 'currency',
-                                            currency: 'VND',
-                                        }).format(product.discount)}
+                                    <td>{product.discount ? `${product.discount}%` : 'Không có'}
                                     </td>
                                     <td>{product.quantity}</td>
                                     <td>{product.type.name}</td>
@@ -336,11 +364,11 @@ const handleCancelStatusChange = () => {
                                         </Link>
                                     </td>
                                     <td className="px-4 py-2">
-                                        <Button 
-                                            type="primary" 
-                                            icon={<DeleteOutlined />} 
-                                            danger 
-                                            onClick={() => handleDeleteClick(product.id)} 
+                                        <Button
+                                            type="primary"
+                                            icon={<DeleteOutlined />}
+                                            danger
+                                            onClick={() => handleDeleteClick(product.id)}
                                         />
                                     </td>
                                 </tr>

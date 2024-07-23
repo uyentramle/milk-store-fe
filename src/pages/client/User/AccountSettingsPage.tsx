@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import SidebarMenu from './SidebarMenu';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Input, message } from 'antd';
 import {
     UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     MailOutlined,
     PhoneOutlined,
     KeyOutlined,
     TwitterOutlined,
     GoogleOutlined,
-    DollarOutlined,
     // FacebookFilled,
 } from '@ant-design/icons';
 
@@ -113,24 +108,6 @@ const getUserProfile = async (): Promise<any> => {
     }
 };
 
-const LogoutButton = () => {
-    const navigate = useNavigate();
-    const handleLogout = () => {
-        navigate('/sign-in');
-        localStorage.removeItem('accessToken'); // Example: Remove token from localStorage
-    };
-
-    return (
-        <button
-            className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-            onClick={handleLogout}
-        >
-            <LogoutOutlined className="mr-2" />
-            <span>Đăng xuất</span>
-        </button>
-    );
-};
-
 const AccountSettingsPage: React.FC = () => {
     // const username = 't****du';
     // const [username, setUsername] = useState('t****du'); // Sử dụng useState để quản lý giá trị username, dòng này có thể bỏ do dùng để test
@@ -144,6 +121,14 @@ const AccountSettingsPage: React.FC = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [googleEmail, setGoogleEmail] = useState('');
     const [facebookEmail, setFacebookEmail] = useState('');
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('token');
+        // Redirect to sign-in page
+        navigate('/sign-in');
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -172,70 +157,7 @@ const AccountSettingsPage: React.FC = () => {
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <b>Thiết lập tài khoản</b>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                <DollarOutlined className="mr-2" />
-                                <span>Lịch sử điểm thưởng</span>
-                            </a>
-                            {/* <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={LogoutButton}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> 
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a> */}
-                            <LogoutButton />
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <nav className="mb-4 flex">
@@ -662,7 +584,6 @@ export const LinkedEmail: React.FC<LinkedEmailProps> = ({ email, setEmail }) => 
             }
         }
     };
-
 
     const verifyNewEmail = async (newEmail: string, code: string) => {
         const accessToken = localStorage.getItem('accessToken');

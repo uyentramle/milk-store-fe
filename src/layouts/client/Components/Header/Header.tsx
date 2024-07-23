@@ -7,6 +7,7 @@ import {
     UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const linkClass = "text-pink-500 hover:text-pink-800";
 const menuStyle = "text-pink-500 hover:text-pink-800 font-medium";
@@ -14,13 +15,18 @@ const menuStyle = "text-pink-500 hover:text-pink-800 font-medium";
 const Header: React.FC = () => {
     const navigate = useNavigate();
 
-    const handleAvatarClick = () => {
+    const isUserLoggedIn = () => {
+        const accessToken = localStorage.getItem('accessToken');
+        return !!accessToken;
+    };
+
+    const getUserRole = () => {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
-            navigate('/user-profile'); // Nếu đã đăng nhập, chuyển hướng đến /user-profile
-        } else {
-            navigate('/sign-in'); // Nếu chưa đăng nhập, chuyển hướng đến /sign-in
+            const decoded: any = jwtDecode(accessToken);
+            return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         }
+        return null;
     };
 
     const handleMenuClick = (e: any) => {
@@ -36,6 +42,22 @@ const Header: React.FC = () => {
         }
     };
 
+    const handleAvatarMenuClick = (e: any) => {
+        const key = e.key;
+        if (key === "profile") {
+            navigate('/user-profile');
+        } else if (key === "logout") {
+            localStorage.removeItem('accessToken');
+            navigate('/sign-in');
+        } else if (key === "admin") {
+            navigate('/admin');
+        } else if (key === "sign-in") {
+            navigate('/sign-in');
+        } else if (key === "sign-up") {
+            navigate('/sign-up');
+        }
+    };
+
     const productMenu = (
         <Menu onClick={handleMenuClick}>
             <Menu.Item key="1">Sữa bột cao cấp</Menu.Item>
@@ -44,6 +66,28 @@ const Header: React.FC = () => {
             <Menu.Item key="4">Sữa cho mẹ</Menu.Item>
         </Menu>
     );
+
+    const getAvatarMenu = () => {
+        const role = getUserRole();
+        if (isUserLoggedIn()) {
+            return (
+                <Menu onClick={handleAvatarMenuClick}>
+                    <Menu.Item key="profile">Thông tin cá nhân</Menu.Item>
+                    {role === 'Admin' || role === 'Staff' ? (
+                        <Menu.Item key="admin">Đi tới trang admin</Menu.Item>
+                    ) : null}
+                    <Menu.Item key="logout">Đăng xuất</Menu.Item>
+                </Menu>
+            );
+        } else {
+            return (
+                <Menu onClick={handleAvatarMenuClick}>
+                    <Menu.Item key="sign-in">Đăng nhập</Menu.Item>
+                    <Menu.Item key="sign-up">Đăng ký</Menu.Item>
+                </Menu>
+            );
+        }
+    };
 
     return (
         <div className="flex items-center justify-between p-4 bg-white shadow-md fixed w-full top-0 z-50 mx-auto">
@@ -80,12 +124,14 @@ const Header: React.FC = () => {
                         icon={<UserOutlined />}
                     />
                 </a> */}
-                <a href="" className="" onClick={handleAvatarClick}>
-                    <Avatar
-                        style={{ backgroundColor: '#e83c7e' }}
-                        icon={<UserOutlined />}
-                    />
-                </a>
+                <Dropdown overlay={getAvatarMenu()} trigger={['click']}>
+                    <a onClick={e => e.preventDefault()}>
+                        <Avatar
+                            style={{ backgroundColor: '#e83c7e' }}
+                            icon={<UserOutlined />}
+                        />
+                    </a>
+                </Dropdown>
                 {/* <Button type="primary" className="ml-4 bg-pink-500 hover:bg-pink-800">Đăng nhập</Button> */}
             </div>
         </div>

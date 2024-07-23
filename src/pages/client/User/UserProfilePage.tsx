@@ -4,17 +4,11 @@ import { useNavigate } from 'react-router-dom';
 // import { Form, Input, Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import {
-    UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     CameraOutlined,
     UploadOutlined,
-    DollarOutlined,
 } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, Modal, Spin, Avatar } from 'antd';
+import SidebarMenu from './SidebarMenu';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../services/Firebase/firebase';
 
@@ -41,7 +35,7 @@ interface UserProfile {
     address: string;
     avatar: string;
     background: string;
-  }
+}
 
 // Hàm để gọi API và trả về thông tin người dùng đã được lọc
 const getUserProfile = async (): Promise<any> => {
@@ -119,6 +113,7 @@ const UserProfilePage: React.FC = () => {
     const [tempUserData, setTempUserData] = useState<Partial<UserProfile>>({});
     const [isEditing, setIsEditing] = useState(false);
     const inputRef = useRef<{ [key: string]: HTMLInputElement | null }>({});
+    const [loading, setLoading] = useState(true); // Trạng thái tải trang
 
     const navigate = useNavigate();
 
@@ -153,7 +148,7 @@ const UserProfilePage: React.FC = () => {
         //     [name]: value
         // });
     };
-    
+
     const fetchData = async () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
@@ -166,9 +161,12 @@ const UserProfilePage: React.FC = () => {
             setAvatar(userProfileData.avatar);
         } catch (error) {
             console.error('Error fetching user profile:', error);
-            // Xử lý lỗi khi cần thiết
+            navigateToSignInPage(); // Redirect to sign-in page on error
+        } finally {
+            setLoading(false); // Set loading to false after data fetching
         }
     };
+
     // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
     useEffect(() => {
         // fetchData();
@@ -180,12 +178,12 @@ const UserProfilePage: React.FC = () => {
         // }, 2000);
 
         // return () => clearTimeout(intervalId);  
-        
+
         const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
 
         return () => clearInterval(interval);
     }, [isEditing]);
-    
+
     // // Giả lập gọi API để lấy dữ liệu người dùng
     // useEffect(() => {
     //     // Giả lập một gọi API với setTimeout
@@ -266,83 +264,25 @@ const UserProfilePage: React.FC = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
     if (!userData) {
         navigateToSignInPage();
-        return (
-            <div className="container mx-auto w-4/5 p-4 pt-10">
-                <div className="flex flex-col gap-10 lg:flex-row">
-                    <div>Loading...</div>
-                </div>
-            </div>); // Placeholder for loading state
+        return null;
     }
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <b>Thông tin tài khoản</b>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                <DollarOutlined className="mr-2" />
-                                <span>Lịch sử điểm thưởng</span>
-                            </a>
-                            <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={handleLogout}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4 flex flex-col gap-12 sm:flex-row">
@@ -360,7 +300,7 @@ const UserProfilePage: React.FC = () => {
                                 <div className="mt-4 flex flex-col items-center justify-center">
                                     <button
                                         className="rounded bg-pink-500 px-3 py-1.5 text-white transition-colors duration-300 hover:bg-pink-600"
-                                        onClick={() =>handleOpenModal(userId)}
+                                        onClick={() => handleOpenModal(userId)}
                                     >
                                         {/* <i className="fa fa-fw fa-camera mr-2"></i> */}
                                         <CameraOutlined className="mr-2" />
@@ -393,10 +333,10 @@ const UserProfilePage: React.FC = () => {
                                                     // value={userData.lastName}
                                                     // onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
                                                     ref={el => inputRef.current['lastName'] = el}
-                                        value={tempUserData.lastName || userData.lastName || ''}
-                                        onChange={handleInputChange}
-                                        onFocus={() => setIsEditing(true)}
-                                        onBlur={() => setIsEditing(false)}
+                                                    value={tempUserData.lastName || userData.lastName || ''}
+                                                    onChange={handleInputChange}
+                                                    onFocus={() => setIsEditing(true)}
+                                                    onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-[150px]">
@@ -408,10 +348,10 @@ const UserProfilePage: React.FC = () => {
                                                     // value={userData.firstName}
                                                     // onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
                                                     ref={el => inputRef.current['firstName'] = el}
-                                        value={tempUserData.firstName || userData.firstName || ''}
-                                        onChange={handleInputChange}
-                                        onFocus={() => setIsEditing(true)}
-                                        onBlur={() => setIsEditing(false)}
+                                                    value={tempUserData.firstName || userData.firstName || ''}
+                                                    onChange={handleInputChange}
+                                                    onFocus={() => setIsEditing(true)}
+                                                    onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex items-end justify-end mt-4 mb-2 sm:mt-0">
@@ -431,9 +371,9 @@ const UserProfilePage: React.FC = () => {
                                                 // value={userData.gender}
                                                 // onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
                                                 value={tempUserData.gender ?? userData.gender ?? ''}
-                                    onChange={handleInputChange}
-                                    onFocus={() => setIsEditing(true)}
-                                    onBlur={() => setIsEditing(false)}
+                                                onChange={handleInputChange}
+                                                onFocus={() => setIsEditing(true)}
+                                                onBlur={() => setIsEditing(false)}
                                             >
                                                 <option value="Male">Nam</option>
                                                 <option value="Female">Nữ</option>
@@ -483,14 +423,14 @@ const UserProfilePage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} userId={currentUserId}/>
+            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} userId={currentUserId} />
         </div>
     );
 };
 
 export default UserProfilePage;
 
-const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void, userId: string | null}> = ({ isOpen, onClose, onSave, userId: userIdd }) => {
+const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void, userId: string | null }> = ({ isOpen, onClose, onSave, userId: userIdd }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [modalClass, setModalClass] = useState('');
@@ -542,7 +482,7 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
     //     }
     // };
 
-     // const handleSave = () => {
+    // const handleSave = () => {
     //     if (selectedFile) {
     //         onSave(selectedFile);
     //         onClose();
@@ -585,14 +525,14 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
         });
     };
 
-   const handleSave = async () => {
+    const handleSave = async () => {
         if (selectedFile) {
             try {
                 const url = await handleUpload(selectedFile);
                 console.log('Uploaded file URL:', url);
 
                 // Gọi API để cập nhật URL ảnh đại diện của người dùng
-            const response = await axios.put('https://localhost:44329/api/Account/UpdateUserAvatar', {
+                const response = await axios.put('https://localhost:44329/api/Account/UpdateUserAvatar', {
                     userId: userIdd,
                     avatarUrl: url
                 }, {

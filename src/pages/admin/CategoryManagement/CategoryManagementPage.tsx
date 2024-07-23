@@ -3,6 +3,7 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant
 import { Button, Input, Table, Select, Modal, Form, Input as AntInput, message } from 'antd';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
 
@@ -21,7 +22,30 @@ const CategoryBlogManagementPage: React.FC = () => {
     const [editingCategory, setEditingCategory] = useState<CategoryBlog | null>(null);
     const [form] = Form.useForm();
 
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
         const fetchCategoryBlogs = async () => {
             try {
                 const response = await fetch('https://localhost:44329/api/Category/GetAllCategory?pageIndex=0&pageSize=10');
@@ -44,12 +68,12 @@ const CategoryBlogManagementPage: React.FC = () => {
                     .filter((category: any) => !category.isDeleted) // Exclude deleted categories
                     .map((category: any) => {
                         const blogsCount = blogCategories.filter((item: any) => item.categoryId === category.id).length;
-                        return { 
+                        return {
                             id: category.id,
                             name: category.name,
                             description: category.description,
                             status: category.active, // `active` corresponds to `status`
-                            blogsCount 
+                            blogsCount
                         };
                     });
 
@@ -64,9 +88,9 @@ const CategoryBlogManagementPage: React.FC = () => {
 
     const filteredBlogs = categoryBlogs.filter((b) => {
         const matchesSearch = `${b.name}`.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === 'All' || 
-                              (filterStatus === 'Active' && b.status) || 
-                              (filterStatus === 'Inactive' && !b.status);
+        const matchesStatus = filterStatus === 'All' ||
+            (filterStatus === 'Active' && b.status) ||
+            (filterStatus === 'Inactive' && !b.status);
         return matchesSearch && matchesStatus;
     });
 
@@ -118,6 +142,14 @@ const CategoryBlogManagementPage: React.FC = () => {
             }
         });
     };
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     const columns = [
         {

@@ -17,6 +17,7 @@ import {
     Bar,
 } from 'recharts';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
 
@@ -243,11 +244,34 @@ const DashBoardPage: React.FC = () => {
     const [selectedMonth, setSelectedMonth] = useState<string>('June');
     const [promotionProducts, setPromotionProducts] = useState<Product[]>([]);
 
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
     const handleMonthChange = (value: string) => {
         setSelectedMonth(value);
     };
 
     useEffect(() => {
+        if (!isAuthorized) return;
+
         getPromotionProducts()
             .then((promotionProducts) => {
                 setPromotionProducts(promotionProducts);
@@ -256,7 +280,15 @@ const DashBoardPage: React.FC = () => {
                 console.error('Lỗi tìm nạp sản phẩm khuyến mãi:', error);
             });
     }, []);
-    
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
+
     return (
         <>
             <h2 className="mb-4 text-2xl font-bold">Bảng điều khiển</h2>
