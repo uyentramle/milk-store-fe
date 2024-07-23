@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Image, Select, Spin, } from 'antd';
-import { Link } from 'react-router-dom';
+import {
+    SearchOutlined,
+    PlusOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    ExclamationCircleOutlined
+} from '@ant-design/icons';
+import { Button, Input, Table, Image, Select, Spin, Modal, notification, } from 'antd';
+import { Link, useNavigate, } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 interface Brand {
     id: number;
@@ -15,6 +23,39 @@ interface Brand {
     active: boolean;
 }
 
+const deleteBrandById = async (brandId: number): Promise<void> => {
+    try {
+        await axios.delete(`https://localhost:44329/api/Brand/DeleteBrand?id=${brandId}`, {
+            headers: {
+                'accept': '*/*'
+            }
+        });
+        notification.success({
+            message: 'Success',
+            description: 'Thương hiệu được xóa thành công!',
+        });
+    } catch (error) {
+        console.error('Lỗi xóa thương hiệu:', error);
+        try {
+            await axios.delete(`https://localhost:7251/api/Brand/DeleteBrand?id=${brandId}`, {
+                headers: {
+                    'accept': '*/*'
+                }
+            });
+            notification.success({
+                message: 'Success',
+                description: 'Thương hiệu được xóa thành công!',
+            });
+        } catch (error) {
+            console.error('Lỗi xóa thương hiệu:', error);
+            notification.error({
+                message: 'Error',
+                description: 'Không thể xóa.',
+            });
+        }
+    }
+};
+
 const BrandManagementPage: React.FC = () => {
     const [brands, setBrands] = useState<Brand[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,9 +63,35 @@ const BrandManagementPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const navigate = useNavigate();
+
     const defaultImageUrl = 'https://via.placeholder.com/64';
 
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
+
     useEffect(() => {
+        // if (!isAuthorized) return;
+
         const fetchBrands = async () => {
             setLoading(true);
             setError(null);
@@ -40,8 +107,22 @@ const BrandManagementPage: React.FC = () => {
                 }));
                 setBrands(fetchedBrands);
             } catch (error) {
-                console.error('Error fetching brands:', error);
-                setError('Failed to fetch brands.');
+                console.error('Lỗi tìm nạp từ port 7251:', error);
+                try {
+                    const fallbackResponse = await axios.get('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=10');
+                    const fetchedBrands = fallbackResponse.data.data.items.map((brand: any) => ({
+                        id: brand.id,
+                        name: brand.name,
+                        origin: brand.brandOrigin,
+                        description: brand.description,
+                        image: brand.imageUrl,
+                        active: brand.active,
+                    }));
+                    setBrands(fetchedBrands);
+                } catch (fallbackError) {
+                    console.error('Lỗi tìm nạp từ port 44329:', fallbackError);
+                    setError('Không thể lấy từ cả hai ports.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -49,6 +130,27 @@ const BrandManagementPage: React.FC = () => {
 
         fetchBrands();
     }, []);
+
+    const handleEdit = (brandId: number) => {
+        navigate(`/admin/brands/update/${brandId}`);
+    };
+
+    const handleDeleteBrand = (brandId: number) => {
+        confirm({
+            title: 'Bạn có chắc xóa thương hiệu này?',
+            icon: <ExclamationCircleOutlined />,
+            okText: 'Có',
+            okType: 'danger',
+            cancelText: 'Không',
+            onOk: async () => {
+                await deleteBrandById(brandId);
+                setBrands(brands.filter(brand => brand.id !== brandId));
+            },
+            onCancel() {
+                console.log('Hủy');
+            },
+        });
+    };
 
     const filteredBrands = brands.filter((brand) => {
         const matchesSearch = `${brand.name} ${brand.origin} ${brand.description}`
@@ -58,6 +160,14 @@ const BrandManagementPage: React.FC = () => {
             filterStatus === 'All' || (filterStatus === 'Active' && brand.active) || (filterStatus === 'Inactive' && !brand.active);
         return matchesSearch && matchesStatus;
     });
+
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
 
     const columns = [
         {
@@ -70,7 +180,12 @@ const BrandManagementPage: React.FC = () => {
             title: 'Tên',
             dataIndex: 'name',
             key: 'name',
-            render: (text: string) => <span className="font-semibold text-pink-500">{text}</span>,
+            render: (text: string, brand: Brand) =>
+                <a href={`/brand-name/${brand.id}`} target='_blank'>
+                    <span className="font-semibold text-pink-500">
+                        {text}
+                    </span>
+                </a>,
         },
         {
             title: 'Hình ảnh',
@@ -90,11 +205,11 @@ const BrandManagementPage: React.FC = () => {
             dataIndex: 'origin',
             key: 'origin',
         },
-        {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            key: 'description',
-        },
+        // {
+        //     title: 'Mô tả',
+        //     dataIndex: 'description',
+        //     key: 'description',
+        // },
         {
             title: 'Trạng thái',
             dataIndex: 'active',
@@ -105,8 +220,11 @@ const BrandManagementPage: React.FC = () => {
             title: 'Cập nhật',
             key: 'update',
             render: (_text: any, _record: any) => (
-                <Button type="primary" icon={<EditOutlined />} className="bg-blue-500">
-                    Edit
+                <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={() => handleEdit(_record.id)} >
+                    Cập nhật
                 </Button>
             ),
         },
@@ -114,15 +232,19 @@ const BrandManagementPage: React.FC = () => {
             title: 'Xóa',
             key: 'delete',
             render: (_text: any, _record: any) => (
-                <Button type="primary" danger icon={<DeleteOutlined />} className="bg-red-500">
-                    Delete
-                </Button>
+                <Button
+                    type="primary"
+                    danger icon={<DeleteOutlined />}
+                    className="bg-red-500"
+                    onClick={() => handleDeleteBrand(_record.id)}>
+                    Xóa
+                </Button >
             ),
         },
     ];
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Quản lý thương hiệu</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">

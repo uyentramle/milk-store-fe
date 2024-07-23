@@ -13,7 +13,6 @@ import {
   LoadingOutlined,
   GoogleOutlined,
 } from '@ant-design/icons';
-import { m } from 'framer-motion';
 
 const { Step } = Steps;
 
@@ -196,6 +195,8 @@ const SignUpPage: React.FC = () => {
         return 'Mật khẩu phải có ít nhất một chữ số (\'0\'-\'9\').';
       case 'Passwords must have at least one uppercase (\'A\'-\'Z\').':
         return 'Mật khẩu phải có ít nhất một ký tự viết hoa (\'A\'-\'Z\').';
+        case 'Passwords must have at least one lowercase (\'a\'-\'z\').':
+                return 'Mật khẩu phải có ít nhất một ký tự viết thường (\'a\'-\'z\').';
       default:
         return error; // Hoặc trả về lỗi gốc nếu không có bản dịch
     }

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faSearch);
 
-const ManageOrderPage = () => {
+const ManageOrderPage: React.FC = () => {
     const [orders, setOrders] = useState([
         // Sample order data
         {
@@ -36,7 +36,7 @@ const ManageOrderPage = () => {
     );
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Manage Orders</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">

@@ -7,6 +7,7 @@ import {
     FormOutlined,
     SnippetsOutlined,
     DatabaseOutlined,
+    SmileOutlined,
 } from '@ant-design/icons';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
@@ -55,6 +56,7 @@ export default function MySider() {
             getItem('Bảng thống kê', '1', <AnalyticsOutlinedIcon />),
             getItem('Quản lý tài khoản', '2', <ManageAccountsOutlinedIcon />),
             getItem('Quản lý sản phẩm', '3', <ProductOutlined />),
+            getItem('Quản lý độ tuổi sử dụng', '10', <SmileOutlined />),
             getItem('Quản lý danh mục sản phẩm', '9', <DatabaseOutlined />),
             getItem('Quản lý đơn hàng', '4', <TruckOutlined />),
             getItem('Quản lý thương hiệu', '5', <BuildOutlined />),
@@ -66,14 +68,15 @@ export default function MySider() {
     const navUrl = new Map<string, string>();
     navUrl
         .set('1', '/admin/')
-        .set('2', '/admin/accounts')
+        .set('2', '/admin/manage-users')
         .set('3', '/admin/products')
-        .set('4', '/admin/orders')
+        .set('4', '/admin/manage-orders')
         .set('5', '/admin/brands')
         .set('6', '/admin/vouchers')
         .set('7', '/admin/blogs')
         .set('8', '/admin/categories')
-        .set('9', '/admin/product-types');
+        .set('9', '/admin/product-types')
+        .set('10', '/admin/age-ranges');
     return (
         <>
             <Sider

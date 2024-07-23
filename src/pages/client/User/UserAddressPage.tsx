@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import { jwtDecode } from 'jwt-decode';
-import { Modal, Form, Input, Checkbox, Button, message } from 'antd';
+import SidebarMenu from './SidebarMenu';
+import { Modal, Form, Input, Checkbox, Button, message, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import {
-    UserOutlined,
-    SettingOutlined,
     EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     EditOutlined,
     DeleteOutlined,
 } from '@ant-design/icons';
@@ -51,18 +47,16 @@ interface UserAddressModalProps {
     isOpen: boolean;
     onClose: () => void;
     address?: UserAddress;
-    // onUpdateSuccess?: () => void; // Optional callback for update success
-    onAdd?: (address: UserAddress) => void;
 }
 
-const fetchData = async (setUserAddresses: React.Dispatch<React.SetStateAction<any>>) => {
-    try {
-        const userAddressData = await getUserAddress();
-        setUserAddresses(userAddressData);
-    } catch (error) {
-        console.error('Error fetching user address:', error);
-    }
-};
+// const fetchData = async (setUserAddresses: React.Dispatch<React.SetStateAction<any>>) => {
+//     try {
+//         const userAddressData = await getUserAddress();
+//         setUserAddresses(userAddressData);
+//     } catch (error) {
+//         console.error('Error fetching user address:', error);
+//     }
+// };
 
 const getUserAddress = async (): Promise<any> => {
     const accessToken = localStorage.getItem('accessToken');
@@ -112,6 +106,7 @@ const UserAddressPage: React.FC = () => {
     //const [addresses, setAddresses] = useState(fakeAddresses); // Use state for addresses
     const [userAddresses, setUserAddresses] = useState<any>(null);
     const [selectedAddress, setSelectedAddress] = useState<any>(null); // Use state for selected address
+    const [loading, setLoading] = useState(true); // Added loading state
 
     const navigate = useNavigate();
     const navigateToSignInPage = () => {
@@ -125,7 +120,6 @@ const UserAddressPage: React.FC = () => {
         navigateToSignInPage();
     };
 
-
     // const fetchData = async () => {
     //     try {
     //         const userAddressData = await getUserAddress();
@@ -137,22 +131,29 @@ const UserAddressPage: React.FC = () => {
     // };
 
     useEffect(() => {
-        // const fetchData = async () => {
-        //     // const accessToken = localStorage.getItem('accessToken');
-        //     // if (!accessToken) {
-        //     //     navigateToSignInPage(); return;
-        //     // }
+        const fetchData = async () => {
+            // const accessToken = localStorage.getItem('accessToken');
+            // if (!accessToken) {
+            //     navigateToSignInPage(); return;
+            // }
 
-        //     try {
-        //         const userAddressData = await getUserAddress();
-        //         setUserAddresses(userAddressData);
-        //     } catch (error) {
-        //         console.error('Error fetching user address:', error);
-        //         // Xử lý lỗi khi cần thiết
-        //     }
-        // };
+            try {
+                const userAddressData = await getUserAddress();
+                setUserAddresses(userAddressData);
+            } catch (error) {
+                console.error('Error fetching user address:', error);
+                // Xử lý lỗi khi cần thiết
+            } finally {
+                setLoading(false); // Set loading to false after data fetching
+            }
+        };
 
-        fetchData(setUserAddresses);
+        // fetchData(setUserAddresses);
+
+        const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
+
+        return () => clearInterval(interval);
+
     }, []);
 
 
@@ -174,16 +175,6 @@ const UserAddressPage: React.FC = () => {
         setSelectedAddress(null); // Clear selected address
     };
 
-    const handleAddAddress = (newAddress: any) => {
-        setUserAddresses([...userAddresses, newAddress]);
-
-        fetchData(setUserAddresses);
-    };
-
-    // const handleAddAddress = (newAddress: UserAddress) => {
-    //     setUserAddresses((prevAddresses: UserAddress[]) => [...prevAddresses, newAddress]);
-    // };
-
     const handleDeleteAddress = async (addressId: number) => {
         try {
             await axios.delete(`https://localhost:44329/api/Address/DeleteAddress?addressId=${addressId}`, {
@@ -192,7 +183,7 @@ const UserAddressPage: React.FC = () => {
                 }
             });
             // setUserAddresses(userAddresses.filter((address: { id: number; }) => address.id !== addressId)); // Cập nhật state addresses sau khi xóa
-            await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
+            // await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi xóa thành công
             message.success('Xóa địa chỉ thành công');
 
         } catch (error) {
@@ -201,76 +192,38 @@ const UserAddressPage: React.FC = () => {
         }
     };
 
-    if (!userAddresses) {
-        // navigateToSignInPage();        
+    if (loading) {
         return (
-            <div className="container mx-auto w-4/5 p-4 pt-10">
-                <div className="flex flex-col gap-10 lg:flex-row">
-                    <div>Loading...</div>
-                </div>
-            </div>); // Placeholder for loading state
+            // <div className="container mx-auto w-4/5 p-4 pt-10">
+            //     <div className="flex items-center justify-center h-screen">
+            //         <Spin size="large" />
+            //         <span className="ml-4">Đang tải dữ liệu...</span>
+            //     </div>
+            // </div>
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
+    if (!userAddresses) {
+        navigateToSignInPage();
+        return null;
+        // return (
+        //     <div className="container mx-auto w-4/5 p-4 pt-10">
+        //         <div className="flex flex-col gap-10 lg:flex-row">
+        //             <div>Loading...</div>
+        //         </div>
+        //     </div>); // Placeholder for loading state
+
     }
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <b>Quản lí địa chỉ</b>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={handleLogout}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4 flex items-center justify-between">
@@ -337,9 +290,9 @@ const UserAddressPage: React.FC = () => {
             { }
             {/* <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} /> */}
             {/* <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} /> */}
-            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} onAdd={handleAddAddress} />
+            <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
 
-            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} onAdd={handleAddAddress} />
+            <AddAddressModel isOpen={isAddModalOpen} onClose={closeAddModal} />
             {/* {selectedAddress && (
                 <EditAddressModel isOpen={isEditModalOpen} onClose={closeEditModal} address={selectedAddress} />
             )} */}
@@ -351,7 +304,7 @@ export default UserAddressPage;
 
 // Add and Edit Address Modal
 // const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
-const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserAddress) => void }> = ({ isOpen, onClose, onAdd }) => {
+const AddAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose }) => {
     // State for controlling the modal animation
     const [modalClass, setModalClass] = useState('');
     const [form] = Form.useForm();
@@ -450,11 +403,13 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                 }
             });
 
-            message.success('Thêm địa chỉ thành công');
+            if (response.data.success) {
+                message.success('Thêm địa chỉ thành công');
+                onClose();
+            }
 
-            onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
+            // onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
             // window.location.reload(); // Reload trang sau khi thêm thành công
-            onClose();
         } catch (error) {
             console.error('Error adding address:', error);
             message.error('Thêm địa chỉ thất bại');
@@ -478,6 +433,8 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
             visible={isOpen}
             onCancel={onClose}
             footer={null}
+            width={540}
+            style={{ textAlign: 'center' }}
             className={modalClass}
         >
             <Form
@@ -489,6 +446,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Họ và tên"
                     name="fullName"
                     rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -496,7 +454,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Số điện thoại"
                     name="phoneNumber"
                     rules={[
-                        { required: true, message: 'Vui lòng nhập số điện thoại' },
+                        // { required: true, message: 'Vui lòng nhập số điện thoại' },
                         // { type: 'string', pattern: new RegExp(/^[0-9]+$/), message: 'Số điện thoại chưa hợp lệ' },
                         {
 
@@ -512,6 +470,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                             },
                         },
                     ]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -519,6 +478,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     label="Địa chỉ"
                     name="addressLine"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -544,7 +504,6 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                     <Input />
                 </Form.Item> */}
                 <Form.Item>
-
                     <AddressForm
                         selectedCity={selectedCity}
                         selectedDistrict={selectedDistrict}
@@ -554,6 +513,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
                 <Form.Item
                     name="isDefault"
                     valuePropName="checked"
+                    style={{ textAlign: 'left' }}
                 >
                     <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
                 </Form.Item>
@@ -568,7 +528,7 @@ const AddAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserA
     );
 };
 
-const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: UserAddress) => void }> = ({ isOpen, onClose, address, onAdd }) => {
+const EditAddressModel: React.FC<UserAddressModalProps> = ({ isOpen, onClose, address }) => {
     const [form] = Form.useForm();
     const [selectedCity, setSelectedCity] = useState<string | undefined>(undefined);
     const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>(undefined);
@@ -609,13 +569,15 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                 }
             });
 
-            message.success('Cập nhật địa chỉ thành công');
+            if (response.data.success) {
+                message.success('Cập nhật địa chỉ thành công');
+                onClose();
+            }
 
             // await fetchData(setUserAddresses); // Reload danh sách địa chỉ sau khi cập nhật thành công
             // window.location.reload(); // Reload trang sau khi cập nhật thành công
-            onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
+            // onAdd(response.data.data); // Cập nhật danh sách địa chỉ với địa chỉ mới
 
-            onClose();
         } catch (error) {
             console.error('Error updating address:', error);
             message.error('Cập nhật địa chỉ thất bại');
@@ -663,6 +625,7 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
             title="Cập nhật địa chỉ"
             visible={isOpen}
             onCancel={onClose}
+            style={{ textAlign: 'center' }}
             footer={[
                 <Button key="back" onClick={onClose}>
                     Hủy
@@ -671,12 +634,14 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                     Lưu thay đổi
                 </Button>,
             ]}
+            width={500}
         >
             <Form form={form} layout="vertical">
                 <Form.Item
                     name="fullName"
                     label="Họ và tên"
                     rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -684,13 +649,13 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                     name="phoneNumber"
                     label="Số điện thoại"
                     rules={[
-                        // { required: true, message: 'Vui lòng nhập số điện thoại hoặc email' },
+                        { required: true, message: 'Vui lòng nhập số điện thoại hoặc email' },
                         // { type: 'string', pattern: new RegExp(/^[0-9]+$/), message: 'Số điện thoại chưa hợp lệ' },
                         {
                             validator: (_, value) => {
-                                if (!value) {
-                                    return Promise.reject('Vui lòng nhập số điện thoại');
-                                }
+                                // if (!value) {
+                                //     return Promise.reject('Vui lòng nhập số điện thoại');
+                                // }
                                 const isPhone = /^0\d{9}$/.test(value) || /^\+84\s?\d{9,10}$/.test(value);
                                 if (!isPhone) {
                                     return Promise.reject('Định dạng số điện thoại không hợp lệ');
@@ -698,13 +663,15 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                                 return Promise.resolve();
                             },
                         },
-                    ]}                >
+                    ]}
+                    style={{ textAlign: 'left' }} >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     name="addressLine"
                     label="Địa chỉ"
                     rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
+                    style={{ textAlign: 'left' }}
                 >
                     <Input />
                 </Form.Item>
@@ -716,7 +683,8 @@ const EditAddressModel: React.FC<UserAddressModalProps & { onAdd: (address: User
                         onDistrictChange={handleDistrictChange}
                     />
                 </Form.Item>
-                <Form.Item name="isDefault" valuePropName="checked">
+                <Form.Item name="isDefault" valuePropName="checked" style={{ textAlign: 'left' }}
+                >
                     <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
                 </Form.Item>
             </Form>

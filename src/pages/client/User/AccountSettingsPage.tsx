@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import SidebarMenu from './SidebarMenu';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Input, message } from 'antd';
 import {
     UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     MailOutlined,
     PhoneOutlined,
     KeyOutlined,
@@ -112,24 +108,6 @@ const getUserProfile = async (): Promise<any> => {
     }
 };
 
-const LogoutButton = () => {
-    const navigate = useNavigate();
-    const handleLogout = () => {
-        navigate('/sign-in');
-        localStorage.removeItem('accessToken'); // Example: Remove token from localStorage
-    };
-
-    return (
-        <button
-            className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-            onClick={handleLogout}
-        >
-            <LogoutOutlined className="mr-2" />
-            <span>Đăng xuất</span>
-        </button>
-    );
-};
-
 const AccountSettingsPage: React.FC = () => {
     // const username = 't****du';
     // const [username, setUsername] = useState('t****du'); // Sử dụng useState để quản lý giá trị username, dòng này có thể bỏ do dùng để test
@@ -138,11 +116,19 @@ const AccountSettingsPage: React.FC = () => {
 
     // const [phoneNumber, setPhoneNumber] = useState('(+**)397****07'); // Sử dụng useState để quản lý giá trị số điện thoại, dòng này có thể bỏ do dùng để test
 
-    const [username, setUsername] = useState(''); 
-    const [email, setEmail] = useState(''); 
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [googleEmail, setGoogleEmail] = useState('');
     const [facebookEmail, setFacebookEmail] = useState('');
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('token');
+        // Redirect to sign-in page
+        navigate('/sign-in');
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -171,63 +157,7 @@ const AccountSettingsPage: React.FC = () => {
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <b>Thiết lập tài khoản</b>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            {/* <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={LogoutButton}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> 
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a> */}
-                            <LogoutButton />
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <nav className="mb-4 flex">
@@ -251,7 +181,7 @@ const AccountSettingsPage: React.FC = () => {
                                     Đã Liên Kết
                                 </button>
                             </div> */}
-                            <LinkedAccount username={username} setUsername={setUsername}/>
+                            <LinkedAccount username={username} setUsername={setUsername} />
 
                             {/* <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
@@ -305,17 +235,17 @@ const AccountSettingsPage: React.FC = () => {
                                     Đổi
                                 </a> */}
                                 {username ? (
-                    <a
-                        href="/change-password"
-                        className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700"
-                    >
-                        Đổi
-                    </a>
-                ) : (
-                    <div className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700  bg-gray-300">
-                        Hãy liên kết với tên người dùng
-                    </div>
-                )}
+                                    <a
+                                        href="/change-password"
+                                        className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700"
+                                    >
+                                        Đổi
+                                    </a>
+                                ) : (
+                                    <div className="rounded bg-gray-300 px-3 py-1 text-sm text-gray-700  bg-gray-300">
+                                        Hãy liên kết với tên người dùng
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <h6 className="mb-4 mt-8 border-t pt-5 text-xl">Tài khoản liên kết</h6>
@@ -339,7 +269,7 @@ const AccountSettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <button className="mt-1 rounded bg-gray-300 px-2 py-1 text-sm text-gray-700">
-                                {facebookEmail ? 'Hủy liên kết' : 'Liên Kết'}
+                                    {facebookEmail ? 'Hủy liên kết' : 'Liên Kết'}
                                 </button>
                             </div>
 
@@ -370,7 +300,7 @@ const AccountSettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <button className="mt-1 rounded bg-gray-300 px-2 py-1 text-sm text-gray-700">
-                                {googleEmail ? 'Hủy liên kết' : 'Liên Kết'}
+                                    {googleEmail ? 'Hủy liên kết' : 'Liên Kết'}
                                 </button>
                             </div>
                         </div>
@@ -433,8 +363,8 @@ const LinkedAccount: React.FC<LinkedAccountProps> = ({ username, setUsername }) 
                 setConfirmPassword(''); // Clear the input field
             } else {
                 // Handle general failure
-        message.error(response.data.message || 'Liên kết tài khoản thất bại.');
-        }
+                message.error(response.data.message || 'Liên kết tài khoản thất bại.');
+            }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 // Handle specific errors based on server response
@@ -626,7 +556,7 @@ export const LinkedEmail: React.FC<LinkedEmailProps> = ({ email, setEmail }) => 
                 userId,
                 newEmail
             };
-            
+
             const response = await axios.post('https://localhost:44329/api/Account/SendVerificationCodeEmail', data, {
                 headers: {
                     'accept': '*/*',
@@ -634,26 +564,26 @@ export const LinkedEmail: React.FC<LinkedEmailProps> = ({ email, setEmail }) => 
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
-    
+
             // Check the success field in the response
-        if (response.data.success) {
-            // If successful, show success message and update state
-            message.success('Mã xác thực đã được gửi đến email của bạn.');
-            setEmailSent(true);
-        } 
-        // else {
-        //     // If not successful, show error message based on the message from API
-        //     message.error(response.data.message);
-        // }
+            if (response.data.success) {
+                // If successful, show success message and update state
+                message.success('Mã xác thực đã được gửi đến email của bạn.');
+                setEmailSent(true);
+            }
+            // else {
+            //     // If not successful, show error message based on the message from API
+            //     message.error(response.data.message);
+            // }
         } catch (error: any) {
             // Handle other errors, e.g., network error
             if (error.response && error.response.status === 400 && error.response.data.message === 'Email is already in use.') {
                 message.error('Email đã được sử dụng. Vui lòng nhập một địa chỉ email khác.');
             } else {
                 message.error('Gửi mã xác thực thất bại.');
-            }        }
+            }
+        }
     };
-    
 
     const verifyNewEmail = async (newEmail: string, code: string) => {
         const accessToken = localStorage.getItem('accessToken');

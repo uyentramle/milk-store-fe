@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { Row, Col, Card, Statistic, List, Avatar, Select, Typography, Image } from 'antd';
 import { AreaChartOutlined, UserOutlined, StarFilled } from '@ant-design/icons';
 import {
@@ -16,8 +16,67 @@ import {
     BarChart,
     Bar,
 } from 'recharts';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
+
+interface Brand {
+    id: number;
+    name: string;
+    brandOrigin: string;
+    description: string;
+    active: boolean;
+    imageUrl: string | null;
+    totalFollow: number;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
+
+interface Type {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
+
+interface AgeRange {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    image: string;
+    sku: string;
+    description: string;
+    price: number;
+    weight: number;
+    discount: number;
+    quantity: number;
+    typeId: number;
+    ageId: number;
+    brandId: number;
+    active: boolean;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+    brand: Brand;
+    type: Type;
+    ageRange: AgeRange;
+}
 
 interface DataPoint {
     name: string;
@@ -161,13 +220,74 @@ const recentFeedbacksData = [
         rating: 5
     },
 ];
+const getPromotionProducts = async (): Promise<Product[]> => {
+    try {
+        const response = await axios.get('https://localhost:44329/api/Product/GetAllProducts');
+        const fetchedProducts = response.data.data.filter((promotionProduct: Product) => promotionProduct.active && promotionProduct.discount > 0);
 
-const DashBoardPage = () => {
+        const promotionProductImagesPromises = fetchedProducts.map(async (promotionProduct: Product) => {
+            const imageResponse = await axios.get(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${promotionProduct.id}`);
+            if (imageResponse.data.success && imageResponse.data.data.length > 0) {
+                promotionProduct.image = imageResponse.data.data[0].image.thumbnailUrl;
+            }
+            return promotionProduct;
+        });
+
+        return Promise.all(promotionProductImagesPromises);
+    } catch (error) {
+        console.error('Lỗi tìm nạp sản phẩm:', error);
+        throw error;
+    }
+};
+
+const DashBoardPage: React.FC = () => {
     const [selectedMonth, setSelectedMonth] = useState<string>('June');
+    const [promotionProducts, setPromotionProducts] = useState<Product[]>([]);
+
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
 
     const handleMonthChange = (value: string) => {
         setSelectedMonth(value);
     };
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
+        getPromotionProducts()
+            .then((promotionProducts) => {
+                setPromotionProducts(promotionProducts);
+            })
+            .catch((error) => {
+                console.error('Lỗi tìm nạp sản phẩm khuyến mãi:', error);
+            });
+    }, []);
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     return (
         <>
@@ -335,6 +455,69 @@ const DashBoardPage = () => {
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
+                    </Card>
+                </Col>
+            </Row>
+
+            <Row gutter={[16, 16]} className="mb-6">
+                <Col span={24}>
+                    <Card
+                        title="Sản phẩm khuyến mãi"
+                    >
+                        <List.Item>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    width: '100%',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <div style={{ flex: '1 1 30px' }}>
+                                    <Text strong># </Text>
+                                </div>
+                                <div style={{ flex: '1 1 350px' }}>
+                                    <Text strong>Tên sản phẩm</Text>
+                                </div>
+                                <div style={{ flex: '1 1 150px' }}>
+                                    <Text strong>Giá</Text>
+                                </div>
+                                <div style={{ flex: '1 1 150px' }}>
+                                    <Text strong>Giảm giá</Text>
+                                </div>
+                                <div style={{ flex: '1 1 150px' }}>
+                                    <Text strong>Thương hiệu</Text>
+                                </div>
+                            </div>
+                        </List.Item>
+                        <List
+                            itemLayout="vertical"
+                            dataSource={promotionProducts}
+                            renderItem={(item) => (
+                                <List.Item>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            width: '100%',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <div style={{ flex: '0 1 30px' }}>
+                                            <img src={item.image} alt={item.name} style={{ width: '100%' }} />
+                                        </div>
+                                        <div style={{ flex: '1 1 350px', paddingLeft: '10px' }}>
+                                            <Text strong>{item.name}</Text>
+                                        </div>
+                                        <div style={{ flex: '1 1 150px' }}>
+                                            {item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                        </div>
+                                        <div style={{ flex: '1 1 150px' }}>{item.discount}%</div>
+                                        <div style={{ flex: '1 1 150px' }}>
+                                            <Text>{item.brand.name}</Text>
+                                        </div>
+                                    </div>
+                                </List.Item>
+                            )}
+                        />
                     </Card>
                 </Col>
             </Row>

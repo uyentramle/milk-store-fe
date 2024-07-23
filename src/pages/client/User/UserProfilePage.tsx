@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosError } from 'axios';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import { Form, Input, Button } from 'antd';
 import { jwtDecode } from 'jwt-decode';
 import {
-    UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
     CameraOutlined,
-    UploadOutlined
+    UploadOutlined,
 } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, Modal, Spin, Avatar } from 'antd';
+import SidebarMenu from './SidebarMenu';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../../services/Firebase/firebase';
 
 // const fakeUserData = {
 //     id: "1234567890",
@@ -26,6 +23,19 @@ import { message } from 'antd';
 //     avatar: "",
 //     background: ""
 // };
+
+// Định nghĩa interface cho dữ liệu người dùng
+interface UserProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    avatar: string;
+    background: string;
+}
 
 // Hàm để gọi API và trả về thông tin người dùng đã được lọc
 const getUserProfile = async (): Promise<any> => {
@@ -98,6 +108,13 @@ const UserProfilePage: React.FC = () => {
     const [avatar, setAvatar] = useState<string | null>(null); // For storing the avatar URL
     // const [userData, setUserData] = useState(fakeUserData);
     const [userData, setUserData] = useState<any>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const userId = userData?.id;
+    const [tempUserData, setTempUserData] = useState<Partial<UserProfile>>({});
+    const [isEditing, setIsEditing] = useState(false);
+    const inputRef = useRef<{ [key: string]: HTMLInputElement | null }>({});
+    const [loading, setLoading] = useState(true); // Trạng thái tải trang
+
     const navigate = useNavigate();
 
     const navigateToSignInPage = () => {
@@ -111,7 +128,8 @@ const UserProfilePage: React.FC = () => {
         navigateToSignInPage();
     };
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (userId: string) => {
+        setCurrentUserId(userId);
         setIsModalOpen(true);
     };
 
@@ -119,27 +137,52 @@ const UserProfilePage: React.FC = () => {
         setIsModalOpen(false);
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setTempUserData({
+            ...tempUserData,
+            [name]: value
+        });
+        // setUserData({
+        //     ...userData,
+        //     [name]: value
+        // });
+    };
+
+    const fetchData = async () => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            navigateToSignInPage(); return;
+        }
+
+        try {
+            const userProfileData = await getUserProfile();
+            setUserData(userProfileData);
+            setAvatar(userProfileData.avatar);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            navigateToSignInPage(); // Redirect to sign-in page on error
+        } finally {
+            setLoading(false); // Set loading to false after data fetching
+        }
+    };
 
     // Sử dụng useEffect để gọi hàm getUserProfile khi component được render
     useEffect(() => {
-        const fetchData = async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) {
-                navigateToSignInPage(); return;
-            }
+        // fetchData();
 
-            try {
-                const userProfileData = await getUserProfile();
-                setUserData(userProfileData);
-                setAvatar(userProfileData.avatar);
-            } catch (error) {
-                console.error('Error fetching user profile:', error);
-                // Xử lý lỗi khi cần thiết
-            }
-        };
+        // const intervalId = setTimeout(() => {
+        //     if (!isEditing) {
+        //         fetchData();
+        //     }
+        // }, 2000);
 
-        fetchData();
-    }, []);
+        // return () => clearTimeout(intervalId);  
+
+        const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 1 giây
+
+        return () => clearInterval(interval);
+    }, [isEditing]);
 
     // // Giả lập gọi API để lấy dữ liệu người dùng
     // useEffect(() => {
@@ -172,10 +215,13 @@ const UserProfilePage: React.FC = () => {
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { id, firstName, lastName, gender } = userData;
+        // const { id, firstName, lastName, gender } = userData;
+
+        const { id, gender } = userData;
 
         try {
-            const success = await updateProfile(id, firstName, lastName, gender);
+            // const success = await updateProfile(id, firstName, lastName, gender);
+            const success = await updateProfile(id, tempUserData.firstName ?? userData.firstName, tempUserData.lastName ?? userData.lastName, tempUserData.gender ?? gender);
 
             if (success) {
                 // Optional: Perform any actions needed after successful update
@@ -186,6 +232,7 @@ const UserProfilePage: React.FC = () => {
                         const userProfileData = await getUserProfile();
                         setUserData(userProfileData);
                         setAvatar(userProfileData.avatar);
+                        setIsEditing(false);
                         console.log('User profile data refreshed');
                     } catch (error) {
                         console.error('Error refreshing user profile:', error);
@@ -217,76 +264,25 @@ const UserProfilePage: React.FC = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
     if (!userData) {
         navigateToSignInPage();
-        return (
-            <div className="container mx-auto w-4/5 p-4 pt-10">
-                <div className="flex flex-col gap-10 lg:flex-row">
-                    <div>Loading...</div>
-                </div>
-            </div>); // Placeholder for loading state
+        return null;
     }
 
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <b>Thông tin tài khoản</b>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <span>Lịch sử đơn hàng</span>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href=""
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                                onClick={handleLogout}
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4 flex flex-col gap-12 sm:flex-row">
@@ -298,13 +294,13 @@ const UserProfilePage: React.FC = () => {
                                     {avatar || userData.avatar ? (
                                         <img src={avatar ?? userData.avatar} alt="Avatar" className="h-40 w-40 rounded-full object-cover" />
                                     ) : (
-                                        <span className="text-xl text-gray-400">140x140</span>
+                                        <div className="text-xl text-gray-400 bg-gray-200 h-40 w-40 rounded-full flex justify-center items-center">140x140</div>
                                     )}
                                 </div>
                                 <div className="mt-4 flex flex-col items-center justify-center">
                                     <button
                                         className="rounded bg-pink-500 px-3 py-1.5 text-white transition-colors duration-300 hover:bg-pink-600"
-                                        onClick={handleOpenModal}
+                                        onClick={() => handleOpenModal(userId)}
                                     >
                                         {/* <i className="fa fa-fw fa-camera mr-2"></i> */}
                                         <CameraOutlined className="mr-2" />
@@ -334,8 +330,13 @@ const UserProfilePage: React.FC = () => {
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
                                                     name="lastName"
-                                                    value={userData.lastName}
-                                                    onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                                                    // value={userData.lastName}
+                                                    // onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
+                                                    ref={el => inputRef.current['lastName'] = el}
+                                                    value={tempUserData.lastName || userData.lastName || ''}
+                                                    onChange={handleInputChange}
+                                                    onFocus={() => setIsEditing(true)}
+                                                    onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-[150px]">
@@ -344,8 +345,13 @@ const UserProfilePage: React.FC = () => {
                                                     className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                     type="text"
                                                     name="firstName"
-                                                    value={userData.firstName}
-                                                    onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
+                                                    // value={userData.firstName}
+                                                    // onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
+                                                    ref={el => inputRef.current['firstName'] = el}
+                                                    value={tempUserData.firstName || userData.firstName || ''}
+                                                    onChange={handleInputChange}
+                                                    onFocus={() => setIsEditing(true)}
+                                                    onBlur={() => setIsEditing(false)}
                                                 />
                                             </div>
                                             <div className="flex items-end justify-end mt-4 mb-2 sm:mt-0">
@@ -362,8 +368,12 @@ const UserProfilePage: React.FC = () => {
                                             <select
                                                 className="mt-1 block w-full rounded border border-gray-300 px-2 py-1.5 focus:border-pink-500 focus:outline-none"
                                                 name="gender"
-                                                value={userData.gender}
-                                                onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                                // value={userData.gender}
+                                                // onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                                                value={tempUserData.gender ?? userData.gender ?? ''}
+                                                onChange={handleInputChange}
+                                                onFocus={() => setIsEditing(true)}
+                                                onBlur={() => setIsEditing(false)}
                                             >
                                                 <option value="Male">Nam</option>
                                                 <option value="Female">Nữ</option>
@@ -413,17 +423,26 @@ const UserProfilePage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} />
+            <AvatarModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveAvatar} userId={currentUserId} />
         </div>
     );
 };
 
 export default UserProfilePage;
 
-const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void }> = ({ isOpen, onClose, onSave }) => {
+const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (file: File) => void, userId: string | null }> = ({ isOpen, onClose, onSave, userId: userIdd }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [modalClass, setModalClass] = useState('');
+
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        throw new Error('Access token not found.');
+    }
+
+    const decodedToken: any = jwtDecode(accessToken);
+    const userId = decodedToken.userId;
 
     useEffect(() => {
         // Add or remove transition class based on modal state
@@ -450,6 +469,26 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
     }, [onClose]);
 
 
+    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         setSelectedFile(file);
+
+    //         const reader = new FileReader();
+    //         reader.onload = () => {
+    //             setPreview(reader.result as string);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
+
+    // const handleSave = () => {
+    //     if (selectedFile) {
+    //         onSave(selectedFile);
+    //         onClose();
+    //     }
+    // };
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -463,10 +502,60 @@ const AvatarModal: React.FC<{ isOpen: boolean, onClose: () => void, onSave: (fil
         }
     };
 
-    const handleSave = () => {
+    const handleUpload = async (file: File) => {
+        const storageRef = ref(storage, `avatars/${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        return new Promise<string>((resolve, reject) => {
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Handle progress if needed
+                },
+                (error) => {
+                    console.error('Upload failed:', error);
+                    reject(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
+    };
+
+    const handleSave = async () => {
         if (selectedFile) {
-            onSave(selectedFile);
-            onClose();
+            try {
+                const url = await handleUpload(selectedFile);
+                console.log('Uploaded file URL:', url);
+
+                // Gọi API để cập nhật URL ảnh đại diện của người dùng
+                const response = await axios.put('https://localhost:44329/api/Account/UpdateUserAvatar', {
+                    userId: userIdd,
+                    avatarUrl: url
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': '*/*',
+                        'authorization': `Bearer ${accessToken}` // xem trong api yêu cầu gì thì copy vào
+                    }
+                });
+
+                if (response.data.success) {
+                    console.log('Avatar updated successfully');
+                    message.success('Cập nhật ảnh đại diện thành công.');
+
+                    onClose();
+                } else {
+                    console.error('Failed to update avatar:', response.data.message);
+                    message.error('Cập nhật ảnh đại diện thất bại.');
+                }
+
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
         }
     };
 

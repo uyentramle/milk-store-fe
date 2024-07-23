@@ -3,6 +3,7 @@ import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant
 import { Button, Input, Table, Select, Spin, Modal, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+// import { jwtDecode } from 'jwt-decode';
 
 const { Option } = Select;
 
@@ -17,7 +18,7 @@ interface Voucher {
     usage_limit: number;
     used_count: number;
     minimum_order_value: number;
-    status: "Active" | "Expired" | "Used";
+    status: "Active" | "Expired" | "Used" | "Disabled";
 }
 
 const VoucherManagementPage: React.FC = () => {
@@ -26,15 +27,41 @@ const VoucherManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Expired' | 'Used' | 'All'>('All');
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
+    // const accessToken = localStorage.getItem('accessToken');
+    // const decodedToken: { userId: string } = jwtDecode(accessToken as string);
+    
     const navigate = useNavigate();
 
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
+
     useEffect(() => {
+        // if (!isAuthorized) return;
+
         const fetchVouchers = async () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get('https://localhost:7251/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
+                const response = await axios.get('https://localhost:44329/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
                     headers: {
                         'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
                     }
@@ -42,8 +69,25 @@ const VoucherManagementPage: React.FC = () => {
                 const fetchedVouchers = response.data.data.items;
                 setVouchers(fetchedVouchers);
             } catch (error) {
-                console.error('Lỗi tìm nạp vouchers:', error);
-                setError('Không thể lấy vouchers.');
+                console.error('Lỗi tìm nạp vouchers từ port 44329:', error);
+                try {
+                    const fallbackResponse = await axios.get('https://localhost:7251/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
+                        headers: {
+                            'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
+                        }
+                    });
+                    const fetchedVouchers = fallbackResponse.data.data.items;
+                    setVouchers(fetchedVouchers);
+                } catch (fallbackError) {
+                    console.error('Lỗi tìm nạp vouchers từ port 7251:', fallbackError);
+                    setError('Không thể lấy vouchers từ cả hai ports.');
+                }
+                // } catch (error) {
+                //     console.error('Lỗi tìm nạp vouchers:', error);
+                //     setError('Không thể lấy vouchers.');
+                // } finally {
+                //     setLoading(false);
+                // }
             } finally {
                 setLoading(false);
             }
@@ -60,7 +104,7 @@ const VoucherManagementPage: React.FC = () => {
             cancelText: 'Không',
             onOk: async () => {
                 try {
-                    await axios.delete(`https://localhost:7251/api/Voucher/DeleteVoucher?id=${id}`, {
+                    await axios.delete(`https://localhost:44329/api/Voucher/DeleteVoucher?id=${id}`, {
                         headers: {
                             'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
                         }
@@ -68,15 +112,28 @@ const VoucherManagementPage: React.FC = () => {
                     setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
                     message.success('Voucher đã xóa thành công.');
                 } catch (error) {
-                    console.error('Lỗi xóa voucher:', error);
-                    message.error('Không thể xóa voucher.');
+                    console.error('Lỗi xóa voucher từ port 44329:', error);
+                    try {
+                        await axios.delete(`https://localhost:7251/api/Voucher/DeleteVoucher?id=${id}`, {
+                            headers: {
+                                'Authorization': 'Bearer 916ddd3c-8263-4bab-a7b2-5b50c7fd9458' // Replace by token from local storage
+                            }
+                        });
+                        setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
+                        message.success('Voucher đã xóa thành công.');
+                    } catch (fallbackError) {
+                        console.error('Lỗi xóa voucher từ port 7251:', fallbackError);
+                        message.error('Không thể xóa voucher từ cả hai ports.');
+                    }
                 }
             },
         });
     };
 
     const handleEdit = (id: number) => {
-        navigate(`/admin/vouchers/update/${id}`);
+        // navigate(`/admin/vouchers/update/voucherId=${id}`);
+        navigate(`#`);
+
     };
 
     const filteredVouchers = vouchers.filter((v) => {
@@ -87,6 +144,14 @@ const VoucherManagementPage: React.FC = () => {
             filterStatus === 'All' || filterStatus === v.status;
         return matchesSearch && matchesStatus;
     });
+
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
 
     const columns = [
         {
@@ -144,7 +209,7 @@ const VoucherManagementPage: React.FC = () => {
     ];
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-8">
             <h1 className="mb-6 text-3xl font-bold">Quản lý vouchers</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">

@@ -2,12 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPen, faTrash, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { EditOutlined, DeleteOutlined, RestOutlined } from '@ant-design/icons';
+import { Button, Modal } from 'antd';
 import { Link } from 'react-router-dom';
+import Pagination from 'antd/es/pagination';
+import axios from 'axios';
+import { message } from 'antd';
+import { jwtDecode } from 'jwt-decode';
 
 library.add(faEye, faPen, faTrash, faSearch, faPlus);
 
-interface Product {
+interface Brand {
     id: number;
+    name: string;
+    brandOrigin: string;
+    description: string;
+    active: boolean;
+    imageUrl: string | null;
+    totalFollow: number;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
+
+interface Type {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
+
+interface AgeRange {
+    id: number;
+    name: string;
+    description: string;
+    active: boolean;
+}
+
+interface Product {
+    id: string;
     name: string;
     image: string;
     sku: string;
@@ -16,82 +53,209 @@ interface Product {
     weight: number;
     discount: number;
     quantity: number;
-    type: string;
-    brand: string;
-    age: string;
+    typeId: number;
+    ageId: number;
+    brandId: number;
+    active: boolean;
     createdAt: string;
     createdBy: string;
-    updatedAt: string;
-    updatedBy: string;
-    status: 'Active' | 'Inactive';
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+    brand: Brand;
+    type: Type;
+    ageRange: AgeRange;
 }
 
 const ManageProductPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
+    const [filterStatus, setFilterStatus] = useState<boolean | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(5);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+    const [isStatusModalVisible, setIsStatusModalVisible] = useState(false);
+    const [statusProduct, setStatusProduct] = useState<Product | null>(null);
+    
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
 
     useEffect(() => {
-        const fetchedProducts: Product[] = [
-            {
-                id: 1,
-                name: 'Organic Whole Milk',
-                image: 'https://oasisonline.com.au/cdn/shop/products/DSC_8544_786x.jpg?v=1613482476',
-                sku: 'ORG-WHL-MLK',
-                description: 'Fresh organic whole milk from local farms.',
-                price: 3.99,
-                weight: 1,
-                discount: 0.2,
-                quantity: 100,
-                type: 'Whole Milk',
-                brand: 'Dairy Delight',
-                age: '2-5 years',
-                createdAt: '2023-04-01T10:00:00Z',
-                createdBy: 'John Doe',
-                updatedAt: '2023-04-05T14:30:00Z',
-                updatedBy: 'Jane Smith',
-                status: 'Active',
-            },
-            {
-                id: 2,
-                name: 'Low-Fat Milk',
-                image: 'https://www.danoneawayfromhome.com/wp-content/uploads/2018/03/ho-up-milk-6-64oz-whole-organic-ca.png',
-                sku: 'LF-MLK',
-                description: 'Low-fat milk with reduced fat content.',
-                price: 2.99,
-                weight: 1,
-                discount: 0.1,
-                quantity: 75,
-                type: 'Low-Fat Milk',
-                brand: 'Dairy Delight',
-                age: '6-12 years',
-                createdAt: '2023-03-15T08:30:00Z',
-                createdBy: 'Jane Smith',
-                updatedAt: '2023-04-10T16:45:00Z',
-                updatedBy: 'John Doe',
-                status: 'Inactive',
-            },
-        ];
-        setProducts(fetchedProducts);
+        // if (!isAuthorized) return;
+
+        fetch('https://localhost:44329/api/Product/GetAllProducts')
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    const fetchedProducts = data.data.filter((product: Product) => !product.isDeleted);
+                    const productImagesPromises = fetchedProducts.map((product: Product) =>
+                        fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
+                            .then((response) => response.json())
+                            .then((imageData) => {
+                                if (imageData.success && imageData.data.length > 0) {
+                                    product.image = imageData.data[0].image.thumbnailUrl;
+                                }
+                                return product;
+                            })
+                    );
+
+                    Promise.all(productImagesPromises).then((updatedProducts) => {
+                        setProducts(updatedProducts);
+                    });
+                } else {
+                    console.error('Failed to fetch products:', data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching products:', error);
+            });
     }, []);
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handleDeleteClick = (productId: string) => {
+        setSelectedProductId(productId);
+        setIsModalVisible(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedProductId) {
+
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                throw new Error('Access token not found.');
+            }
+            const decodedToken: any = jwtDecode(accessToken);
+            const DeletedBy = decodedToken.id;
+
+            const deleteData = new FormData();
+            deleteData.append('Id', selectedProductId);
+            deleteData.append('DeletedBy', DeletedBy);
+
+            const response = await axios.post(`https://localhost:44329/api/Product/DeleteProduct`, deleteData, {
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            })
+            if (response.data.success) {
+                message.success('Xóa sản phẩm thành công');
+                // Sau khi xóa, đóng popup và xóa sản phẩm khỏi state
+                setProducts(products.filter(product => product.id !== selectedProductId));
+                setIsModalVisible(false);
+                setSelectedProductId(null);
+            } else {
+                message.error('Xóa sản phẩm thất bại');
+            }
+
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setIsModalVisible(false);
+        setSelectedProductId(null);
+    };
+
     const filteredProducts = products.filter((product) => {
-        const matchesSearch = `${product.name} ${product.sku} ${product.description}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === 'All' || product.status === filterStatus;
-        return matchesSearch && matchesStatus;
+        const searchTermLower = searchTerm.toLowerCase();
+        return (
+            (filterStatus === null || product.active === filterStatus) &&
+            (product.name.toLowerCase().includes(searchTermLower) ||
+                product.description.toLowerCase().includes(searchTermLower))
+        );
     });
 
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+    const handleStatusClick = (product: Product) => {
+        setStatusProduct(product);
+        setIsStatusModalVisible(true);
+    };
+
+    const handleConfirmStatusChange = async () => {
+        if (statusProduct) {
+            const updatedStatus = !statusProduct.active;
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                throw new Error('Access token not found.');
+            }
+            const decodedToken: any = jwtDecode(accessToken);
+            const UpdatedBy = decodedToken.id;
+
+            const updateData = new FormData();
+            updateData.append('Id', statusProduct.id);
+            updateData.append('UpdatedBy', UpdatedBy);
+
+            const response = await axios.post(`https://localhost:44329/api/Product/UpdateStatusProduct`, updateData, {
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
+
+            if (response.data.success) {
+                message.success('Cập nhật trạng thái thành công');
+                setProducts(products.map(product =>
+                    product.id === statusProduct.id ? { ...product, active: updatedStatus } : product
+                ));
+                setIsStatusModalVisible(false);
+                setStatusProduct(null);
+            } else {
+                message.error('Cập nhật trạng thái thất bại');
+            }
+        }
+    };
+
+    const handleCancelStatusChange = () => {
+        setIsStatusModalVisible(false);
+        setStatusProduct(null);
+    };
+
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
+
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="mb-6 text-3xl font-bold">Manage Milk Products</h1>
+        <div className="container mx-auto px-4 pb-8">
+            <h1 className="mb-6 text-3xl font-bold">Quản lý sản phẩm</h1>
             <div className="mb-4 flex justify-between">
                 <div className="flex">
                     <div className="relative mr-4">
                         <input
                             type="text"
-                            placeholder="Search products..."
+                            placeholder="Tìm kiếm sản phẩm..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -101,30 +265,42 @@ const ManageProductPage: React.FC = () => {
                             className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400"
                         />
                     </div>
-
                     <div>
                         <select
                             id="status-filter"
-                            value={filterStatus}
+                            value={filterStatus === null ? 'All' : String(filterStatus)}
                             onChange={(e) =>
-                                setFilterStatus(e.target.value as 'Active' | 'Inactive' | 'All')
+                                setFilterStatus(
+                                    e.target.value === 'true'
+                                        ? true
+                                        : e.target.value === 'false'
+                                            ? false
+                                            : null,
+                                )
                             }
                             className="rounded-md border border-gray-300 px-4 py-2"
                         >
-                            <option value="All">All</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value="All">Tất cả</option>
+                            <option value="true">Đang bán</option>
+                            <option value="false">Ngừng bán</option>
                         </select>
                     </div>
                 </div>
 
-                <div>
+                <div className="flex space-x-4">
                     <Link
                         to="/admin/products/create"
                         className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
                     >
                         <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                        New
+                        Thêm mới
+                    </Link>
+                    <Link
+                        to="/admin/products/restore"
+                        className="inline-flex items-center rounded bg-pink-500 px-4 py-2 text-white hover:bg-pink-700 hover:text-white"
+                    >
+                        <RestOutlined className="mr-2" />
+                        Khôi phục
                     </Link>
                 </div>
             </div>
@@ -133,68 +309,103 @@ const ManageProductPage: React.FC = () => {
                 <table className="w-full table-auto">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="px-4 py-2">No.</th>
-                            <th className="px-4 py-2">Name</th>
-                            <th className="px-4 py-2">Image</th>
+                            <th className="px-4 py-2">STT.</th>
+                            <th className="px-4 py-2">Tên sản phẩm</th>
+                            <th className="px-4 py-2">Ảnh bìa</th>
                             <th className="px-4 py-2">SKU</th>
-                            <th className="px-4 py-2">Description</th>
-                            <th className="px-4 py-2">Price</th>
-                            <th className="px-4 py-2">Weight</th>
-                            <th className="px-4 py-2">Discount</th>
-                            <th className="px-4 py-2">Quantity</th>
-                            <th className="px-4 py-2">Type</th>
-                            <th className="px-4 py-2">Brand</th>
-                            <th className="px-4 py-2">Age</th>
-                            <th className="px-4 py-2">Created Date</th>
-                            <th className="px-4 py-2">Created By</th>
-                            <th className="px-4 py-2">Updated Date</th>
-                            <th className="px-4 py-2">Updated By</th>
-                            <th className="px-4 py-2">Status</th>
-                            <th className="px-4 py-2">Update</th>
-                            <th className="px-4 py-2">Delete</th>
+                            <th className="px-4 py-2">Giá gốc</th>
+                            <th className="px-4 py-2">Giảm giá</th>
+                            <th className="px-4 py-2">Số lượng</th>
+                            <th className="px-4 py-2">Phân loại</th>
+                            <th className="px-4 py-2">Thương hiệu</th>
+                            <th className="px-4 py-2">Độ tuổi</th>
+                            <th className="px-4 py-2">Trạng thái</th>
+                            <th className="px-4 py-2">Cập nhật</th>
+                            <th className="px-4 py-2">Xóa</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredProducts.map((product, index) => (
-                            <tr key={product.id}>
-                                <td>{index + 1}</td>
-                                <td>{product.name}</td>
-                                <td>
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        className="h-16 w-16 object-cover"
-                                    />
-                                </td>
-                                <td>{product.sku}</td>
-                                <td>{product.description}</td>
-                                <td>${product.price.toFixed(2)}</td>
-                                <td>{product.weight} L</td>
-                                <td>{(product.discount * 100).toFixed(0)}%</td>
-                                <td>{product.quantity}</td>
-                                <td>{product.type}</td>
-                                <td>{product.brand}</td>
-                                <td>{product.age}</td>
-                                <td>{new Date(product.createdAt).toLocaleDateString()}</td>
-                                <td>{product.createdBy}</td>
-                                <td>{new Date(product.updatedAt).toLocaleDateString()}</td>
-                                <td>{product.updatedBy}</td>
-                                <td>{product.status}</td>
-                                <td className="px-4 py-2">
-                                    <button className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
-                                        <FontAwesomeIcon icon={faPen} />
-                                    </button>
-                                </td>
-                                <td className="px-4 py-2">
-                                    <button className="rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700">
-                                        <FontAwesomeIcon icon={faTrash} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {currentProducts.map((product, index) => {
+                            const rowNumber = (currentPage - 1) * productsPerPage + index + 1;
+                            return (
+                                <tr key={product.id} className="border-b bg-white">
+                                    <td className="px-4 py-2 font-bold">{rowNumber}</td>
+                                    <Link to={`/admin/products/details/${product.id}/manage`}>
+                                        <td className="mx-auto px-4 py-2 font-bold">
+                                            {product.name}
+                                        </td>
+                                    </Link>
+                                    <td>
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            className="h-16 w-16 object-cover"
+                                        />
+                                    </td>
+                                    <td>{product.sku}</td>
+                                    <td>
+                                        {new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND',
+                                        }).format(product.price)}
+                                    </td>
+                                    <td>{product.discount ? `${product.discount}%` : 'Không có'}
+                                    </td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.type.name}</td>
+                                    <td>{product.brand.name}</td>
+                                    <td>{product.ageRange.name}</td>
+                                    <td className={`${product.active ? 'text-green-500' : 'text-red-500'} font-bold cursor-pointer`} onClick={() => handleStatusClick(product)}>
+                                        {product.active ? 'Đang bán' : 'Ngừng bán'}
+                                    </td>
+                                    <td className="px-4 py-2">
+                                        <Link to={`/admin/products/update/${product.id}/manage`}>
+                                            <Button type="primary" icon={<EditOutlined />}>
+                                            </Button>
+                                        </Link>
+                                    </td>
+                                    <td className="px-4 py-2">
+                                        <Button
+                                            type="primary"
+                                            icon={<DeleteOutlined />}
+                                            danger
+                                            onClick={() => handleDeleteClick(product.id)}
+                                        />
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
+            <Pagination
+                current={currentPage}
+                pageSize={productsPerPage}
+                total={filteredProducts.length}
+                onChange={handlePageChange}
+            />
+            <Modal
+                title="Xác nhận xóa"
+                visible={isModalVisible}
+                onOk={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                okText="Xóa"
+                cancelText="Hủy"
+                centered
+            >
+                <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+            </Modal>
+            <Modal
+                title="Xác nhận thay đổi trạng thái"
+                visible={isStatusModalVisible}
+                onOk={handleConfirmStatusChange}
+                onCancel={handleCancelStatusChange}
+                okText="Cập nhật"
+                cancelText="Hủy"
+                centered
+            >
+                <p>Bạn có chắc chắn muốn thay đổi trạng thái của sản phẩm này không?</p>
+            </Modal>
         </div>
     );
 };

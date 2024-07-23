@@ -14,16 +14,20 @@ import ShoppingCart from '../pages/client/Cart/Cart';
 import BrandPage from '../pages/client/Brand/BrandPage';
 import BrandDetailPage from '../pages/client/Brand/BrandDetailPage';
 import ContactPage from '../pages/client/Contact/ContactPage';
-
+import PromotionPage from '../pages/client/Promotion/PromotionPage';
+import ProductListPage from '../pages/client/Product/ProductListPage';
 
 import DashBoardPage from '../pages/admin/DashBoard/DashBoardPage';
-import ManageAccountPage from '../pages/admin/ManageAccount/ManageAccountPage';
+import AccountManagementPage from '../pages/admin/AccountManagement/AccountManagementPage';
+import OrderManagementPage from '../pages/admin/OrderManagement/OrderManagementPage';
 import CreateAccountPage from '../pages/admin/ManageAccount/CreateAccountPage';
 import ManageProductPage from '../pages/admin/ManageProduct/ManageProductPage';
 import CreateProductPage from '../pages/admin/ManageProduct/CreateProductPage';
 import ManageOrderPage from '../pages/admin/ManageOrder/ManageOrderPage';
+import ProductDetailPage from '../pages/admin/ManageProduct/ProductDetailsPage';
 import BrandManagementPage from '../pages/admin/BrandManagement/BrandManagementPage';
 import CreateBrandPage from '../pages/admin/BrandManagement/CreateBrandPage';
+import UpdateBrandPage from '../pages/admin/BrandManagement/UpdateBrandPage';
 import VoucherManagementPage from '../pages/admin/VoucherManagement/VoucherManagementPage';
 import CreateVoucherPage from '../pages/admin/VoucherManagement/CreateVoucherPage';
 import UpdateVoucherPage from '../pages/admin/VoucherManagement/UpdateVoucherPage';
@@ -39,9 +43,19 @@ import ChangePasswordPage from '../pages/client/User/ChangePasswordPage';
 import OrderHistoryPage from '../pages/client/User/OrderHistoryPage';
 import UserAddressPage from '../pages/client/User/UserAddressPage';
 import AccountSettingsPage from '../pages/client/User/AccountSettingsPage';
+import PointHistoryTransaction from '../pages/client/User/PointHistoryTransaction';
 
 import { DefaultLayoutProps } from '../types/layout.type';
-
+import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
+import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
+import UpdateProductTypePage from '../pages/admin/ProductTypeManagement/UpdateProductTypePage';
+import RestoreProductTypePage from '../pages/admin/ProductTypeManagement/RestoreProductTypePage';
+import ConfirmTransaction from '../pages/client/Cart/ConfirmOrder';
+import AgeRangeManagementPage from '../pages/admin/ManageAgeRange/ManageAgeRangePage';
+import CreateAgeRangePage from '../pages/admin/ManageAgeRange/CreateAgeRangePage';
+import UpdateAgeRangePage from '../pages/admin/ManageAgeRange/UpdateAgeRangePage';
+import RestoreAgeRangePage from '../pages/admin/ManageAgeRange/RestoreAgeRangePage';
+import RestoreProductPage from '../pages/admin/ManageProduct/RestoreProductPage';
 interface RouteProps {
     path: string;
     component: React.FC<any>;
@@ -56,18 +70,24 @@ const publicRoutes: RouteProps[] = [
     { path: '/blog', component: BlogPage, layout: DefaultClientLayout },
 
     { path: '/cart', component: ShoppingCart, layout: DefaultClientLayout },
-    { path: '/blog-detail', component: BlogPageDetail, layout: DefaultClientLayout },
-    { path: '/product-detail', component: ProductDetail, layout: DefaultClientLayout },
+    { path: '/blog-detail/:blogId', component: BlogPageDetail, layout: DefaultClientLayout }, // Updated route
+    { path: '/product-detail/:productId', component: ProductDetail, layout: DefaultClientLayout }, // Updated route
 
     { path: '/brand', component: BrandPage, layout: DefaultClientLayout },
     { path: '/brand-name/:brandId', component: BrandDetailPage, layout: DefaultClientLayout },
     { path: '/contact', component: ContactPage, layout: DefaultClientLayout },
+    { path: '/promotion', component: PromotionPage, layout: DefaultClientLayout },
+    { path: '/product-list/type/:typeId', component: ProductListPage, layout: DefaultClientLayout },
 
     { path: '/user-profile', component: UserProfilePage, layout: DefaultClientLayout },
     { path: '/change-password', component: ChangePasswordPage, layout: DefaultClientLayout },
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
+    { path: '/confirm-transaction/:orderCode', component: ConfirmTransaction, layout: DefaultClientLayout },
+
+
+    { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
 
 ];
 
@@ -75,22 +95,34 @@ const privateRoutes: RouteProps[] = [];
 
 const adminRoutes: RouteProps[] = [
     { path: '/admin/', component: DashBoardPage, layout: DefaultAdminLayout },
-    { path: '/admin/accounts', component: ManageAccountPage, layout: DefaultAdminLayout },
+    { path: '/admin/manage-users', component: AccountManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/manage-orders', component: OrderManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/accounts/create', component: CreateAccountPage, layout: DefaultAdminLayout },
     { path: '/admin/products', component: ManageProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/details/:id/:page', component: ProductDetailPage, layout: DefaultAdminLayout },
     { path: '/admin/products/create', component: CreateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/update/:productId/:page', component: UpdateProductPage, layout: DefaultAdminLayout },
+    { path: '/admin/products/restore', component: RestoreProductPage, layout: DefaultAdminLayout },
     { path: '/admin/orders', component: ManageOrderPage, layout: DefaultAdminLayout },
     { path: '/admin/brands', component: BrandManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/brands/create', component: CreateBrandPage, layout: DefaultAdminLayout },
+    { path: '/admin/brands/update/:brandId', component: UpdateBrandPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers', component: VoucherManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/vouchers/create', component: CreateVoucherPage, layout: DefaultAdminLayout },
-    { path: '/admin/vouchers/update/:id', component: UpdateVoucherPage, layout: DefaultAdminLayout },
+    { path: '/admin/vouchers/update/:voucherId', component: UpdateVoucherPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs', component: BlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/blogs/create', component: CreateBlogPage, layout: DefaultAdminLayout },
+    { path: '/admin/blogs/edit/:blogId', component: UpdateBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/categories', component: CategoryBlogManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/categories/create', component: CreateCategoryBlogPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types', component: ProductTypeManagementPage, layout: DefaultAdminLayout },
     { path: '/admin/product-types/create', component: CreateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/update/:id/:page', component: UpdateProductTypePage, layout: DefaultAdminLayout },
+    { path: '/admin/product-types/restore', component: RestoreProductTypePage, layout: DefaultAdminLayout},
+    { path: '/admin/age-ranges', component: AgeRangeManagementPage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/create', component: CreateAgeRangePage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/update/:id/:page', component: UpdateAgeRangePage, layout: DefaultAdminLayout },
+    { path: '/admin/age-ranges/restore', component: RestoreAgeRangePage, layout: DefaultAdminLayout },
 ];
 
 export { publicRoutes, privateRoutes, adminRoutes };
