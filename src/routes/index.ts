@@ -50,12 +50,12 @@ import UpdateBlogPage from '../pages/admin/BlogManagement/UpdateBlogPage';
 import UpdateProductPage from '../pages/admin/ManageProduct/UpdateProductPage';
 import UpdateProductTypePage from '../pages/admin/ProductTypeManagement/UpdateProductTypePage';
 import RestoreProductTypePage from '../pages/admin/ProductTypeManagement/RestoreProductTypePage';
+import ConfirmTransaction from '../pages/client/Cart/ConfirmOrder';
 import AgeRangeManagementPage from '../pages/admin/ManageAgeRange/ManageAgeRangePage';
 import CreateAgeRangePage from '../pages/admin/ManageAgeRange/CreateAgeRangePage';
 import UpdateAgeRangePage from '../pages/admin/ManageAgeRange/UpdateAgeRangePage';
 import RestoreAgeRangePage from '../pages/admin/ManageAgeRange/RestoreAgeRangePage';
 import RestoreProductPage from '../pages/admin/ManageProduct/RestoreProductPage';
-
 interface RouteProps {
     path: string;
     component: React.FC<any>;
@@ -84,6 +84,7 @@ const publicRoutes: RouteProps[] = [
     { path: '/order-history', component: OrderHistoryPage, layout: DefaultClientLayout },
     { path: '/user-address', component: UserAddressPage, layout: DefaultClientLayout },
     { path: '/account-settings', component: AccountSettingsPage, layout: DefaultClientLayout },
+    { path: '/confirm-transaction/:orderCode', component: ConfirmTransaction, layout: DefaultClientLayout },
 
 
     { path: '/point-history-transaction', component: PointHistoryTransaction, layout: DefaultClientLayout },
