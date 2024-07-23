@@ -137,17 +137,17 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
         const accountId = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
 
         const [cartResponse, pointsResponse, addressesResponse, vouchersResponse] = await Promise.all([
-          axios.get('https://localhost:7251/api/Cart/GetCartByAccountID/get-by-account-id', {
+          axios.get('https://localhost:44329/api/Cart/GetCartByAccountID/get-by-account-id', {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
-          axios.get(`https://localhost:7251/api/Point/GetTotalPointsByAccountId?accountId=${accountId}`, {
+          axios.get(`https://localhost:44329/api/Point/GetTotalPointsByAccountId?accountId=${accountId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
-          axios.get(`https://localhost:7251/api/Address/GetAddressByUserId?userId=${accountId}&pageIndex=0&pageSize=10`, {
+          axios.get(`https://localhost:44329/api/Address/GetAddressByUserId?userId=${accountId}&pageIndex=0&pageSize=10`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
           
-        axios.get('https://localhost:7251/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
+        axios.get('https://localhost:44329/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         ]);
@@ -190,7 +190,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
   }, []);
   const fetchAddresses = async (token: string, userId: string) => {
     try {
-      const response = await axios.get(`https://localhost:7251/api/Address/GetAddressByUserId?userId=${userId}&pageIndex=0&pageSize=10`, {
+      const response = await axios.get(`https://localhost:44329/api/Address/GetAddressByUserId?userId=${userId}&pageIndex=0&pageSize=10`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.data.success) {
@@ -208,7 +208,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
     const productDetails: { [key: string]: Product } = {};
     for (const item of items) {
       try {
-        const response = await axios.get(`https://localhost:7251/api/Product/GetProductById?id=${item.productId}`, {
+        const response = await axios.get(`https://localhost:44329/api/Product/GetProductById?id=${item.productId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -287,7 +287,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
       };
 
       const response = await axios.post(
-        'https://localhost:7251/api/orders/add-to-cart',
+        'https://localhost:44329/api/orders/add-to-cart',
         checkoutData,
         {
           headers: {
