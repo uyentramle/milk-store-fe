@@ -51,7 +51,7 @@ const CartItem: React.FC<CartItemProps> = ({
 
     try {
       const response = await axios.put(
-        `https://localhost:7251/api/Cart/UpdateCartByID/update-cart/${id}`,
+        `https://localhost:44329/api/Cart/UpdateCartByID/update-cart/${id}`,
         { 
           productId: productId,
           quanity: newQuantity 
