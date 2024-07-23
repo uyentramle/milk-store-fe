@@ -21,30 +21,31 @@ const CategoryBlogManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
     const [editingCategory, setEditingCategory] = useState<CategoryBlog | null>(null);
     const [form] = Form.useForm();
+    
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            return;
-        }
-
-        try {
-            const decodedToken: any = jwtDecode(accessToken);
-            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
-                setIsAuthorized(true);
-            }
-        } catch (error) {
-            console.error('Error decoding token:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!isAuthorized) return;
+        // if (!isAuthorized) return;
 
         const fetchCategoryBlogs = async () => {
             try {
@@ -143,13 +144,13 @@ const CategoryBlogManagementPage: React.FC = () => {
         });
     };
 
-    if (!isAuthorized) {
-        return (
-            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
-                Bạn không có quyền để truy cập nội dung này.
-            </div>
-        );
-    }
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
 
     const columns = [
         {

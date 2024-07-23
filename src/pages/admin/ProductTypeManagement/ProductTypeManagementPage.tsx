@@ -22,36 +22,37 @@ const ProductTypeManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [currentProductType, setCurrentProductType] = useState<ProductType | null>(null);
+    
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            return;
-        }
-
-        try {
-            const decodedToken: any = jwtDecode(accessToken);
-            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
-                setIsAuthorized(true);
-            }
-        } catch (error) {
-            console.error('Error decoding token:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!isAuthorized) return;
+        // if (!isAuthorized) return;
 
         fetch('https://localhost:44329/api/ProductType/GetAllProductType')
             .then(response => response.json())
             .then(data => setProductTypes(data.data
                 .filter((productType: ProductType) => !productType.isDeleted)
-                .sort((a, b) => b.id - a.id)));
+                .sort((a: { id: number; }, b: { id: number; }) => b.id - a.id)));
     }, []);
 
     const filteredBlogs = productTypes.filter((p) => {
@@ -63,13 +64,13 @@ const ProductTypeManagementPage: React.FC = () => {
         return matchesSearch && matchesStatus;
     });
 
-    if (!isAuthorized) {
-        return (
-            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
-                Bạn không có quyền để truy cập nội dung này.
-            </div>
-        );
-    }
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
 
     const columns = [
         {
@@ -139,7 +140,7 @@ const ProductTypeManagementPage: React.FC = () => {
                 const DeletedBy = decodedToken.id;
 
                 const data = new FormData();
-                data.append('Id', currentProductType.id);
+                data.append('Id', currentProductType.id.toString());
                 data.append('DeletedBy', DeletedBy);
                 const response = await axios.post('https://localhost:44329/api/ProductType/DeleteProductType', data, {
                     headers: {

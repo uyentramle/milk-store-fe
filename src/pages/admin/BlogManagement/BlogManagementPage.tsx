@@ -14,6 +14,7 @@ interface Blog {
     description: string;
     thumbnail: string;
     status: boolean;
+    isDelete: boolean;
 }
 
 const BlogManagementPage: React.FC = () => {
@@ -22,33 +23,35 @@ const BlogManagementPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState<'Active' | 'Inactive' | 'All'>('All');
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
-    const accessToken = localStorage.getItem('accessToken');
-    const decodedToken = jwtDecode(accessToken);
-    const userId = decodedToken.userId;
+    // const accessToken = localStorage.getItem('accessToken');
+    // const decodedToken: { userId: string } = jwtDecode(accessToken as string);
+    // const userId = decodedToken.userId;
+    const userId = '916ddd3c-8263-4bab-a7b2-5b50c7fd9458';
 
-    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+    // const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //     const accessToken = localStorage.getItem('accessToken');
+
+    //     if (!accessToken) {
+    //         return;
+    //     }
+
+    //     try {
+    //         const decodedToken: any = jwtDecode(accessToken);
+    //         const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    //         if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+    //             userRoles.includes('admin') || userRoles.includes('staff')) {
+    //             setIsAuthorized(true);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error decoding token:', error);
+    //     }
+    // }, []);
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('accessToken');
-
-        if (!accessToken) {
-            return;
-        }
-
-        try {
-            const decodedToken: any = jwtDecode(accessToken);
-            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
-            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
-                setIsAuthorized(true);
-            }
-        } catch (error) {
-            console.error('Error decoding token:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!isAuthorized) return;
+        // if (!isAuthorized) return;
 
         const fetchBlogs = async () => {
             try {
@@ -110,13 +113,13 @@ const BlogManagementPage: React.FC = () => {
         return matchesSearch && matchesStatus;
     });
 
-    if (!isAuthorized) {
-        return (
-            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
-                Bạn không có quyền để truy cập nội dung này.
-            </div>
-        );
-    }
+    // if (!isAuthorized) {
+    //     return (
+    //         <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+    //             Bạn không có quyền để truy cập nội dung này.
+    //         </div>
+    //     );
+    // }
 
     const columns = [
         {
