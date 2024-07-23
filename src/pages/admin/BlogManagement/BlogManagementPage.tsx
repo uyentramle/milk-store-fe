@@ -23,10 +23,33 @@ const BlogManagementPage: React.FC = () => {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [blogToDelete, setBlogToDelete] = useState<Blog | null>(null);
     const accessToken = localStorage.getItem('accessToken');
-  const decodedToken = jwtDecode(accessToken);
-  const userId = decodedToken.userId;
+    const decodedToken = jwtDecode(accessToken);
+    const userId = decodedToken.userId;
+
+    const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
     useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            return;
+        }
+
+        try {
+            const decodedToken: any = jwtDecode(accessToken);
+            const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+                setIsAuthorized(true);
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isAuthorized) return;
+
         const fetchBlogs = async () => {
             try {
                 const response = await axios.get('https://localhost:44329/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
@@ -52,14 +75,14 @@ const BlogManagementPage: React.FC = () => {
     const handleDeleteBlog = async () => {
         try {
             if (!blogToDelete) return; // Ensure blogToDelete is defined
-    
+
             setDeleteModalVisible(false);
-    
+
             // Replace with your logic to get userId from accessToken
             const deleteBy = 1; // Example: Replace with actual userId from accessToken
-    
+
             const response = await axios.put(`https://localhost:44329/api/Blog/DeleteBlog?id=${blogToDelete.id}&deleteBy=${userId}`);
-    
+
             if (response.data.success) {
                 message.success('Deleted blog successfully');
                 const updatedBlogs = blogs.filter((blog) => blog.id !== blogToDelete.id);
@@ -86,6 +109,14 @@ const BlogManagementPage: React.FC = () => {
             filterStatus === 'All' || (filterStatus === 'Active' && b.status) || (filterStatus === 'Inactive' && !b.status);
         return matchesSearch && matchesStatus;
     });
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex justify-center items-center mt-16 text-lg font-semibold">
+                Bạn không có quyền để truy cập nội dung này.
+            </div>
+        );
+    }
 
     const columns = [
         {

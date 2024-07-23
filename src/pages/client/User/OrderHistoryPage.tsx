@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { Dropdown, Menu } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-
-import {
-    UserOutlined,
-    SettingOutlined,
-    EnvironmentOutlined,
-    FileTextOutlined,
-    RetweetOutlined,
-    LogoutOutlined,
-    DollarOutlined,
-} from '@ant-design/icons';
+import SidebarMenu from './SidebarMenu';
+import { useNavigate } from 'react-router-dom';
+import { Spin } from 'antd';
 
 // const fakeOrderData = [
 //     {
@@ -93,7 +84,6 @@ const fetchOrders = async (pageIndex: number, pageSize: number): Promise<ApiResp
     }
 
     try {
-
         const decodedToken: any = jwtDecode(accessToken);
         const userId = decodedToken.userId;
 
@@ -141,7 +131,20 @@ const OrderHistoryPage: React.FC = () => {
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [totalItemsCount, setTotalItemsCount] = useState(0);
+    const [loading, setLoading] = useState(true); // Added loading state
 
+    const navigate = useNavigate();
+
+    const navigateToSignInPage = () => {
+        navigate('/sign-in');
+    };
+
+    const handleLogout = () => {
+        // Clear local items
+        localStorage.removeItem('accessToken');
+        // Redirect to sign-in page
+        navigateToSignInPage();
+    };
     // const accessToken = localStorage.getItem('accessToken');
 
     // if (!accessToken) {
@@ -184,12 +187,13 @@ const OrderHistoryPage: React.FC = () => {
             if (response?.success) {
                 setOrders(response.data.items);
                 setTotalItemsCount(response.data.totalItemsCount);
+                setLoading(false); // Set loading to false after data fetching
             }
         };
         // fetchData();
         const interval = setInterval(fetchData, 1000); // Cập nhật mỗi 0 giây
 
-      return () => clearInterval(interval);
+        return () => clearInterval(interval);
     }, [pageIndex, pageSize]);
 
     const openModal = (orderId: string) => {
@@ -202,72 +206,20 @@ const OrderHistoryPage: React.FC = () => {
         setSelectedOrderId('');
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" />
+                <span className="ml-4">Đang tải dữ liệu...</span>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto w-4/5 p-4 pt-10">
             <div className="flex flex-col gap-10 lg:flex-row">
                 {' '}
-                {/* Thêm lớp gap-4 */}
-                <div className="mb-4 w-full lg:mb-0 lg:w-1/4">
-                    <div className="rounded bg-white p-4 shadow">
-                        <nav className="space-y-2">
-                            <a
-                                href="/user-profile"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-user mr-2"></i> */}
-                                <UserOutlined className="mr-2" />
-                                <span>Thông tin tài khoản</span>
-                            </a>
-                            <a
-                                href="/account-settings"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <SettingOutlined className="mr-2" />
-                                <span>Thiết lập tài khoản</span>
-                            </a>
-                            <a
-                                href="/user-address"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-location-dot mr-2"></i> */}
-                                <EnvironmentOutlined className="mr-2" />
-                                <span>Quản lí địa chỉ</span>
-                            </a>
-                            <a
-                                href="/order-history"
-                                className="flex items-center rounded bg-pink-500 p-2 text-white"
-                            >
-                                {/* <i className="fa-solid fa-file-lines mr-2"></i> */}
-                                <FileTextOutlined className="mr-2" />
-                                <b>Lịch sử đơn hàng</b>
-                            </a>
-                            <a
-                                href="/change-password"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-retweet fa-sm mr-2"></i> */}
-                                <RetweetOutlined className="mr-2" />
-                                <span>Đổi mật khẩu</span>
-                            </a>
-                            <a
-                                href="/point-history-transaction"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                <DollarOutlined className="mr-2" />
-                                <span>Lịch sử điểm thưởng</span>
-                            </a>
-                            <a
-                                href="#"
-                                className="flex items-center rounded p-2 text-gray-700 hover:bg-pink-400 hover:text-white"
-                            >
-                                {/* <i className="fa-solid fa-arrow-right-from-bracket mr-2"></i> */}
-                                <LogoutOutlined className="mr-2" />
-                                <span>Đăng xuất</span>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
+                <SidebarMenu onLogout={handleLogout} />
                 <div className="w-full lg:flex-1">
                     <div className="rounded bg-white p-4 shadow">
                         <div className="mb-4">
@@ -295,13 +247,20 @@ const OrderHistoryPage: React.FC = () => {
                                                     <td className="py-2 text-center">{order.orderId}</td>
                                                     {/* <td className="py-2 text-center">{order.orderDate}</td> */}
                                                     <td className="py-2 text-center">
-    {new Date(order.orderDate).toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })}
-</td>
-                                                    <td className="py-2 text-center">{order.totalAmount.toLocaleString()} ₫</td>
+                                                        {new Date(order.orderDate).toLocaleDateString('vi-VN', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </td>
+                                                    {/* <td className="py-2 text-center">{order.totalAmount.toLocaleString()} ₫</td> */}
+                                                    <td className="py-2 text-center">
+                                                        {new Intl.NumberFormat('vi-VN', {
+                                                            style: 'currency',
+                                                            currency: 'VND'
+                                                        }).format(order.totalAmount)}
+                                                    </td>
+
                                                     <td className="py-2 text-center">
                                                         <span className={`rounded-full px-3 py-1 text-xs ${getStatusColor(order.status)}`}>
                                                             {getStatusVietnamese(order.status)}
@@ -326,7 +285,7 @@ const OrderHistoryPage: React.FC = () => {
                 </div>
             </div>
             {/* Đặt OrderModal tại đây */}
-            <OrderDetailModal isOpen={isModalOpen} onClose={closeModal} orderId={selectedOrderId}/>
+            <OrderDetailModal isOpen={isModalOpen} onClose={closeModal} orderId={selectedOrderId} />
         </div>
     );
 };
@@ -354,7 +313,7 @@ const getStatusColor = (status: string) => {
         default:
             return 'bg-gray-300 text-gray-800'; // Default color
     }
-  };
+};
 
 const getStatusVietnamese = (status: string) => {
     switch (status) {
@@ -379,7 +338,7 @@ const getStatusVietnamese = (status: string) => {
         default:
             return status;
     }
-  };
+};
 
 // Helper function to determine status color
 // const getStatusColor = (status: string | undefined) => {
@@ -423,19 +382,19 @@ interface OrderDetail {
         vnpayQR: string;
         momo: string;
         paypal: string;
-        subtotal: string;
-        discount: string;
+        subtotal: number;
+        discount: number;
         shippingFee: string;
         coupon: string;
         points: string;
-        total: string;
+        total: number;
     };
     products: Array<{
         id: string;
         name: string;
         quantity: number;
-        unitPrice: string;
-        totalPrice: string;
+        unitPrice: number;
+        totalPrice: number;
         image: string;
     }>;
 }
@@ -647,9 +606,8 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ${
-                isOpen ? '' : 'hidden'
-            }`}
+            className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ${isOpen ? '' : 'hidden'
+                }`}
         >
             {/* max-w-[60rem] */}
             <div className={`w-full max-w-screen-lg rounded bg-white p-4 shadow-lg ${modalClass}`}>
@@ -669,9 +627,17 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                         <span className="font-normal">{orderDetail?.orderId}</span>
                                     </p>
                                     <p className="font-bold">
-                                        Ngày đặt hàng:{' '}
-                                        <span className="font-normal">{orderDetail?.orderDate}</span>
+                                        Ngày đặt hàng: <span className="font-normal">
+                                            {orderDetail?.orderDate
+                                                ? new Date(orderDetail.orderDate).toLocaleDateString('vi-VN', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })
+                                                : 'Ngày không xác định'}
+                                        </span>
                                     </p>
+
                                 </div>
                                 <p className="font-bold">
                                     Trạng thái:{' '}
@@ -749,7 +715,7 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                             </thead>
 
                                             <tbody className="text-gray-700">
-                                            {orderDetail?.products?.map((product) => (
+                                                {orderDetail?.products?.map((product) => (
                                                     <tr key={product.id}>
                                                         <td className="px-4 py-2">
                                                             <img
@@ -760,12 +726,25 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                                         </td>
                                                         <td className="px-4 py-2 text-center">{product.name}</td>
                                                         <td className="px-4 py-2 text-center">{product.quantity}</td>
-                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                        {/* <td className="whitespace-nowrap px-4 py-2 text-center">
                                                             {product.unitPrice}
                                                         </td>
                                                         <td className="whitespace-nowrap px-4 py-2 text-center">
                                                             {product.totalPrice}
+                                                        </td> */}
+                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            }).format(product.unitPrice)}
                                                         </td>
+                                                        <td className="whitespace-nowrap px-4 py-2 text-center">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND'
+                                                            }).format(product.totalPrice)}
+                                                        </td>
+
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -798,15 +777,17 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                 <h6 className="mb-4 font-semibold text-primary">THANH TOÁN</h6>
                                 <p className="mb-2 flex justify-between">
                                     Tạm tính:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.subtotal} ₫</span>
+                                    {/* <span className="font-semibold">{orderDetail?.payment?.subtotal}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.subtotal.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Khuyến mãi:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.discount} ₫</span>
+                                    {/* <span className="font-semibold">{orderDetail?.payment?.discount}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Phí vận chuyển:{' '}
-                                    <span className="font-semibold">{orderDetail?.payment?.shippingFee} ₫</span>
+                                    <span className="font-semibold">{orderDetail?.payment?.shippingFee}</span>
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Mã giảm giá:{' '}
@@ -818,36 +799,37 @@ const OrderDetailModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId 
                                 </p>
                                 <p className="mb-2 flex justify-between">
                                     Cần thanh toán:{' '}
-                                    <span className="font-semibold text-red-500">{orderDetail?.payment?.total} ₫</span>
+                                    {/* <span className="font-semibold text-red-500">{orderDetail?.payment?.total}</span> */}
+                                    <span className="font-semibold">{orderDetail?.payment?.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
                                 </p>
                             </div>
                             <div className="modal-footer flex justify-end gap-2">
-                            {orderDetail?.status === 'DeliverySuccessful' && (
-        <button
-            type="button"
-            className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-            onClick={handleMarkAsReceived}
-        >
-            Đã nhận được hàng
-        </button>
-    )}
-    {orderDetail?.status === 'Received' && (
-        <button
-            type="button"
-            className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-            onClick={handleMarkAsCompleted}
-        >
-            Hoàn thành
-        </button>
-    )}
+                                {orderDetail?.status === 'DeliverySuccessful' && (
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                        onClick={handleMarkAsReceived}
+                                    >
+                                        Đã nhận được hàng
+                                    </button>
+                                )}
+                                {orderDetail?.status === 'Received' && (
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                        onClick={handleMarkAsCompleted}
+                                    >
+                                        Hoàn thành
+                                    </button>
+                                )}
                                 {canReturnOrder() && (
-                            <button
-                                type="button"
-                                className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
-                            >
-                                Hoàn trả
-                            </button>
-                        )}
+                                    <button
+                                        type="button"
+                                        className="rounded border border-pink-500 px-2 py-1 text-sm text-pink-500 transition-colors duration-300 hover:bg-pink-600 hover:text-white"
+                                    >
+                                        Hoàn trả
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     className="rounded bg-pink-500 px-2 py-1 text-sm text-white transition-colors duration-300 hover:bg-pink-600"

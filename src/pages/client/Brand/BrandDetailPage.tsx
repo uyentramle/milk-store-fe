@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Pagination, Card, Badge, Rate, Spin, Empty, } from 'antd';
 import { EyeTwoTone, CheckOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 // import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
@@ -19,6 +19,21 @@ interface Product {
     ageId: number;
     brandId: number;
     active: boolean;
+    createdAt: string;
+    createdBy: string;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    isDeleted: boolean;
+}
+
+interface Blog {
+    id: number;
+    title: string;
+    description: string;
+    blogImg: string;
+    status: boolean;
     createdAt: string;
     createdBy: string;
     updatedAt: string | null;
@@ -93,6 +108,7 @@ const BrandDetailPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(10);
     const [sortType, setSortType] = useState<string>('default');
+    const [recentBlog, setBlogs] = useState<Blog[]>([]);
 
     // const accountId = "4e03d7e3-c366-4266-858c-625c3da51bb3"; // thay the khi co authen
     // const [isFollowing, setIsFollowing] = useState<boolean>(false);
@@ -122,6 +138,24 @@ const BrandDetailPage: React.FC = () => {
 
         fetchData();
     }, [brandId]);
+
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await axios.get('https://localhost:44329/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
+                if (response.data.success) {
+                    const filteredBlogs = response.data.data.items.filter((blog: Blog) => blog.status);
+                    setBlogs(filteredBlogs);
+                } else {
+                    console.error('Failed to fetch blogs:', response.data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+            }
+        };
+
+        fetchBlogs();
+    }, []);
 
     useEffect(() => {
         let sortedProducts = [...productData];
@@ -182,9 +216,9 @@ const BrandDetailPage: React.FC = () => {
         );
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedProducts = productData.slice(startIndex, endIndex);
+    // const startIndex = (currentPage - 1) * pageSize;
+    // const endIndex = startIndex + pageSize;
+    // const paginatedProducts = productData.slice(startIndex, endIndex);
 
     return (
         <div className="min-h-screen flex flex-wrap w-full">
@@ -234,12 +268,22 @@ const BrandDetailPage: React.FC = () => {
                 </div>
 
                 <div className="flex space-x-4 mt-2">
-                    <div className="w-1/4 bg-white shadow rounded-lg p-4">
-                        <img src="https://cdn1.concung.com/img/news/2021/1053-1633086650-cover.webp" alt="Info 1" className="h-45 w-full object-cover rounded-lg" />
-                        <p className="mt-2">5 lý do mẹ nên tin chọn sữa Vinamilk Organic Gold cho bé yêu</p>
-                        <p className="text-xs text-gray-500 mt-2"><EyeTwoTone twoToneColor="#9b9b9b" /> 4.4k</p>
-                    </div>
-                    <div className="w-1/4 bg-white shadow rounded-lg p-4">
+                    {recentBlog.map((blog) => (
+                        <div
+                            key={blog.id}
+                            className="w-1/4 bg-white shadow rounded-lg p-4"
+                        >
+                            <Link to={`/blog-detail/${blog.id}`} className="block hover:opacity-75">
+                                <img
+                                    src={blog.blogImg}
+                                    alt={blog.title} className="h-45 w-full object-cover rounded-lg"
+                                />
+                                <p className="mt-2">{blog.title}</p>
+                                <p className="text-xs text-gray-500 mt-2"><EyeTwoTone twoToneColor="#9b9b9b" /> 20k</p>
+                            </Link>
+                        </div>
+                    ))}
+                    {/* <div className="w-1/4 bg-white shadow rounded-lg p-4">
                         <img src="https://cdn1.concung.com/img/news/2023/2430-1692244686-cover.webp" alt="Info 2" className="h-45 w-full object-cover rounded-lg" />
                         <p className="mt-2">Back to school: Bé đi học mẫu giáo, ba mẹ cần chuẩn bị đồ dùng gì?</p>
                         <p className="text-xs text-gray-500 mt-2"><EyeTwoTone twoToneColor="#9b9b9b" /> 2.7k</p>
@@ -253,7 +297,7 @@ const BrandDetailPage: React.FC = () => {
                         <img src="https://cdn1.concung.com/img/news/2023/2563-1699929403-cover.webp" alt="Info 4" className="h-45 w-full object-cover rounded-lg" />
                         <p className="mt-2">Top 5 sữa cho trẻ biếng ăn, suy dinh dưỡng được ưa chuộng</p>
                         <p className="text-xs text-pink-500 mt-2"><EyeTwoTone twoToneColor="#eb2f96" /> 14k</p>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="p-6">
@@ -275,19 +319,21 @@ const BrandDetailPage: React.FC = () => {
                     <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
                         {productData.length > 0 ? (
                             productData.map((product) => (
-                                <Card className="w-full">
-                                    <div className="flex justify-center">
-                                        <img src={product.image} alt={product.name} className="h-40 object-cover rounded-md mb-4" />
-                                    </div>
-                                    <h3 className="text-lg font-medium">{product.name}</h3>
-                                    <Rate disabled defaultValue={5} />
-                                    <div className="flex items-center justify-between my-2">
-                                        <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
-                                        <Badge.Ribbon text={`-${product.discount}%`} color="red">
-                                        </Badge.Ribbon>
-                                    </div>
-                                    <p className="text-gray-500">Đã bán 99</p>
-                                    <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                <Card className="w-full" key={product.id}>
+                                    <Link to={`/product-detail/${product.id}`} className="block hover:opacity-75">
+                                        <div className="flex justify-center">
+                                            <img src={product.image} alt={product.name} className="h-40 object-cover rounded-md mb-4" />
+                                        </div>
+                                        <h3 className="text-lg font-medium">{product.name}</h3>
+                                        <Rate disabled defaultValue={5} />
+                                        <div className="flex items-center justify-between my-2">
+                                            <span className="text-xl font-semibold">{product.price.toLocaleString()}₫</span>
+                                            <Badge.Ribbon text={`-${product.discount}%`} color="red">
+                                            </Badge.Ribbon>
+                                        </div>
+                                        <p className="text-gray-500">Đã bán 99</p>
+                                        <Button className="mt-2 w-full" type="primary" icon={<ShoppingCartOutlined />}>Thêm vào giỏ</Button>
+                                    </Link>
                                 </Card>
                             ))
                         ) : (

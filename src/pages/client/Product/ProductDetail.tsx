@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Typography, Row, Col, Card, Button, Rate } from 'antd';
+import { Input, Typography, Row, Col, Card, Button, Rate, message } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import './ProductDetail.css';
 import Banner from '../../../layouts/client/Components/Banner/Banner';
 import Sidebar from '../../../layouts/client/Components/Sidebar/Sidebar';
+import axios from 'axios';
 
 const { Title, Paragraph } = Typography;
 
@@ -170,6 +171,37 @@ const ProductDetail = () => {
         console.error('Error fetching related products:', error);
       });
   }, [productId]);
+  const addToCart = async (productId: string) => {
+    const token = localStorage.getItem('accessToken'); // Get the token from localStorage
+    if (!token) {
+        message.error('You need to be logged in to add items to cart');
+        return;
+    }
+
+    try {
+        const response = await axios.post(
+            'https://localhost:44329/api/Cart/AddProductToCart/add-to-cart',
+            {
+                productId: productId,
+                quanity: 1 // You can modify this if you want to allow adding multiple quantities
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+
+        if (response.data.success) {
+            message.success('Product added to cart successfully');
+        } else {
+            message.error('Failed to add product to cart');
+        }
+    } catch (error) {
+        console.error('Error adding product to cart:', error);
+        message.error('An error occurred while adding the product to cart');
+    }
+};
   const handleProductClick = (id: string) => {
     navigate(`/product-detail/${id}`); // Navigate to the ProductDetail page with the clicked product ID
   };
@@ -187,8 +219,8 @@ const ProductDetail = () => {
 
 
   return (
-    <div>
-      <Banner />
+    <div style={{ marginTop: '40px' }}>
+      {/* <Banner /> */}
       <Row gutter={16}>
         <Col span={6}>
           <Sidebar />
@@ -239,9 +271,17 @@ const ProductDetail = () => {
                       style={{ width: '100px' }}
                     />
                     <div style={{ display: 'flex' }}>
-                      <Button style={{ marginTop: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
-                        Thêm vào giỏ hàng
-                      </Button>
+                      <Button 
+  style={{ marginTop: '10px' }} 
+  type="primary" 
+  icon={<ShoppingCartOutlined />}
+  onClick={(e) => {
+    e.preventDefault(); // Prevent navigation
+    addToCart(product.id); // Assuming product.id is available
+  }}
+>
+  Thêm vào giỏ hàng
+</Button>
                       <Button style={{ marginTop: '10px', marginLeft: '10px' }} type="primary" icon={<ShoppingCartOutlined />}>
                         Mua ngay
                       </Button>
@@ -282,31 +322,33 @@ const ProductDetail = () => {
                       <Slider {...settings}>
                         {relatedProducts.map((relatedProduct) => (
                           <div key={relatedProduct.id} className="product-slide">
-                            <Card
-                              hoverable
-                              cover={
-                                <img
-                                  alt={relatedProduct.name}
-                                  src={relatedProduct.image}
-                                  style={{
-                                    width: '150px',
-                                    height: '150px',
-                                    objectFit: 'cover', // Ensure the image covers the container while maintaining aspect ratio
-                                    margin: '0 auto',
-                                    display: 'block',
-                                  }}
+                            <Link to={`/product-detail/${relatedProduct.id}`} className="block hover:opacity-75">
+                              <Card
+                                hoverable
+                                cover={
+                                  <img
+                                    alt={relatedProduct.name}
+                                    src={relatedProduct.image}
+                                    style={{
+                                      width: '150px',
+                                      height: '150px',
+                                      objectFit: 'cover', // Ensure the image covers the container while maintaining aspect ratio
+                                      margin: '0 auto',
+                                      display: 'block',
+                                    }}
+                                  />
+                                } actions={[
+                                  <a href="#" onClick={() => handleProductClick(relatedProduct.id)}>
+                                    <ShoppingCartOutlined className="hover:text-pink-500" style={{ fontSize: '25px' }} />
+                                  </a>,
+                                ]}
+                              >
+                                <Card.Meta
+                                  title={<a href="#" className="hover:text-pink-500" onClick={() => handleProductClick(relatedProduct.id)}>{relatedProduct.name}</a>}
+                                  description={<span className="text-sm text-pink-500">{relatedProduct.price} VND</span>}
                                 />
-                              } actions={[
-                                <a href="#" onClick={() => handleProductClick(relatedProduct.id)}>
-                                  <ShoppingCartOutlined className="hover:text-pink-500" style={{ fontSize: '25px' }} />
-                                </a>,
-                              ]}
-                            >
-                              <Card.Meta
-                                title={<a href="#" className="hover:text-pink-500" onClick={() => handleProductClick(relatedProduct.id)}>{relatedProduct.name}</a>}
-                                description={<span className="text-sm text-pink-500">{relatedProduct.price} VND</span>}
-                              />
-                            </Card>
+                              </Card>
+                            </Link>
                           </div>
                         ))}
                       </Slider>
