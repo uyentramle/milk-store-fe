@@ -90,7 +90,7 @@ const HomePage: React.FC = () => {
                 if (data.success) {
                     const fetchedProducts = data.data.filter((product: Product) => !product.isDeleted);
                     const productImagesPromises = fetchedProducts.map((product: Product) =>
-                        fetch(`https://localhost:7251/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
+                        fetch(`https://localhost:44329/api/ProductImage/GetProductImagesById?productImageId=${product.id}`)
                             .then((response) => response.json())
                             .then((imageData) => {
                                 if (imageData.success && imageData.data.length > 0) {
@@ -115,7 +115,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axios.get('https://localhost:7251/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
+                const response = await axios.get('https://localhost:44329/api/Blog/GetAllBlogs?pageIndex=0&pageSize=10');
                 if (response.data.success) {
                     const filteredBlogs = response.data.data.items.filter((blog: Blog) => blog.status);
                     setBlogs(filteredBlogs);
@@ -138,7 +138,7 @@ const HomePage: React.FC = () => {
 
         try {
             const response = await axios.post(
-                'https://localhost:7251/api/Cart/AddProductToCart/add-to-cart',
+                'https://localhost:44329/api/Cart/AddProductToCart/add-to-cart',
                 {
                     productId: productId,
                     quanity: 1 // You can modify this if you want to allow adding multiple quantities
