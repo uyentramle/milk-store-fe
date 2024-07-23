@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
     const [recentBlog, setBlogs] = useState<Blog[]>([]);
 
     useEffect(() => {
-        fetch('https://localhost:7251/api/Product/GetAllProducts')
+        fetch('https://localhost:44329/api/Product/GetAllProducts')
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
