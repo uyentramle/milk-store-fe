@@ -366,7 +366,8 @@ const OrderManagementPage: React.FC = () => {
             const decodedToken: any = jwtDecode(accessToken);
             const userRoles = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
-            if (userRoles.includes('Admin') || userRoles.includes('Staff')) {
+            if (userRoles.includes('Admin') || userRoles.includes('Staff') ||
+                (userRoles.includes('admin') || userRoles.includes('staff'))) {
                 setIsAuthorized(true);
             }
         } catch (error) {

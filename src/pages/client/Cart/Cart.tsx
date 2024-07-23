@@ -30,15 +30,15 @@ interface Product {
   discount: number;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ 
-  id, 
-  productId, 
-  imgSrc, 
-  title, 
-  price, 
-  quantity, 
-  discountPrice, 
-  discountText, 
+const CartItem: React.FC<CartItemProps> = ({
+  id,
+  productId,
+  imgSrc,
+  title,
+  price,
+  quantity,
+  discountPrice,
+  discountText,
   onQuantityChange,
   onRemoveItem
 }) => {
@@ -52,9 +52,9 @@ const CartItem: React.FC<CartItemProps> = ({
     try {
       const response = await axios.put(
         `https://localhost:44329/api/Cart/UpdateCartByID/update-cart/${id}`,
-        { 
+        {
           productId: productId,
-          quanity: newQuantity 
+          quanity: newQuantity
         },
         {
           headers: {
@@ -91,14 +91,14 @@ const CartItem: React.FC<CartItemProps> = ({
           {discountPrice && <span className="line-through text-gray-500">{discountPrice}₫</span>} {price}₫
         </p>
         <div className="flex items-center mt-2">
-          <button 
-            className="bg-gray-300 text-gray-600 px-2 py-1 rounded-md" 
+          <button
+            className="bg-gray-300 text-gray-600 px-2 py-1 rounded-md"
             onClick={() => updateQuantity(quantity - 1)}
           >
             -
           </button>
           <input type="text" value={quantity} className="w-12 text-center mx-2 border rounded-md" readOnly />
-          <button 
+          <button
             className="bg-gray-300 text-gray-600 px-2 py-1 rounded-md"
             onClick={() => updateQuantity(quantity + 1)}
           >
@@ -120,7 +120,7 @@ const ShoppingCart: React.FC = () => {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [vouchers, setVouchers] = useState<any[]>([]);
-const [selectedVoucher, setSelectedVoucher] = useState<string>('');
+  const [selectedVoucher, setSelectedVoucher] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -146,10 +146,10 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
           axios.get(`https://localhost:44329/api/Address/GetAddressByUserId?userId=${accountId}&pageIndex=0&pageSize=10`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
-          
-        axios.get('https://localhost:44329/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+
+          axios.get('https://localhost:44329/api/Voucher/GetVouchers?pageIndex=0&pageSize=10', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
         ]);
 
         if (cartResponse.data.success) {
@@ -265,7 +265,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
     try {
       const pointsUsed = usePoints ? totalPoints.totalPoints - remainingPoints : 0;
       const selectedAddressObj = addresses.find(addr => addr.addressId.toString() === selectedAddress);
-      const shippingAddress = selectedAddressObj 
+      const shippingAddress = selectedAddressObj
         ? `${selectedAddressObj.addressLine}, ${selectedAddressObj.ward}, ${selectedAddressObj.district}, ${selectedAddressObj.city}`
         : "Default Address";
 
@@ -300,7 +300,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
         console.log('Checkout successful');
         const [orderId, paymentUrl] = response.data.data.split(' ');
         console.log(`Order ID: ${orderId}`);
-        
+
         // Navigate to the payment URL
         window.location.href = paymentUrl;
       } else {
@@ -332,7 +332,7 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
                 productId={item.productId}
                 imgSrc={product.image || "https://via.placeholder.com/50"}
                 title={product.name}
-                price={discountedPrice}
+                price= {discountedPrice}
                 quantity={item.quanity}
                 discountPrice={product.discount > 0 ? product.price : undefined}
                 discountText={product.discount > 0 ? `Giảm ${product.discount}%` : undefined}
@@ -345,9 +345,14 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex justify-between mb-2">
             <p className="text-gray-600">Tạm tính</p>
-            <p className="font-semibold">{subtotal}₫</p>
+            <p className="font-semibold">
+              {new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              }).format(subtotal)}
+            </p>
           </div>
-          <div className="flex items-center justify-between mb-2">
+          {/* <div className="flex items-center justify-between mb-2">
             <p className="text-gray-600">Sử dụng điểm: {totalPoints.totalPoints}</p>
             <label className="switch">
               <input
@@ -363,26 +368,26 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
               <p className="text-gray-600">Điểm còn lại</p>
               <p>{remainingPoints}</p>
             </div>
-          )}
+          )} */}
           <div className="flex items-center justify-between mb-2">
-    <p className="text-gray-600">Voucher</p>
-    <select 
-      value={selectedVoucher} 
-      onChange={(e) => setSelectedVoucher(e.target.value)}
-      className="border rounded-md p-2"
-    >
-      <option value="">Select a voucher</option>
-      {vouchers.map((voucher) => (
-        <option key={voucher.id} value={voucher.code}>
-          {voucher.code} - {voucher.description}
-        </option>
-      ))}
-    </select>
-  </div>
+            <p className="text-gray-600">Voucher</p>
+            <select
+              value={selectedVoucher}
+              onChange={(e) => setSelectedVoucher(e.target.value)}
+              className="border rounded-md p-2"
+            >
+              <option value="">Select a voucher</option>
+              {vouchers.map((voucher) => (
+                <option key={voucher.id} value={voucher.code}>
+                  {voucher.code} - {voucher.description}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-gray-600">Địa chỉ giao hàng</p>
-            <select 
-              value={selectedAddress} 
+            <select
+              value={selectedAddress}
               onChange={(e) => setSelectedAddress(e.target.value)}
               className="border rounded-md p-2"
             >
@@ -395,11 +400,17 @@ const [selectedVoucher, setSelectedVoucher] = useState<string>('');
           </div>
           <div className="flex justify-between font-bold text-xl">
             <p>Tổng tiền</p>
-            <p className="text-pink-500">{finalTotal.toFixed(2)}₫</p>
+            {/* <p className="text-pink-500">{finalTotal.toFixed(2)}₫</p> */}
+            <p className='text-pink-500'>
+              {new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+              }).format(finalTotal)}
+            </p>
           </div>
-          <button 
+          <button
             className="w-full bg-pink-500 text-white py-3 mt-4 rounded-md"
-            onClick={localStorage.getItem('accessToken') ? handleCheckout : () => {/* Redirect to login */}}
+            onClick={localStorage.getItem('accessToken') ? handleCheckout : () => {/* Redirect to login */ }}
           >
             {localStorage.getItem('accessToken') ? 'Tiến hành thanh toán' : 'Đăng nhập ngay để mua hàng'}
           </button>
