@@ -103,17 +103,17 @@ const UpdateProductPage = () => {
 
         fetch('https://localhost:44329/api/ProductType/GetAllProductType')
             .then((response) => response.json())
-            .then((data) => setProductTypes(data.data))
+            .then((data) => setProductTypes(data.data.filter((type: Type) => type.active)))
             .catch((error) => console.error('Error fetching product types:', error));
 
         fetch('https://localhost:44329/api/AgeRange/GetAllAgeRange')
             .then((response) => response.json())
-            .then((data) => setAgeRanges(data.data))
+            .then((data) => setAgeRanges(data.data.filter((age: AgeRange) => age.active)))
             .catch((error) => console.error('Error fetching age ranges:', error));
 
         fetch('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
             .then((response) => response.json())
-            .then((data) => setBrands(data.data.items))
+            .then((data) => setBrands(data.data.items.filter((brand: Brand) => brand.active)))
             .catch((error) => console.error('Error fetching brands:', error));
     }, []);
 

@@ -35,7 +35,7 @@ interface AgeRange {
     active: boolean;
 }
 
-const CreateProductPage = () => {
+const CreateProductPage: React.FC = () => {
     const [formData, setFormData] = useState({
         name: '',
         thumbnail: null,
@@ -60,12 +60,12 @@ const CreateProductPage = () => {
     useEffect(() => {
         fetch('https://localhost:44329/api/ProductType/GetAllProductType')
             .then((response) => response.json())
-            .then((data) => setProductTypes(data.data))
+            .then((data) => setProductTypes(data.data.filter((type: Type) => type.active)))
             .catch((error) => console.error('Error fetching product types:', error));
 
         fetch('https://localhost:44329/api/AgeRange/GetAllAgeRange')
             .then((response) => response.json())
-            .then((data) => setAgeRanges(data.data))
+            .then((data) => setAgeRanges(data.data.filter((ageRange: AgeRange) => ageRange.active)))
             .catch((error) => console.error('Error fetching age ranges:', error));
 
         fetch('https://localhost:44329/api/Brand/GetBrands?pageIndex=0&pageSize=1000')
@@ -244,7 +244,7 @@ const CreateProductPage = () => {
         }
         setShowDeletePopup(false);
         setItemToDelete(null);
-    };    
+    };
 
     const DeletePopup = () => (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -266,7 +266,7 @@ const CreateProductPage = () => {
                 </div>
             </div>
         </div>
-    );    
+    );
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -276,28 +276,28 @@ const CreateProductPage = () => {
                     <div className="flex-1 flex flex-col space-y-4">
                         <label className="font-bold">Ảnh bìa <span className="text-red-500">*</span></label>
                         <div className="flex justify-center items-center border border-gray-300 rounded-md h-64 min-w-64 w-auto mx-auto">
-                        {formData.thumbnail ? (
-                            <img
-                                src={URL.createObjectURL(formData.thumbnail)}
-                                alt="Thumbnail"
-                                className="object-cover h-full w-full"
-                                onClick={() => {
-                                    setItemToDelete('thumbnail');
-                                    setShowDeletePopup(true);
-                                }}
-                            />
-                        ) : (
-                            <label className="w-full h-full flex justify-center items-center cursor-pointer">
-                                <input
-                                    type="file"
-                                    name="thumbnail"
-                                    accept="image/*"
-                                    onChange={handleChange}
-                                    className="hidden"
+                            {formData.thumbnail ? (
+                                <img
+                                    src={URL.createObjectURL(formData.thumbnail)}
+                                    alt="Thumbnail"
+                                    className="object-cover h-full w-full"
+                                    onClick={() => {
+                                        setItemToDelete('thumbnail');
+                                        setShowDeletePopup(true);
+                                    }}
                                 />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-28 opacity-50" />
-                            </label>
-                        )}
+                            ) : (
+                                <label className="w-full h-full flex justify-center items-center cursor-pointer">
+                                    <input
+                                        type="file"
+                                        name="thumbnail"
+                                        accept="image/*"
+                                        onChange={handleChange}
+                                        className="hidden"
+                                    />
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/PlusCM128.svg/1200px-PlusCM128.svg.png" alt="Add Thumbnail" className="h-28 opacity-50" />
+                                </label>
+                            )}
                         </div>
                         <label className="font-bold">Ảnh sản phẩm <span className="text-red-500">*</span></label>
                         <div className="relative w-full h-12">

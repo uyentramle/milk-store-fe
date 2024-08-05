@@ -175,7 +175,7 @@ const ProductListPage: React.FC = () => {
                     <div className="flex items-center my-5">
                         <Input
                             className="rounded-full"
-                            style={{ height: '70px' }}
+                            style={{ height: '50px' }}
                             placeholder="Ba mẹ muốn tìm mua gì hôm nay?"
                             prefix={<SearchOutlined />}
                         />
